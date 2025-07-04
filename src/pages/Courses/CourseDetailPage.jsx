@@ -35,7 +35,7 @@ function CourseDetailPage() {
         <img src={course.imageUrl} alt={`Imagen de ${course.title}`} className="w-full h-64 object-cover" />
         <div className="p-6">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">{course.title}</h1>
-          <p className="text-gray-700 text-lg mt-4">
+          <p className="text-gray-700 text-lg mt-4 text-justify whitespace-pre-line">
             {course.longDescription}
           </p>
         </div>

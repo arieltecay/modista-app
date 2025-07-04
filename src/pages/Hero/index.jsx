@@ -1,4 +1,4 @@
-import React from 'react';
+import image from '../../assets/images/moda.jpg'
 
 const Hero = () => {
   return (
@@ -67,7 +67,7 @@ const Hero = () => {
               <div className="grid grid-cols-1 gap-4">
                 <div className="relative h-64 overflow-hidden rounded-xl">
                   <img
-                    src="https://plushlamour.com.ar/wp-content/uploads/2021/04/que-hace-un-ilustrador-de-moda.jpg"
+                    src={image}
                     alt="Diseño de moda"
                     className="absolute inset-0 h-full w-full object-cover"
                   />

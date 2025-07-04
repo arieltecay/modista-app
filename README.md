@@ -1,12 +1,46 @@
-# React + Vite
+# Modista App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Este es un proyecto web desarrollado con React, Vite y Tailwind CSS.
 
-Currently, two official plugins are available:
+## Descripción
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+`Modista App` es una aplicación web para gestionar cursos y contenido relacionado con la costura y el diseño de modas.
 
-## Expanding the ESLint configuration
+## Características
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+*   **React**: Biblioteca para construir interfaces de usuario.
+*   **Vite**: Herramienta de desarrollo frontend moderna y ultrarrápida.
+*   **Tailwind CSS**: Framework de CSS para un diseño rápido y personalizado.
+*   **React Router**: Para la navegación y el enrutamiento dentro de la aplicación.
+
+## Instalación y Uso
+
+Sigue estos pasos para levantar el proyecto en un entorno de desarrollo local.
+
+1.  **Clonar el repositorio**
+    ```bash
+    git clone https://github.com/tu-usuario/modista-app.git
+    cd modista-app
+    ```
+
+2.  **Instalar dependencias**
+    Se utiliza `npm` para la gestión de paquetes.
+    ```bash
+    npm install
+    ```
+
+3.  **Ejecutar el proyecto**
+    Esto iniciará el servidor de desarrollo.
+    ```bash
+    npm run dev
+    ```
+    Abre [http://localhost:5173](http://localhost:5173) para verlo en tu navegador.
+
+## Scripts Disponibles
+
+En el directorio del proyecto, puedes ejecutar:
+
+*   `npm run dev`: Inicia la aplicación en modo de desarrollo.
+*   `npm run build`: Compila la aplicación para producción en la carpeta `dist`.
+*   `npm run lint`: Ejecuta el linter para revisar el código.
+*   `npm run preview`: Sirve la carpeta de `build` para previsualizar la versión de producción.

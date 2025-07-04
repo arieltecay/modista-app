@@ -23,5 +23,12 @@ export const coursesData = [
     shortDescription: 'Lleva tus ideas del papel a la pantalla. Aprende a usar software profesional para diseñar tus colecciones.',
     longDescription: 'En este curso innovador, te enseñaremos a utilizar Adobe Illustrator y Procreate para crear bocetos de moda, fichas técnicas y presentaciones de colecciones profesionales. No se requiere experiencia previa en diseño digital.',
     imageUrl: 'https://images.unsplash.com/photo-1524255684952-d7185b509551?q=80&w=1974&auto=format&fit=crop'
+  },
+    {
+    id: 'diseno-de-moda-digital1',
+    title: 'Diseño de Moda con Herramientas Digitales',
+    shortDescription: 'Lleva tus ideas del papel a la pantalla. Aprende a usar software profesional para diseñar tus colecciones.',
+    longDescription: 'En este curso innovador, te enseñaremos a utilizar Adobe Illustrator y Procreate para crear bocetos de moda, fichas técnicas y presentaciones de colecciones profesionales. No se requiere experiencia previa en diseño digital.',
+    imageUrl: 'https://images.unsplash.com/photo-1524255684952-d7185b509551?q=80&w=1974&auto=format&fit=crop'
   }
 ];

@@ -1,4 +1,3 @@
-import image from '../../assets/images/moda.jpg'
 
 const Hero = () => {
   return (
@@ -67,7 +66,7 @@ const Hero = () => {
               <div className="grid grid-cols-1 gap-4">
                 <div className="relative h-64 overflow-hidden rounded-xl">
                   <img
-                    src={image}
+                    src='/images/moda.jpg'
                     alt="Diseño de moda"
                     className="absolute inset-0 h-full w-full object-cover"
                   />

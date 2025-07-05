@@ -14,7 +14,7 @@ const Footer = () => {
           <a href="mailto:hola@modista.com" className="text-4xl hover:text-purple-400 transition duration-300">
             <FaEnvelope />
           </a>
-          <a href="#" className="text-4xl hover:text-purple-400 transition duration-300"><FaInstagram /></a>
+          <a href="https://www.instagram.com/soymicaguevara?igsh=dmFicTdlZml5MHRk" className="text-4xl hover:text-purple-400 transition duration-300"><FaInstagram /></a>
           <a href="#" className="text-4xl hover:text-purple-400 transition duration-300"><FaFacebook /></a>
         </div>
         <p className="text-gray-500">&copy; 2025 ModistaApp. Todos los derechos reservados. 👗</p>

@@ -11,8 +11,6 @@ function CourseDetailPage() {
     const fetchCourse = async () => {
       try {
         setLoading(true);
-        // In a real API, you would fetch a single course: `/api/courses/${id}`
-        // For this example, we fetch the whole list and find the course.
         const response = await fetch('/api/courses.json');
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -28,7 +26,7 @@ function CourseDetailPage() {
     };
 
     fetchCourse();
-  }, [id]); // Re-run effect if the id from the URL changes
+  }, [id]);
 
   if (loading) {
     return <div className="text-center py-10">Cargando curso...</div>;

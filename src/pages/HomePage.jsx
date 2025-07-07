@@ -8,7 +8,7 @@ const HomePage = () => {
   return (
     <>
       <Hero />
-      <Courses />
+      <Courses limit={6} />
       <About />
       <Footer />
     </>

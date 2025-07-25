@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import CourseCard from '../../components/CourseCard'; // Importa el componente reutilizable
+import { getCourses } from '../../services/api';
 
 function CoursesPage({ limit }) {
   const [courses, setCourses] = useState([]);
@@ -11,12 +12,8 @@ function CoursesPage({ limit }) {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        // In a real app, you would fetch from your API endpoint, e.g., /api/courses
-        const response = await fetch('/api/courses.json');
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
+        setLoading(true);
+        const data = await getCourses();
         setCourses(data);
       } catch (e) {
         setError(e.message);

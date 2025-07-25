@@ -15,9 +15,6 @@ function CourseCard({ course }) {
           </div>
         </Link>
       </div>
-
-      {/* Sección de compra */}
-      <CoursePurchaseSection course={course} />
     </div>
   );
 }

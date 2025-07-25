@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import CoursePurchaseSection from '../../components/CoursePurchaseSection';
+import { getCourses } from '../../services/api';
 
 function CourseDetailPage() {
   const { id } = useParams();
@@ -12,11 +13,7 @@ function CourseDetailPage() {
     const fetchCourse = async () => {
       try {
         setLoading(true);
-        const response = await fetch('/api/courses.json');
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const coursesData = await response.json();
+        const coursesData = await getCourses();
         const foundCourse = coursesData.find(c => c.id === id);
         setCourse(foundCourse);
       } catch (e) {

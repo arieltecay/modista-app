@@ -1,60 +1,55 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { FaWhatsapp } from 'react-icons/fa';
+import { initMercadoPago, Wallet } from '@mercadopago/sdk-react';
+import { createPreference } from '../../services/api';
 
-// Se obtiene la clave pública de Mercado Pago desde las variables de entorno de Vite.
-const MERCADO_PAGO_PUBLIC_KEY = import.meta.env.VITE_MERCADO_PAGO_PUBLIC_KEY;
+initMercadoPago('TEST-a0211741-2288-440f-897f-122921222020');
 
-function CoursePurchaseSection({ course }) {
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleBuyClick = async () => {
-    setIsLoading(true);
+const CoursePurchaseSection = ({ course }) => {
+  const handleCreatePreference = async () => {
     try {
-      // 1. Llama a tu backend para crear la preferencia de pago
-      const response = await fetch('http://localhost:3001/create-preference', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          id: course.id,
-          title: course.title,
-          price: course.price,
-        }),
-      });
-
-      const preference = await response.json();
-
-      if (preference.id) {
-        // 2. Si se crea la preferencia, inicializa el checkout de Mercado Pago
-        const mp = new window.MercadoPago(MERCADO_PAGO_PUBLIC_KEY);
-
-        // 3. Redirige al usuario al checkout
-        mp.checkout({
-          preference: {
-            id: preference.id,
-          },
-        });
-      }
+      const data = await createPreference(course);
+      return data.preferenceId;
     } catch (error) {
-      console.error('Error al procesar el pago:', error);
-      alert('Ocurrió un error al intentar procesar el pago. Por favor, intenta de nuevo.');
-    } finally {
-      setIsLoading(false);
+      console.error("Error creating preference:", error);
     }
   };
 
   return (
-    <div className="px-6 pt-4 pb-4 border-t border-gray-200 flex justify-between items-center">
-      <p className="text-2xl font-bold text-purple-600">${course.price}</p>
-      <button
-        onClick={handleBuyClick}
-        disabled={isLoading}
-        className="bg-purple-600 text-white font-semibold py-2 px-5 rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50 transition-all duration-300 disabled:bg-purple-400 disabled:cursor-not-allowed"
-      >
-        {isLoading ? 'Procesando...' : 'Comprar ahora'}
-      </button>
-    </div>
+    <section className="bg-gray-100 py-12">
+      <div className="container mx-auto px-4">
+        <div className="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-md">
+          <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">¡Inscríbete ahora!</h2>
+          <p className="text-gray-600 text-lg mb-8 text-center">
+            Aprovecha esta oportunidad para aprender y crecer. El curso incluye:
+          </p>
+          <ul className="list-disc list-inside text-gray-700 text-lg mb-8 space-y-2">
+            <li>Acceso a todas las clases grabadas</li>
+            <li>Material de apoyo descargable</li>
+            <li>Certificado de finalización</li>
+            <li>Acceso a comunidad exclusiva</li>
+          </ul>
+          <div className="flex flex-col items-center space-y-4">
+            <button
+              onClick={handleCreatePreference}
+              className="bg-purple-600 text-white px-8 py-3 rounded-lg text-xl font-semibold hover:bg-purple-700 transition duration-300 shadow-lg"
+            >
+              Comprar Curso
+            </button>
+            <Wallet initialization={{ preferenceId: undefined }} />
+            <a
+              href="https://wa.me/3813508796"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center bg-green-500 text-white px-8 py-3 rounded-lg text-xl font-semibold hover:bg-green-600 transition duration-300 shadow-lg"
+            >
+              <FaWhatsapp className="mr-2" /> Contactar por WhatsApp
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
   );
-}
+};
 
 export default CoursePurchaseSection;

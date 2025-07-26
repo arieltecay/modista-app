@@ -3,7 +3,7 @@ import { FaWhatsapp } from 'react-icons/fa';
 import { initMercadoPago, Wallet } from '@mercadopago/sdk-react';
 import { createPreference } from '../../services/api';
 
-initMercadoPago('TEST-a0211741-2288-440f-897f-122921222020');
+initMercadoPago(import.meta.env.VITE_MERCADO_PAGO_PUBLIC_KEY);
 
 const CoursePurchaseSection = ({ course }) => {
   const handleCreatePreference = async () => {

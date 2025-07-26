@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import { FaWhatsapp } from 'react-icons/fa';
-import { initMercadoPago, Wallet } from '@mercadopago/sdk-react';
+import { Wallet } from '@mercadopago/sdk-react';
 import { createPreference } from '../../services/api';
-
-initMercadoPago(import.meta.env.VITE_MERCADO_PAGO_PUBLIC_KEY);
 
 const CoursePurchaseSection = ({ course }) => {
   const [preferenceId, setPreferenceId] = useState(null);

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FaWhatsapp } from 'react-icons/fa';
 import { initMercadoPago, Wallet } from '@mercadopago/sdk-react';
 import { createPreference } from '../../services/api';
@@ -6,10 +6,12 @@ import { createPreference } from '../../services/api';
 initMercadoPago(import.meta.env.VITE_MERCADO_PAGO_PUBLIC_KEY);
 
 const CoursePurchaseSection = ({ course }) => {
+  const [preferenceId, setPreferenceId] = useState(null);
+
   const handleCreatePreference = async () => {
     try {
       const data = await createPreference(course, course.id);
-      return data.preferenceId;
+      setPreferenceId(data.preferenceId);
     } catch (error) {
       console.error("Error creating preference:", error);
     }
@@ -30,13 +32,17 @@ const CoursePurchaseSection = ({ course }) => {
             <li>Acceso a comunidad exclusiva</li>
           </ul>
           <div className="flex flex-col items-center space-y-4">
-            <button
-              onClick={handleCreatePreference}
-              className="bg-purple-600 text-white px-8 py-3 rounded-lg text-xl font-semibold hover:bg-purple-700 transition duration-300 shadow-lg"
-            >
-              Comprar Curso
-            </button>
-            <Wallet initialization={{ preferenceId: undefined }} />
+            {!preferenceId && (
+              <button
+                onClick={handleCreatePreference}
+                className="bg-purple-600 text-white px-8 py-3 rounded-lg text-xl font-semibold hover:bg-purple-700 transition duration-300 shadow-lg"
+              >
+                Comprar Curso
+              </button>
+            )}
+            {preferenceId && (
+              <Wallet initialization={{ preferenceId: preferenceId }} />
+            )}
             <a
               href="https://wa.me/3813508796"
               target="_blank"

@@ -9,6 +9,9 @@ import { Routes, Route } from 'react-router-dom';
 import SuccessPage from './pages/PaymentStatus/SuccessPage';
 import FailurePage from './pages/PaymentStatus/FailurePage';
 import PendingPage from './pages/PaymentStatus/PendingPage';
+import { initMercadoPago } from '@mercadopago/sdk-react';
+
+initMercadoPago(import.meta.env.VITE_MERCADO_PAGO_PUBLIC_KEY);
 
 function App() {
   return (

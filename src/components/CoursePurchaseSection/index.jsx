@@ -53,7 +53,7 @@ const CoursePurchaseSection = ({ course }) => {
               )
             )}
             {preferenceId && (
-              <Wallet />
+              <Wallet initialization={{ preferenceId: preferenceId }} />
             )}
             <a
               href="https://wa.me/3813508796"

@@ -8,7 +8,7 @@ initMercadoPago('TEST-a0211741-2288-440f-897f-122921222020');
 const CoursePurchaseSection = ({ course }) => {
   const handleCreatePreference = async () => {
     try {
-      const data = await createPreference(course);
+      const data = await createPreference(course, course.id);
       return data.preferenceId;
     } catch (error) {
       console.error("Error creating preference:", error);

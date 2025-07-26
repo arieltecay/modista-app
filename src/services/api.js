@@ -8,13 +8,13 @@ export const getCourses = async () => {
     return await response.json();
     }
 
-export const createPreference = async (course) => {
+export const createPreference = async (course, external_reference) => {
     const response = await fetch(`${API_URL}/api/payment/create-preference`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(course),
+        body: JSON.stringify({ course, external_reference }),
     });
     if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);

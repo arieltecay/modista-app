@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const EmailTestPage = ({ courseData }) => { // Recibe courseData como prop
+const EmailTestPage = ({ courseData, onEmailSent }) => { // Recibe courseData y onEmailSent como props
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -44,8 +44,10 @@ const EmailTestPage = ({ courseData }) => { // Recibe courseData como prop
       });
 
       if (response.ok) {
-        alert('Correo de confirmación enviado/simulado exitosamente. Revisa la carpeta api/sent_emails.');
         setFormData({ name: '', email: '' }); // Limpiar formulario
+        if (onEmailSent) {
+          onEmailSent(); // Llamar a la función del padre para mostrar el modal
+        }
       } else {
         const errorData = await response.json();
         alert(`Error al enviar el correo: ${errorData.error || response.statusText}`);

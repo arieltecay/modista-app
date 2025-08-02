@@ -1,3 +1,5 @@
+import maniqui from '../../assets/images/maniqui.jpeg'
+import pantalon from '../../assets/images/pantalon.jpeg'
 
 const Hero = () => {
   return (
@@ -24,7 +26,7 @@ const Hero = () => {
         <div className="mx-auto max-w-2xl lg:mx-0 lg:max-w-xl lg:flex-shrink-0 lg:pt-8 lg:w-1/2">
           <div className="mt-24 sm:mt-32 lg:mt-16">
             <a href="#" className="inline-flex space-x-6">
-              <span className="rounded-full bg-purple-600/10 px-3 py-1 text-sm font-semibold leading-6 text-purple-600 ring-1 ring-inset ring-purple-600/10">
+              <span className="rounded-full bg-[var(--color-green-600)]/10 px-3 py-1 text-sm font-semibold leading-6 text-[var(--color-green-600)] ring-1 ring-inset ring-[var(--color-green-600)]/10">
                 Últimas noticias
               </span>
               <span className="inline-flex items-center space-x-2 text-sm font-medium leading-6 text-gray-600">
@@ -44,7 +46,7 @@ const Hero = () => {
           <div className="mt-10 flex items-center gap-x-6">
             <a
               href="#courses"
-              className="rounded-md bg-purple-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-purple-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-600"
+              className="rounded-md bg-[var(--color-green-600)] px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:brightness-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-green-600)]"
             >
               Ver Cursos
             </a>
@@ -58,7 +60,7 @@ const Hero = () => {
             <div className="grid grid-cols-1 gap-x-8 gap-y-6 lg:grid-cols-2">
               <div className="relative h-64 overflow-hidden rounded-xl sm:h-96 lg:h-full">
                 <img
-                  src="https://images.unsplash.com/photo-1591195853828-11db59a44f6b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2670&q=80"
+                  src={maniqui}
                   alt="Modista trabajando"
                   className="absolute inset-0 h-full w-full object-cover"
                 />
@@ -73,7 +75,7 @@ const Hero = () => {
                 </div>
                 <div className="relative h-64 overflow-hidden rounded-xl">
                   <img
-                    src="https://images.unsplash.com/photo-1589310243389-96a5483213a8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2574&q=80"
+                    src={pantalon}
                     alt="Taller de costura"
                     className="absolute inset-0 h-full w-full object-cover"
                   />

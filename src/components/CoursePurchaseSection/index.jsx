@@ -46,7 +46,7 @@ const CoursePurchaseSection = ({ course }) => {
               ) : (
                 <button
                   onClick={handleCreatePreference}
-                  className="bg-purple-600 text-white px-8 py-3 rounded-lg text-xl font-semibold hover:bg-purple-700 transition duration-300 shadow-lg"
+                  className="bg-[var(--color-green-600)] text-white px-8 py-3 rounded-lg text-xl font-semibold hover:brightness-95 transition duration-300 shadow-lg"
                 >
                   Comprar Curso
                 </button>

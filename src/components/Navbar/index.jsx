@@ -19,7 +19,7 @@ export default function Navbar() {
       <nav aria-label="Global" className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8">
         <div className="flex lg:flex-1">
           <Link to="/" className="-m-1.5 p-1.5 flex items-center space-x-2">
-            <FaCut className="h-8 w-auto text-purple-600" />
+            <FaCut className="h-8 w-auto text-[var(--color-green-600)]" />
             <span className="text-xl font-bold text-gray-900">ModistaApp</span>
           </Link>
         </div>
@@ -38,10 +38,10 @@ export default function Navbar() {
             <Link
               key={item.name}
               to={item.href}
-              className="relative text-base font-semibold leading-6 text-gray-900 transition-colors duration-200 px-2 py-1 rounded-md hover:text-purple-600 hover:bg-purple-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-400"
+              className="relative text-base font-semibold leading-6 text-gray-900 transition-colors duration-200 px-2 py-1 rounded-md hover:text-[var(--color-green-600)] hover:bg-[var(--color-green-600)]/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-green-600)]"
             >
               <span className="transition-all duration-200 group-hover:underline">{item.name}</span>
-              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-purple-600 transition-all duration-300 group-hover:w-full" />
+              <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-[var(--color-green-600)] transition-all duration-300 group-hover:w-full" />
             </Link>
           ))}
         </div>
@@ -51,7 +51,7 @@ export default function Navbar() {
         <DialogPanel className="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
           <div className="flex items-center justify-between">
             <Link to="/" className="-m-1.5 p-1.5 flex items-center space-x-2">
-              <FaCut className="h-8 w-auto text-purple-600" />
+              <FaCut className="h-8 w-auto text-[var(--color-green-600)]" />
               <span className="text-xl font-bold text-gray-900">ModistaApp</span>
             </Link>
             <button
@@ -70,7 +70,7 @@ export default function Navbar() {
                   <Link
                     key={item.name}
                     to={item.href}
-                    className="block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 transition-colors duration-200 hover:bg-purple-50 hover:text-purple-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-400"
+                    className="block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 transition-colors duration-200 hover:bg-[var(--color-green-600)]/10 hover:text-[var(--color-green-600)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-green-600)]"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     {item.name}

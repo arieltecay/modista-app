@@ -14,6 +14,17 @@ const SuccessPage = () => {
   const status = query.get('status');
   const merchantOrderId = query.get('merchant_order_id');
   const preferenceId = query.get('preference_id');
+  const courseTitle = query.get('courseTitle');
+  const courseShortDescription = query.get('courseShortDescription');
+  const coursePrice = query.get('coursePrice');
+  const deeplink = query.get('deeplink');
+
+  const courseData = {
+    title: courseTitle,
+    shortDescription: courseShortDescription,
+    price: coursePrice,
+    deeplink: deeplink,
+  };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 text-center p-4">
@@ -34,7 +45,7 @@ const SuccessPage = () => {
           </div>
         </div>
         <div className="flex-1 mt-8 md:mt-0">
-          <EmailTestPage />
+          <EmailTestPage courseData={courseData} />
         </div>
       </div>
     </div>

@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 
-const EmailTestPage = () => {
+const EmailTestPage = ({ courseData }) => { // Recibe courseData como prop
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    courseTitle: '',
   });
 
   const handleChange = (e) => {
@@ -18,7 +17,13 @@ const EmailTestPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevenir el comportamiento por defecto del formulario
     try {
-      console.log('Enviando correo de prueba con datos:', formData);
+      // Asegurarse de que courseData esté disponible
+      if (!courseData || !courseData.title) {
+        alert('Error: Datos del curso no disponibles para enviar el correo.');
+        return;
+      }
+
+      console.log('Enviando correo de confirmación con datos:', formData, 'y curso:', courseData);
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/email/send-test-email`, {
         method: 'POST',
         headers: {
@@ -26,19 +31,21 @@ const EmailTestPage = () => {
         },
         body: JSON.stringify({
           to: formData.email,
-          subject: 'Confirmación de Compra de Curso',
+          subject: `Confirmación de Compra del Curso: ${courseData.title}`,
           templateName: 'teamplate',
           data: {
             name: formData.name,
-            courseTitle: formData.courseTitle,
-            phone: '+1234567890', // Puedes hacer esto dinámico si lo necesitas
+            courseTitle: courseData.title,
+            description: courseData.shortDescription,
+            price: courseData.price,
+            deeplink:courseData.deeplink,
           },
         }),
       });
 
       if (response.ok) {
-        alert('Correo de prueba enviado/simulado exitosamente. Revisa la carpeta api/sent_emails.');
-        setFormData({ name: '', email: '', courseTitle: '' }); // Limpiar formulario
+        alert('Correo de confirmación enviado/simulado exitosamente. Revisa la carpeta api/sent_emails.');
+        setFormData({ name: '', email: '' }); // Limpiar formulario
       } else {
         const errorData = await response.json();
         alert(`Error al enviar el correo: ${errorData.error || response.statusText}`);
@@ -51,6 +58,14 @@ const EmailTestPage = () => {
 
   return (
     <div className="flex flex-col items-center justify-center">
+      {courseData && (
+        <div className="mt-4 p-4 bg-gray-100 rounded-md w-full max-w-md text-left mb-4">
+          <h3 className="font-bold text-lg mb-2">Datos del Curso Recibidos:</h3>
+          <p><strong>Título:</strong> {courseData.title}</p>
+          <p><strong>Descripción Corta:</strong> {courseData.shortDescription}</p>
+          <p><strong>Precio:</strong> ${courseData.price}</p>
+        </div>
+      )}
       <form onSubmit={handleSubmit} className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
         <div className="mb-4">
           <label htmlFor="name" className="block text-gray-700 text-sm font-bold mb-2">Nombre:</label>
@@ -76,23 +91,11 @@ const EmailTestPage = () => {
             required
           />
         </div>
-        <div className="mb-6">
-          <label htmlFor="courseTitle" className="block text-gray-700 text-sm font-bold mb-2">Título del Curso:</label>
-          <input
-            type="text"
-            id="courseTitle"
-            name="courseTitle"
-            value={formData.courseTitle}
-            onChange={handleChange}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            required
-          />
-        </div>
         <button
           type="submit"
           className="px-8 py-4 bg-purple-600 text-white font-semibold rounded-lg shadow-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-75 transition duration-300 ease-in-out w-full"
         >
-          Enviar Correo de Prueba
+          Enviar Correo de Confirmación
         </button>
       </form>
     </div>

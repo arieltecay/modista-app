@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Dialog, DialogPanel } from '@headlessui/react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
-import { FaCut } from 'react-icons/fa';
+import { GiSewingMachine } from "react-icons/gi";
 import { Link } from 'react-router-dom';
 
 const navigation = [
@@ -19,7 +19,7 @@ export default function Navbar() {
       <nav aria-label="Global" className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8">
         <div className="flex lg:flex-1">
           <Link to="/" className="-m-1.5 p-1.5 flex items-center space-x-2">
-            <FaCut className="h-8 w-auto text-[var(--color-green-600)]" />
+            <GiSewingMachine className="h-8 w-auto text-[var(--color-green-600)]" />
             <span className="text-xl font-bold text-gray-900">ModistaApp</span>
           </Link>
         </div>
@@ -51,7 +51,7 @@ export default function Navbar() {
         <DialogPanel className="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
           <div className="flex items-center justify-between">
             <Link to="/" className="-m-1.5 p-1.5 flex items-center space-x-2">
-              <FaCut className="h-8 w-auto text-[var(--color-green-600)]" />
+              <GiSewingMachine className="h-8 w-auto text-[var(--color-green-600)]" />
               <span className="text-xl font-bold text-gray-900">ModistaApp</span>
             </Link>
             <button

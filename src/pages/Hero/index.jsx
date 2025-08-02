@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import maniqui from '../../assets/images/maniqui.jpeg'
-import pantalon from '../../assets/images/pantalon.jpeg'
 import { getTestimonials } from '../../services/api';
 
 const Hero = () => {
@@ -83,7 +81,7 @@ const Hero = () => {
             <div className="grid grid-cols-1 gap-x-8 gap-y-6 lg:grid-cols-2">
               <div className="relative h-64 overflow-hidden rounded-xl sm:h-96 lg:h-full">
                 <img
-                  src={maniqui}
+                  src="/images/maniqui.jpeg"
                   alt="Modista trabajando"
                   className="absolute inset-0 h-full w-full object-cover"
                 />
@@ -98,7 +96,7 @@ const Hero = () => {
                 </div>
                 <div className="relative h-64 overflow-hidden rounded-xl">
                   <img
-                    src={pantalon}
+                    src="/images/pantalon.jpeg"
                     alt="Taller de costura"
                     className="absolute inset-0 h-full w-full object-cover"
                   />

@@ -1,7 +1,43 @@
+import React, { useState, useEffect } from 'react';
 import maniqui from '../../assets/images/maniqui.jpeg'
 import pantalon from '../../assets/images/pantalon.jpeg'
+import { getTestimonials } from '../../services/api';
 
 const Hero = () => {
+  const initialTestimonialCount = 3;
+  const [showAll, setShowAll] = useState(false);
+  const [testimonials, setTestimonials] = useState([]);
+  const [visibleTestimonials, setVisibleTestimonials] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchTestimonials = async () => {
+      try {
+        const data = await getTestimonials();
+        setTestimonials(data);
+        setLoading(false);
+      } catch (err) {
+        setError(err);
+        setLoading(false);
+      }
+    };
+
+    fetchTestimonials();
+  }, []);
+
+  useEffect(() => {
+    if (showAll) {
+      setVisibleTestimonials(testimonials);
+    } else {
+      setVisibleTestimonials(testimonials.slice(0, initialTestimonialCount));
+    }
+  }, [showAll, testimonials]);
+
+  const handleShowMore = () => {
+    setShowAll(!showAll);
+  };
+
   return (
     <div className="relative isolate overflow-hidden bg-white">
       <svg
@@ -22,26 +58,13 @@ const Hero = () => {
         </defs>
         <rect width="100%" height="100%" strokeWidth={0} fill="url(#0787a7c5-978c-4f66-83c7-11c213f99cb7)" />
       </svg>
-      <div className="mx-auto max-w-7xl px-4 pb-10 pt-6 sm:pb-24 sm:pt-10 lg:flex lg:px-8 lg:py-40">
+      <div className="mx-auto max-w-7xl px-4 pb-10 pt-6 sm:pb-24 sm:pt-10 lg:flex lg:px-8 lg:py-10">
         <div className="mx-auto max-w-2xl lg:mx-0 lg:max-w-xl lg:flex-shrink-0 lg:pt-8 lg:w-1/2">
-          <div className="mt-24 sm:mt-32 lg:mt-16">
-            <a href="#" className="inline-flex space-x-6">
-              <span className="rounded-full bg-[var(--color-green-600)]/10 px-3 py-1 text-sm font-semibold leading-6 text-[var(--color-green-600)] ring-1 ring-inset ring-[var(--color-green-600)]/10">
-                Últimas noticias
-              </span>
-              <span className="inline-flex items-center space-x-2 text-sm font-medium leading-6 text-gray-600">
-                <span>Nuevos cursos disponibles</span>
-                <svg className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                  <path fillRule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clipRule="evenodd" />
-                </svg>
-              </span>
-            </a>
-          </div>
           <h1 className="mt-10 text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
-            Conviértete en una Modista Profesional
+            Domina el arte de la costura y crea tu propia colección
           </h1>
           <p className="mt-6 text-lg leading-8 text-gray-600">
-            Aprende las técnicas más avanzadas de costura y diseño de moda. Domina el arte de la confección y crea tus propias colecciones.
+            Aprende paso a paso a crear tus prendas desde cero, con moldería propia y técnicas de costura profesional. Transforma tu pasión en un oficio.
           </p>
           <div className="mt-10 flex items-center gap-x-6">
             <a
@@ -85,6 +108,33 @@ const Hero = () => {
           </div>
         </div>
       </div>
+      {loading && <p className="text-center text-gray-600">Cargando testimonios...</p>}
+      {error && <p className="text-center text-red-600">Error al cargar testimonios: {error.message}</p>}
+      {!loading && !error && testimonials.length > 0 && (
+        <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+          <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl text-center mb-12">
+            Lo que dicen nuestros estudiantes
+          </h2>
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {visibleTestimonials.map((testimonial) => (
+              <div key={testimonial.id} className="bg-white p-6 rounded-lg shadow-md">
+                <p className="text-gray-600 italic">\"{testimonial.description}\"</p>
+                <p className="mt-4 text-right font-semibold text-gray-800">- {testimonial.name}</p>
+              </div>
+            ))}
+          </div>
+          {testimonials.length > initialTestimonialCount && (
+            <div className="text-center mt-10">
+              <button
+                onClick={handleShowMore}
+                className="rounded-md bg-[var(--color-green-600)] px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:brightness-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-green-600)]"
+              >
+                {showAll ? 'Mostrar menos' : 'Ver más testimonios'}
+              </button>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

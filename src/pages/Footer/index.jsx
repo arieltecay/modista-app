@@ -5,7 +5,7 @@ const Footer = () => {
   return (
     <footer id="contact" className="bg-[var(--color-green-600)] text-black py-12">
       <div className="container mx-auto px-6 text-center">
-        <h2 className="text-3xl font-bold mb-6">Bienvenidos a ésta comunidad que cose sueños, puntada a puntada</h2>
+        <h2 className="text-3xl font-bold mb-6">Bienvenidos a ésta comunidad que cose sueños</h2>
         <h4 className="text-2xl font-bold mb-6">Conectá conmigo</h4>
         <p className="mb-8 text-lg">¿Quieres aprender más?, ¿Hacerme una pregunta o simplemente saludar? Estoy a un click de distancia</p>
         <div className="flex justify-center space-x-6 mb-8">

@@ -95,7 +95,7 @@ const EmailTestPage = ({ courseData, onEmailSent }) => { // Recibe courseData y 
         </div>
         <button
           type="submit"
-          className="px-8 py-4 bg-[var(--color-green-600)] text-white font-semibold rounded-lg shadow-md hover:brightness-95 focus:outline-none focus:ring-2 focus:ring-[var(--color-green-600)] focus:ring-opacity-75 transition duration-300 ease-in-out w-full"
+          className="px-8 py-4 bg-[var(--color-green-600)] text-gray-500 font-semibold rounded-lg shadow-md hover:brightness-95 focus:outline-none focus:ring-2 focus:ring-[var(--color-green-600)] focus:ring-opacity-75 transition duration-300 ease-in-out w-full"
         >
           Enviar Correo de Confirmación
         </button>

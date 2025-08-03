@@ -34,7 +34,7 @@ const PaymentButton = ({ course }) => {
         ) : (
           <button
             onClick={handleCreatePreference}
-            className="bg-[var(--color-green-600)] text-white px-8 py-3 rounded-lg text-xl font-semibold hover:brightness-95 transition duration-300 shadow-lg"
+            className="bg-[var(--color-green-600)] text-gray-500 px-8 py-3 rounded-lg text-xl font-semibold hover:brightness-95 transition duration-300 shadow-lg"
           >
             Inscribirme ahora
           </button>

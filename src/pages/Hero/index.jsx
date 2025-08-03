@@ -67,7 +67,7 @@ const Hero = () => {
           <div className="mt-10 flex items-center gap-x-6">
             <a
               href="#courses"
-              className="rounded-md bg-[var(--color-green-600)] px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:brightness-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-green-600)]"
+              className="rounded-md bg-[var(--color-green-600)] px-3.5 py-2.5 text-sm font-semibold text-gray-500 shadow-sm hover:brightness-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-green-600)]"
             >
               Ver Cursos
             </a>
@@ -125,7 +125,7 @@ const Hero = () => {
             <div className="text-center mt-10">
               <button
                 onClick={handleShowMore}
-                className="rounded-md bg-[var(--color-green-600)] px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:brightness-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-green-600)]"
+                className="rounded-md bg-[var(--color-green-600)] px-3.5 py-2.5 text-sm font-semibold text-gray-500 shadow-sm hover:brightness-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-green-600)]"
               >
                 {showAll ? 'Mostrar menos' : 'Ver más testimonios'}
               </button>

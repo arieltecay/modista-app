@@ -89,7 +89,7 @@ const Hero = () => {
               <div className="grid grid-cols-1 gap-4">
                 <div className="relative h-64 overflow-hidden rounded-xl">
                   <img
-                    src='/images/moda.jpg'
+                    src='/images/caricatura.jpeg'
                     alt="Diseño de moda"
                     className="absolute inset-0 h-full w-full object-cover"
                   />

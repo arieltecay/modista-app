@@ -3,6 +3,12 @@ import { FaWhatsapp } from 'react-icons/fa';
 import PaymentButton from '../PaymentButton';
 
 const CoursePurchaseSection = ({ course }) => {
+  const isFree = parseFloat(course.price) === 0;
+
+  if (isFree) {
+    return null; // No renderiza nada si el curso es gratuito
+  }
+
   return (
     <section className="bg-gray-100 py-12">
       <div className="container mx-auto px-4">

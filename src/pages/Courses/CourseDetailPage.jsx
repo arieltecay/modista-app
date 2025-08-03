@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import CoursePurchaseSection from '../../components/CoursePurchaseSection';
 import { getCourses } from '../../services/api';
+import CourseImage from '../../components/CourseImage'; // Importa el nuevo componente
 
 function CourseDetailPage() {
   const { id } = useParams();
@@ -70,7 +71,7 @@ function CourseDetailPage() {
         </Link>
       </div>
       <div className="bg-white shadow-lg rounded-lg overflow-hidden">
-        <img src={course.imageUrl} alt={`Imagen de ${course.title}`} className="w-full h-64 object-contain" />
+        <CourseImage course={course} className="w-full h-64 object-contain" />
         <div className="p-6">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">{course.title}</h1>
           {/* Sección del Video */}

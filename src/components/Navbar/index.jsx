@@ -8,7 +8,6 @@ const navigation = [
   { name: 'Inicio', href: '/' },
   { name: 'Cursos', href: '/cursos' },
   { name: 'Sobre Mí', href: '/sobre-mi' },
-  { name: 'Contacto', href: '/contacto' },
 ];
 
 export default function Navbar() {

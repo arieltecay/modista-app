@@ -10,7 +10,6 @@ const HomePage = () => {
       <Hero />
       <Courses limit={6} />
       <About />
-      <Footer />
     </>
   );
 };

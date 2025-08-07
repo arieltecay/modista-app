@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import CoursePurchaseSection from '../../components/CoursePurchaseSection';
 import { getCourses } from '../../services/api';
 import CourseImage from '../../components/CourseImage'; // Importa el nuevo componente
+import Spinner from '../../components/Spinner';
 
 function CourseDetailPage() {
   const { id } = useParams();
@@ -23,12 +24,12 @@ function CourseDetailPage() {
         setLoading(false);
       }
     };
-
+    
     fetchCourse();
   }, [id]);
 
   if (loading) {
-    return <div className="text-center py-10">Cargando curso...</div>;
+    return <Spinner text="Cargando curso..." />;
   }
 
   if (error) {

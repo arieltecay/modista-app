@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import CourseCard from '../../components/CourseCard'; // Importa el componente reutilizable
 import { getCourses } from '../../services/api';
+import Spinner from '../../components/Spinner';
 
 function CoursesPage({ limit }) {
   const [courses, setCourses] = useState([]);
@@ -29,7 +30,7 @@ function CoursesPage({ limit }) {
   const showMoreButton = limit && courses.length > limit;
 
   if (loading) {
-    return <div className="text-center py-12">Cargando cursos...</div>;
+    return <Spinner text="Cargando curso..." />;
   }
 
   if (error) {

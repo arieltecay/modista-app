@@ -4,27 +4,29 @@ import { Link } from 'react-router-dom';
 import CourseCard from '../../components/CourseCard'; // Importa el componente reutilizable
 import { getCourses } from '../../services/api';
 import Spinner from '../../components/Spinner';
+import ErrorCard from '../../components/ErrorCard/ErrorCard';
 
 function CoursesPage({ limit }) {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchCourses = async () => {
-      try {
-        setLoading(true);
-        const data = await getCourses();
-        setCourses(data);
-      } catch (e) {
-        setError(e.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCourses();
+  const fetchCourses = React.useCallback(async () => {
+    try {
+      setLoading(true);
+      const data = await getCourses();
+      setCourses(data);
+      setError(null);
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    fetchCourses();
+  }, [fetchCourses]);
 
   const coursesToShow = limit ? courses.slice(0, limit) : courses;
   const showMoreButton = limit && courses.length > limit;
@@ -34,7 +36,15 @@ function CoursesPage({ limit }) {
   }
 
   if (error) {
-    return <div className="text-center py-12 text-red-500">Error: {error}</div>;
+    return (
+      <div className="py-12">
+        <ErrorCard
+          title="No pudimos cargar los cursos"
+          message={`Detalle: ${error}`}
+          onRetry={fetchCourses}
+        />
+      </div>
+    );
   }
 
   return (

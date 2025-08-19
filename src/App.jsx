@@ -1,4 +1,5 @@
 
+import GoogleTagManager from './components/GoogleTagManager/index.jsx';
 import HomePage from './pages/HomePage';
 import About from './pages/About/index.jsx';
 import Courses from './pages/Courses/index.jsx';
@@ -16,6 +17,7 @@ initMercadoPago(import.meta.env.VITE_MERCADO_PAGO_PUBLIC_KEY);
 function App() {
   return (
     <div className="bg-white">
+      <GoogleTagManager />
       <main>
         <Routes>
           {/* Layout base para el 90% de las rutas */}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getTestimonials } from '../../services/api';
+import Announcement from '../../components/Announcement';
 
 const Hero = () => {
   const initialTestimonialCount = 3;
@@ -106,6 +107,7 @@ const Hero = () => {
           </div>
         </div>
       </div>
+      <Announcement />
       {loading && <p className="text-center text-gray-600">Cargando testimonios...</p>}
       {error && <p className="text-center text-red-600">Error al cargar testimonios: {error.message}</p>}
       {!loading && !error && testimonials.length > 0 && (
@@ -116,7 +118,7 @@ const Hero = () => {
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {visibleTestimonials.map((testimonial) => (
               <div key={testimonial.id} className="bg-white p-6 rounded-lg shadow-md">
-                <p className="text-gray-600 italic">\"{testimonial.description}\"</p>
+                <p className="text-gray-600 italic">"{testimonial.description}"</p>
                 <p className="mt-4 text-right font-semibold text-gray-800">- {testimonial.name}</p>
               </div>
             ))}

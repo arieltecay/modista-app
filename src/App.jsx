@@ -11,6 +11,8 @@ import PendingPage from './pages/PaymentStatus/PendingPage';
 import NotFoundPage from './pages/NotFound/index.jsx';
 import { initMercadoPago } from '@mercadopago/sdk-react';
 import { Layout, WithPaymentLayout } from './components/Layout/index.jsx';
+import InscriptionsPage from './pages/Inscriptions/index.jsx';
+import InscriptionsAdminPage from './pages/Admin/Inscriptions/index.jsx';
 
 initMercadoPago(import.meta.env.VITE_MERCADO_PAGO_PUBLIC_KEY);
 
@@ -26,6 +28,7 @@ function App() {
             <Route path="sobre-mi" element={<About />} />
             <Route path="cursos" element={<Courses />} />
             <Route path="cursos/:id" element={<CourseDetailPage />} />
+            <Route path="inscriptions" element={<InscriptionsPage />} />
           </Route>
 
           {/* Layout para rutas de pago */}
@@ -34,6 +37,9 @@ function App() {
             <Route path="failure" element={<FailurePage />} />
             <Route path="pending" element={<PendingPage />} />
           </Route>
+
+          {/* Rutas sin el layout principal (como el admin) */}
+          <Route path="/admin/inscriptions" element={<InscriptionsAdminPage />} />
 
           {/* Página 404 */}
           <Route path="*" element={<NotFoundPage />} />

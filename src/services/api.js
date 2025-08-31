@@ -69,7 +69,7 @@ export const createInscription = (formData) =>
  * @param {string} secret - El secreto para autorizar la petición.
  * @returns {Promise<object>} Una promesa que resuelve a un objeto con los datos de la paginación y las inscripciones.
  */
-export const getInscriptions = (page = 1, limit = 10, secret) =>
+export const getInscriptions = (page = 1, limit = 10, secret, sortBy, sortOrder, search) =>
   apiClient.get('/inscriptions', {
-    params: { page, limit, secret },
+    params: { page, limit, secret, sortBy, sortOrder, search },
   });

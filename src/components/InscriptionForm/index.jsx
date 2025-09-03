@@ -28,7 +28,7 @@ const InscriptionForm = ({ course }) => {
       newErrors.email = 'El formato del email no es válido.';
     }
     if (!formData.celular.trim()) newErrors.celular = 'El celular es obligatorio.';
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -77,21 +77,6 @@ const InscriptionForm = ({ course }) => {
           <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
             {isFree ? '¡Curso Gratuito!' : '¡Inscríbete ahora!'}
           </h2>
-          
-          {!isFree && (
-            <>
-              <p className="text-gray-600 text-lg mb-8 text-center">
-                Aprovecha esta oportunidad para aprender y crecer. El curso incluye:
-              </p>
-              <ul className="list-disc list-inside text-gray-700 text-lg mb-8 space-y-2">
-                <li>Acceso a todas las clases grabadas</li>
-                <li>Material de apoyo descargable</li>
-                <li>Certificado de finalización</li>
-                <li>Acceso a comunidad exclusiva</li>
-              </ul>
-            </>
-          )}
-
           <div className="bg-gray-50 p-6 rounded-lg mb-8">
             <h3 className="text-xl font-bold text-gray-900 mb-4">
               Completa tus datos para inscribirte al curso "{course?.title || 'Curso'}"
@@ -109,9 +94,8 @@ const InscriptionForm = ({ course }) => {
                     required
                     value={formData.nombre}
                     onChange={handleChange}
-                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-                      errors.nombre ? 'border-red-500' : 'border-gray-300'
-                    }`}
+                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 ${errors.nombre ? 'border-red-500' : 'border-gray-300'
+                      }`}
                     placeholder="Tu nombre"
                   />
                   {errors.nombre && <p className="text-red-500 text-xs mt-1">{errors.nombre}</p>}
@@ -128,9 +112,8 @@ const InscriptionForm = ({ course }) => {
                     required
                     value={formData.apellido}
                     onChange={handleChange}
-                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-                      errors.apellido ? 'border-red-500' : 'border-gray-300'
-                    }`}
+                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 ${errors.apellido ? 'border-red-500' : 'border-gray-300'
+                      }`}
                     placeholder="Tu apellido"
                   />
                   {errors.apellido && <p className="text-red-500 text-xs mt-1">{errors.apellido}</p>}
@@ -148,9 +131,8 @@ const InscriptionForm = ({ course }) => {
                   required
                   value={formData.email}
                   onChange={handleChange}
-                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-                    errors.email ? 'border-red-500' : 'border-gray-300'
-                  }`}
+                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 ${errors.email ? 'border-red-500' : 'border-gray-300'
+                    }`}
                   placeholder="tu@email.com"
                 />
                 {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
@@ -167,9 +149,8 @@ const InscriptionForm = ({ course }) => {
                   required
                   value={formData.celular}
                   onChange={handleChange}
-                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-                    errors.celular ? 'border-red-500' : 'border-gray-300'
-                  }`}
+                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 ${errors.celular ? 'border-red-500' : 'border-gray-300'
+                    }`}
                   placeholder="Tu número de celular"
                 />
                 {errors.celular && <p className="text-red-500 text-xs mt-1">{errors.celular}</p>}
@@ -183,7 +164,7 @@ const InscriptionForm = ({ course }) => {
                 >
                   {loading ? <Spinner /> : 'Enviar Inscripción'}
                 </button>
-                
+
                 <a
                   href="https://wa.me/3813508796"
                   target="_blank"
@@ -195,9 +176,8 @@ const InscriptionForm = ({ course }) => {
               </div>
 
               {formMessage && (
-                <div className={`text-center p-3 rounded-md mt-4 ${
-                  formMessage.type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                }`}>
+                <div className={`text-center p-3 rounded-md mt-4 ${formMessage.type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                  }`}>
                   {formMessage.text}
                 </div>
               )}

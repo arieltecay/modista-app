@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import CoursePurchaseSection from '../../components/CoursePurchaseSection';
+import InscriptionForm from '../../components/InscriptionForm';
 import { getCourses } from '../../services/api';
-import CourseImage from '../../components/CourseImage'; // Importa el nuevo componente
+import CourseImage from '../../components/CourseImage';
 import Spinner from '../../components/Spinner';
 
 function CourseDetailPage() {
@@ -91,8 +91,8 @@ function CourseDetailPage() {
             {course.longDescription}
           </p>
         </div>
-        <CoursePurchaseSection course={course} />
       </div>
+      <InscriptionForm course={course} />
     </div>
   );
 }

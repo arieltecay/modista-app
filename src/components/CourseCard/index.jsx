@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import PaymentButton from '../PaymentButton';
 import CourseImage from '../CourseImage'; // Importa el nuevo componente
 
 function CourseCard({ course }) {
@@ -22,7 +21,12 @@ function CourseCard({ course }) {
           ) : (
             <>
               <span className="text-2xl font-bold text-green-600 mb-4">${course.price}</span>
-              <PaymentButton course={course} />
+              <Link 
+                to={`/cursos/${course.id}`}
+                className="w-full bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 text-center transition-colors duration-200"
+              >
+                Ver Curso e Inscribirse
+              </Link>
             </>
           )}
           <Link to={`/cursos/${course.id}`} className="mt-4 flex items-center text-green-600 hover:underline text-base font-medium">

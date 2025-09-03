@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { getInscriptions } from '../../../services/api';
+import { getInscriptions, updateInscriptionPaymentStatus } from '../../../services/api';
 import Spinner from '../../../components/Spinner';
 import { FaSort, FaSortUp, FaSortDown } from 'react-icons/fa';
+import toast from 'react-hot-toast';
 
 const ADMIN_SECRET_KEY = import.meta.env.VITE_ADMIN_SECRET;
 const API_URL = import.meta.env.VITE_API_URL;
@@ -94,6 +95,27 @@ const InscriptionsAdminPage = () => {
     setCurrentPage(1);
   }, [debouncedSearchTerm]);
 
+  const handlePaymentStatusUpdate = async (inscriptionId, newStatus) => {
+    try {
+      setLoading(true);
+      await updateInscriptionPaymentStatus(inscriptionId, newStatus, secret);
+      
+      // Actualizar estado local inmediatamente
+      setInscriptions(prev => prev.map(inscription => 
+        inscription._id === inscriptionId 
+          ? { ...inscription, paymentStatus: newStatus, paymentDate: newStatus === 'paid' ? new Date() : null }
+          : inscription
+      ));
+
+      // Opcional: Mostrar mensaje de éxito
+      toast.success(`Estado actualizado a ${newStatus === 'paid' ? 'pagado' : 'pendiente'} correctamente`);
+    } catch (error) {
+      toast.error('Error al actualizar el estado: ' + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSort = (key) => {
     let direction = 'asc';
     if (sortConfig.key === key && sortConfig.direction === 'asc') {
@@ -151,12 +173,36 @@ const InscriptionsAdminPage = () => {
           ) : (
             inscriptions.map((inscription) => (
               <div key={inscription._id} className="bg-white p-4 rounded-lg shadow mb-4">
-                <div className="flex justify-between items-start">
+                <div className="flex justify-between items-start mb-2">
                   <p className="font-bold text-gray-900 whitespace-normal">{inscription.nombre} {inscription.apellido}</p>
                   <span className="text-xs text-gray-600 whitespace-nowrap">{new Date(inscription.fechaInscripcion).toLocaleDateString('es-AR')}</span>
                 </div>
                 <p className="text-sm text-gray-700 break-all">{inscription.email}</p>
                 <p className="text-sm text-gray-700">{inscription.celular}</p>
+                <div className="mt-2 flex justify-between items-center">
+                  <div>
+                    <p className="text-sm font-medium text-gray-700">{inscription.courseTitle || 'N/A'}</p>
+                    <p className="text-sm text-green-600 font-bold">${inscription.coursePrice || 0}</p>
+                  </div>
+                  <div className="flex flex-col items-end gap-2">
+                    <span className={`px-2 py-1 text-xs rounded-full border ${
+                      inscription.paymentStatus === 'paid' 
+                        ? 'bg-green-100 text-green-800 border-green-200' 
+                        : 'bg-yellow-100 text-yellow-800 border-yellow-200'
+                    }`}>
+                      {inscription.paymentStatus === 'paid' ? '✅ Pagado' : '⏳ Pendiente'}
+                    </span>
+                    {inscription.paymentStatus === 'pending' && (
+                      <button 
+                        onClick={() => handlePaymentStatusUpdate(inscription._id, 'paid')}
+                        className="bg-green-500 text-white px-3 py-1 text-xs rounded hover:bg-green-600 transition-colors"
+                        disabled={loading}
+                      >
+                        {loading ? '...' : 'Marcar Pagado'}
+                      </button>
+                    )}
+                  </div>
+                </div>
               </div>
             ))
           )}
@@ -174,6 +220,10 @@ const InscriptionsAdminPage = () => {
                     <SortableHeader name="nombre" sortConfig={sortConfig} onSort={handleSort}>Nombre Completo</SortableHeader>
                     <SortableHeader name="email" sortConfig={sortConfig} onSort={handleSort}>Email</SortableHeader>
                     <SortableHeader name="celular" sortConfig={sortConfig} onSort={handleSort}>Celular</SortableHeader>
+                    <SortableHeader name="courseTitle" sortConfig={sortConfig} onSort={handleSort}>Curso</SortableHeader>
+                    <SortableHeader name="coursePrice" sortConfig={sortConfig} onSort={handleSort}>Precio</SortableHeader>
+                    <SortableHeader name="paymentStatus" sortConfig={sortConfig} onSort={handleSort}>Estado Pago</SortableHeader>
+                    <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Acciones</th>
                     <SortableHeader name="fechaInscripcion" sortConfig={sortConfig} onSort={handleSort}>Fecha de Inscripción</SortableHeader>
                   </tr>
                 </thead>
@@ -188,6 +238,43 @@ const InscriptionsAdminPage = () => {
                       </td>
                       <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                         <p className="text-gray-900 whitespace-no-wrap">{inscription.celular}</p>
+                      </td>
+                      <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                        <p className="text-gray-900 whitespace-no-wrap">{inscription.courseTitle || 'N/A'}</p>
+                      </td>
+                      <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                        <p className="text-gray-900 whitespace-no-wrap">${inscription.coursePrice || 0}</p>
+                      </td>
+                      <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                        <span className={`px-2 py-1 text-xs rounded-full border ${
+                          inscription.paymentStatus === 'paid' 
+                            ? 'bg-green-100 text-green-800 border-green-200' 
+                            : 'bg-yellow-100 text-yellow-800 border-yellow-200'
+                        }`}>
+                          {inscription.paymentStatus === 'paid' ? '✅ Pagado' : '⏳ Pendiente'}
+                        </span>
+                      </td>
+                      <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                        <div className="flex items-center gap-2">
+                          {inscription.paymentStatus === 'pending' && (
+                            <button 
+                              onClick={() => handlePaymentStatusUpdate(inscription._id, 'paid')}
+                              className="bg-green-500 text-white px-3 py-1 text-xs rounded hover:bg-green-600 transition-colors"
+                              disabled={loading}
+                            >
+                              {loading ? '...' : 'Marcar Pagado'}
+                            </button>
+                          )}
+                          {inscription.paymentStatus === 'paid' && (
+                            <button 
+                              onClick={() => handlePaymentStatusUpdate(inscription._id, 'pending')}
+                              className="bg-gray-500 text-white px-2 py-1 text-xs rounded hover:bg-gray-600 transition-colors"
+                              disabled={loading}
+                            >
+                              Revertir
+                            </button>
+                          )}
+                        </div>
                       </td>
                       <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                         <p className="text-gray-900 whitespace-no-wrap">

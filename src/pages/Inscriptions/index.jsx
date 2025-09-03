@@ -1,8 +1,13 @@
-import React, { useState } from 'react';
-import { createInscription } from '../../services/api';
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import { createInscription, getCourses } from '../../services/api';
 import Spinner from '../../components/Spinner';
+import CourseImage from '../../components/CourseImage';
 
 const InscriptionsPage = () => {
+  const { courseId } = useParams();
+  const [course, setCourse] = useState(null);
+  const [courseLoading, setCourseLoading] = useState(true);
   const [formData, setFormData] = useState({
     nombre: '',
     apellido: '',
@@ -12,6 +17,27 @@ const InscriptionsPage = () => {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [formMessage, setFormMessage] = useState(null);
+
+  useEffect(() => {
+    const fetchCourse = async () => {
+      try {
+        setCourseLoading(true);
+        const coursesData = await getCourses();
+        const foundCourse = coursesData.find(c => c.id === courseId);
+        setCourse(foundCourse);
+      } catch (error) {
+        console.error('Error fetching course:', error);
+      } finally {
+        setCourseLoading(false);
+      }
+    };
+
+    if (courseId) {
+      fetchCourse();
+    } else {
+      setCourseLoading(false);
+    }
+  }, [courseId]);
 
   const validateEmail = (email) => {
     const re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
@@ -51,7 +77,13 @@ const InscriptionsPage = () => {
 
     setLoading(true);
     try {
-      await createInscription(formData);
+      const inscriptionData = {
+        ...formData,
+        courseId: courseId || '1',
+        courseTitle: course?.title || 'Curso por defecto',
+        coursePrice: course?.price || 0
+      };
+      await createInscription(inscriptionData);
       setFormMessage({ type: 'success', text: '¡Gracias por inscribirte! Nos pondremos en contacto contigo pronto.' });
       setFormData({ nombre: '', apellido: '', email: '', celular: '' });
     } catch (error) {
@@ -62,18 +94,40 @@ const InscriptionsPage = () => {
     }
   };
 
+  if (courseLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Spinner text="Cargando curso..." />
+      </div>
+    );
+  }
+
   return (
-    <div className="bg-gray-100 min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-xl shadow-lg">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Formulario de Inscripción
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Completa tus datos para pre-inscribirte a nuestros cursos.
-          </p>
-        </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit} noValidate>
+    <div className="bg-gray-100 min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto">
+        {/* SECCIÓN CURSO (si existe) */}
+        {course && (
+          <div className="bg-white shadow-lg rounded-lg overflow-hidden mb-8">
+            <CourseImage course={course} className="w-full h-64 object-contain" />
+            <div className="p-6">
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">{course.title}</h1>
+              <span className="text-2xl font-bold text-green-600 mb-4 block">${course.price}</span>
+              <p className="text-gray-700 text-lg">{course.shortDescription}</p>
+            </div>
+          </div>
+        )}
+
+        {/* FORMULARIO INSCRIPCIÓN */}
+        <div className="bg-white shadow-lg rounded-lg p-8">
+          <div>
+            <h2 className="text-center text-3xl font-extrabold text-gray-900">
+              Formulario de Inscripción
+            </h2>
+            <p className="mt-2 text-center text-sm text-gray-600">
+              {course ? `Completa tus datos para inscribirte al curso "${course.title}"` : 'Completa tus datos para pre-inscribirte a nuestros cursos.'}
+            </p>
+          </div>
+          <form className="mt-8 space-y-6" onSubmit={handleSubmit} noValidate>
           <div className="rounded-md shadow-sm -space-y-px">
              <div>
               <label htmlFor="nombre" className="sr-only">Nombre</label>
@@ -118,6 +172,7 @@ const InscriptionsPage = () => {
             </div>
           )}
         </form>
+        </div>
       </div>
     </div>
   );

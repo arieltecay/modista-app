@@ -73,3 +73,16 @@ export const getInscriptions = (page = 1, limit = 10, secret, sortBy, sortOrder,
   apiClient.get('/inscriptions', {
     params: { page, limit, secret, sortBy, sortOrder, search },
   });
+
+/**
+ * Actualiza el estado de pago de una inscripción.
+ * @param {string} inscriptionId - El ID de la inscripción.
+ * @param {string} paymentStatus - El nuevo estado de pago ('pending' o 'paid').
+ * @param {string} secret - El secreto para autorizar la petición.
+ * @returns {Promise<object>} Una promesa que resuelve al objeto de la inscripción actualizada.
+ */
+export const updateInscriptionPaymentStatus = (inscriptionId, paymentStatus, secret) =>
+  apiClient.patch(`/inscriptions/${inscriptionId}/payment-status`, { 
+    paymentStatus, 
+    secret 
+  });

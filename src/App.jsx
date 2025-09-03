@@ -11,8 +11,8 @@ import PendingPage from './pages/PaymentStatus/PendingPage';
 import NotFoundPage from './pages/NotFound/index.jsx';
 import { initMercadoPago } from '@mercadopago/sdk-react';
 import { Layout, WithPaymentLayout } from './components/Layout/index.jsx';
-import InscriptionsPage from './pages/Inscriptions/index.jsx';
 import InscriptionsAdminPage from './pages/Admin/Inscriptions/index.jsx';
+import { Toaster } from 'react-hot-toast';
 
 initMercadoPago(import.meta.env.VITE_MERCADO_PAGO_PUBLIC_KEY);
 
@@ -20,6 +20,7 @@ function App() {
   return (
     <div className="bg-white">
       <GoogleTagManager />
+      <Toaster />
       <main>
         <Routes>
           {/* Layout base para el 90% de las rutas */}
@@ -28,7 +29,6 @@ function App() {
             <Route path="sobre-mi" element={<About />} />
             <Route path="cursos" element={<Courses />} />
             <Route path="cursos/:id" element={<CourseDetailPage />} />
-            <Route path="inscriptions" element={<InscriptionsPage />} />
           </Route>
 
           {/* Layout para rutas de pago */}

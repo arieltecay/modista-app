@@ -62,7 +62,7 @@ const InscriptionForm = ({ course }) => {
 
       // 2. Guardar la inscripción en la base de datos
       await createInscription(inscriptionData);
-      
+
       // 3. Enviar el correo de confirmación
       try {
         await sendConfirmationEmail(inscriptionData);
@@ -177,17 +177,7 @@ const InscriptionForm = ({ course }) => {
                 >
                   {loading ? <Spinner /> : 'Enviar Inscripción'}
                 </button>
-
-                <a
-                  href="https://wa.me/3813508796"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center bg-green-500 text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-green-600 transition duration-300 shadow-lg"
-                >
-                  📱 Contactar por WhatsApp
-                </a>
               </div>
-
               {formMessage && (
                 <div className={`text-center p-3 rounded-md mt-4 ${formMessage.type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                   }`}>

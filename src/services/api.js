@@ -86,3 +86,24 @@ export const updateInscriptionPaymentStatus = (inscriptionId, paymentStatus, sec
     paymentStatus, 
     secret 
   });
+
+/**
+ * Envía un correo de confirmación de inscripción.
+ * @param {object} inscriptionData - Los datos de la inscripción, incluyendo nombre, apellido, email y courseTitle.
+ * @returns {Promise<object>} Una promesa que resuelve a la respuesta del servidor.
+ */
+export const sendConfirmationEmail = (inscriptionData) => {
+  const emailPayload = {
+    to: inscriptionData.email,
+    subject: `Confirmación de tu Inscripción - ${inscriptionData.courseTitle}`,
+    templateName: 'teamplate', // Usamos la plantilla general 'teamplate.html'
+    data: {
+      name: `${inscriptionData.nombre} ${inscriptionData.apellido}`,
+      courseTitle: inscriptionData.courseTitle,
+      price: inscriptionData.coursePrice, // Corregido: de price a coursePrice
+      deeplink: inscriptionData.courseDeeplink, // Corregido: de deeplink a courseDeeplink
+      shortDescription: inscriptionData.courseShortDescription, // Corregido: de shortDescription a courseShortDescription
+    },
+  };
+  return apiClient.post('/email/send-email', emailPayload);
+};

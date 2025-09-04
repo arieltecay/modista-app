@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { createInscription } from '../../services/api';
+import { createInscription, sendConfirmationEmail } from '../../services/api';
 import Spinner from '../Spinner';
 
 const InscriptionForm = ({ course }) => {
@@ -55,11 +55,24 @@ const InscriptionForm = ({ course }) => {
         ...formData,
         courseId: course?.id || '1',
         courseTitle: course?.title || 'Curso por defecto',
-        coursePrice: course?.price || 0
+        coursePrice: course?.price || 0,
+        courseShortDescription: course?.shortDescription || 'Descripción corta por defecto',
+        courseDeeplink: course?.deeplink || 'https://modista.app', // Añadimos un deeplink por defecto
       };
+
+      // 2. Guardar la inscripción en la base de datos
       await createInscription(inscriptionData);
-      setFormMessage({ type: 'success', text: '¡Gracias por inscribirte! Nos pondremos en contacto contigo pronto.' });
+      
+      // 3. Enviar el correo de confirmación
+      try {
+        await sendConfirmationEmail(inscriptionData);
+        console.log('Correo de confirmación enviado exitosamente.');
+      } catch (emailError) {
+        console.error("Error al enviar el correo de confirmación:", emailError);
+      }
+      setFormMessage({ type: 'success', text: '¡Gracias por inscribirte! Revisa tu correo para ver la confirmación. Nos pondremos en contacto contigo pronto.' });
       setFormData({ nombre: '', apellido: '', email: '', celular: '' });
+
     } catch (error) {
       const errorMessage = error.message || 'Ocurrió un error al enviar tu inscripción. Por favor, intenta de nuevo.';
       setFormMessage({ type: 'error', text: errorMessage });

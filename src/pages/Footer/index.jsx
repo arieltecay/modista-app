@@ -13,7 +13,7 @@ const Footer = () => {
             <FaWhatsapp />
           </a>
           <a href="https://www.instagram.com/soymicaguevara" className="text-4xl hover:text-[var(--color-green-600)] transition duration-300"><FaInstagram /></a>
-          <a href="#" className="text-4xl hover:text-[var(--color-green-600)] transition duration-300"><FaTiktok /></a>
+          <a href="https://www.tiktok.com/@soymicaguevara" className="text-4xl hover:text-[var(--color-green-600)] transition duration-300"><FaTiktok /></a>
         </div>
         <p className="text-gray-500">&copy; 2025 Micaela Guevara Modista de alta costura. Todos los derechos reservados.</p>
       </div>

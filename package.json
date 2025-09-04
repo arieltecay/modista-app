@@ -14,6 +14,7 @@
     "@heroicons/react": "^2.2.0",
     "@mercadopago/sdk-react": "^1.0.3",
     "@tailwindcss/vite": "^4.1.11",
+    "@vercel/analytics": "^1.5.0",
     "axios": "^1.11.0",
     "dotenv": "^17.0.1",
     "react": "^19.1.0",

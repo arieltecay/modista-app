@@ -13,6 +13,7 @@ import { initMercadoPago } from '@mercadopago/sdk-react';
 import { Layout, WithPaymentLayout } from './components/Layout/index.jsx';
 import InscriptionsAdminPage from './pages/Admin/Inscriptions/index.jsx';
 import { Toaster } from 'react-hot-toast';
+import { Analytics } from '@vercel/analytics/next';
 
 initMercadoPago(import.meta.env.VITE_MERCADO_PAGO_PUBLIC_KEY);
 
@@ -21,6 +22,7 @@ function App() {
     <div className="bg-white">
       <GoogleTagManager />
       <Toaster />
+      <Analytics />
       <main>
         <Routes>
           {/* Layout base para el 90% de las rutas */}

@@ -114,7 +114,7 @@ const InscriptionsAdminPage = () => {
         if (inscription) {
           try {
             await sendPaymentSuccessEmail(inscription);
-            toast.info('Correo de confirmación de pago enviado.');
+            toast.success('Correo de confirmación de pago enviado.');
           } catch (emailError) {
             toast.error(`Error al enviar el correo: ${emailError.message}`);
           }

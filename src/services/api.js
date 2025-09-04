@@ -120,7 +120,7 @@ export const sendPaymentSuccessEmail = (inscriptionData) => {
     templateName: 'paymentSuccess', // Usamos la nueva plantilla
     data: {
       name: `${inscriptionData.nombre} ${inscriptionData.apellido}`,
-      courseTitle: inscriptionData.course.title,
+      courseTitle: inscriptionData.courseTitle,
     },
   };
   return apiClient.post('/email/send-email', emailPayload);

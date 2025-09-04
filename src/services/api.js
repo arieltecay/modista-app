@@ -82,9 +82,9 @@ export const getInscriptions = (page = 1, limit = 10, secret, sortBy, sortOrder,
  * @returns {Promise<object>} Una promesa que resuelve al objeto de la inscripción actualizada.
  */
 export const updateInscriptionPaymentStatus = (inscriptionId, paymentStatus, secret) =>
-  apiClient.patch(`/inscriptions/${inscriptionId}/payment-status`, { 
-    paymentStatus, 
-    secret 
+  apiClient.patch(`/inscriptions/${inscriptionId}/payment-status`, {
+    paymentStatus,
+    secret
   });
 
 /**
@@ -116,7 +116,7 @@ export const sendConfirmationEmail = (inscriptionData) => {
 export const sendPaymentSuccessEmail = (inscriptionData) => {
   const emailPayload = {
     to: inscriptionData.email,
-    subject: `¡Pago Confirmado! Tu curso "${inscriptionData.course.title}"`,
+    subject: `¡Pago Confirmado! Tu curso "${inscriptionData.courseTitle}"`,
     templateName: 'paymentSuccess', // Usamos la nueva plantilla
     data: {
       name: `${inscriptionData.nombre} ${inscriptionData.apellido}`,

@@ -107,3 +107,21 @@ export const sendConfirmationEmail = (inscriptionData) => {
   };
   return apiClient.post('/email/send-email', emailPayload);
 };
+
+/**
+ * Envía un correo de confirmación de pago exitoso.
+ * @param {object} inscriptionData - Los datos de la inscripción, incluyendo email, nombre, apellido y título del curso.
+ * @returns {Promise<object>} Una promesa que resuelve a la respuesta del servidor.
+ */
+export const sendPaymentSuccessEmail = (inscriptionData) => {
+  const emailPayload = {
+    to: inscriptionData.email,
+    subject: `¡Pago Confirmado! Tu curso "${inscriptionData.course.title}"`,
+    templateName: 'paymentSuccess', // Usamos la nueva plantilla
+    data: {
+      name: `${inscriptionData.nombre} ${inscriptionData.apellido}`,
+      courseTitle: inscriptionData.course.title,
+    },
+  };
+  return apiClient.post('/email/send-email', emailPayload);
+};

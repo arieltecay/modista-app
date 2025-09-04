@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { getInscriptions, updateInscriptionPaymentStatus } from '../../../services/api';
+import { getInscriptions, updateInscriptionPaymentStatus, sendPaymentSuccessEmail } from '../../../services/api';
 import Spinner from '../../../components/Spinner';
 import { FaSort, FaSortUp, FaSortDown } from 'react-icons/fa';
 import toast from 'react-hot-toast';
@@ -99,15 +99,28 @@ const InscriptionsAdminPage = () => {
     try {
       setLoading(true);
       await updateInscriptionPaymentStatus(inscriptionId, newStatus, secret);
-      
+
       // Actualizar estado local inmediatamente
-      setInscriptions(prev => prev.map(inscription => 
-        inscription._id === inscriptionId 
+      const updatedInscriptions = inscriptions.map(inscription =>
+        inscription._id === inscriptionId
           ? { ...inscription, paymentStatus: newStatus, paymentDate: newStatus === 'paid' ? new Date() : null }
           : inscription
-      ));
+      );
+      setInscriptions(updatedInscriptions);
 
-      // Opcional: Mostrar mensaje de éxito
+      // Si el nuevo estado es 'pagado', enviar el correo de confirmación
+      if (newStatus === 'paid') {
+        const inscription = updatedInscriptions.find(i => i._id === inscriptionId);
+        if (inscription) {
+          try {
+            await sendPaymentSuccessEmail(inscription);
+            toast.info('Correo de confirmación de pago enviado.');
+          } catch (emailError) {
+            toast.error(`Error al enviar el correo: ${emailError.message}`);
+          }
+        }
+      }
+
       toast.success(`Estado actualizado a ${newStatus === 'paid' ? 'pagado' : 'pendiente'} correctamente`);
     } catch (error) {
       toast.error('Error al actualizar el estado: ' + error.message);

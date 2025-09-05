@@ -123,9 +123,6 @@ const InscriptionsPage = () => {
             <h2 className="text-center text-3xl font-extrabold text-gray-900">
               Formulario de Inscripción
             </h2>
-            <p className="mt-2 text-center text-sm text-gray-600">
-              {course ? `Completa tus datos para inscribirte al curso "${course.title}"` : 'Completa tus datos para pre-inscribirte a nuestros cursos.'}
-            </p>
           </div>
           <form className="mt-8 space-y-6" onSubmit={handleSubmit} noValidate>
           <div className="rounded-md shadow-sm -space-y-px">

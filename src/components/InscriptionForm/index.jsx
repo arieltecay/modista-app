@@ -91,8 +91,8 @@ const InscriptionForm = ({ course }) => {
             {isFree ? '¡Curso Gratuito!' : '¡Inscríbete ahora!'}
           </h2>
           <div className="bg-gray-50 p-6 rounded-lg mb-8">
-            <h3 className="text-xl font-bold text-gray-900 mb-4">
-              Completa tus datos para inscribirte al curso "{course?.title || 'Curso'}"
+            <h3 className="text-xl font-bold text-gray-900 mb-4 text-center">
+              Completa tus datos para pre-inscribirte y luego recibirás un mail para completar el pago
             </h3>
             <form className="space-y-4" onSubmit={handleSubmit} noValidate>
               <div className="grid md:grid-cols-2 gap-4">

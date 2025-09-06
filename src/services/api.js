@@ -75,6 +75,14 @@ export const getInscriptions = (page = 1, limit = 10, secret, sortBy, sortOrder,
   });
 
 /**
+ * Obtiene el recuento de inscripciones totales, pagadas y pendientes.
+ * @param {string} secret - El secreto para autorizar la petición.
+ * @returns {Promise<object>} Una promesa que resuelve al objeto con los recuentos.
+ */
+export const getInscriptionsCount = (secret) => 
+  apiClient.get('/inscriptions/count', { params: { secret } });
+
+/**
  * Actualiza el estado de pago de una inscripción.
  * @param {string} inscriptionId - El ID de la inscripción.
  * @param {string} paymentStatus - El nuevo estado de pago ('pending' o 'paid').

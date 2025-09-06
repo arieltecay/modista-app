@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { getInscriptions, updateInscriptionPaymentStatus, sendPaymentSuccessEmail } from '../../../services/api';
+import { getInscriptions, updateInscriptionPaymentStatus, sendPaymentSuccessEmail, getInscriptionsCount } from '../../../services/api';
 import toast from 'react-hot-toast';
 import InscriptionsListMobile from './InscriptionsListMobile';
 import InscriptionsTableDesktop from './InscriptionsTableDesktop';
@@ -8,6 +8,31 @@ import Pagination from './Pagination';
 
 const ADMIN_SECRET_KEY = import.meta.env.VITE_ADMIN_SECRET;
 const API_URL = import.meta.env.VITE_API_URL;
+
+// --- Helper Components ---
+
+const StatCard = ({ title, value, icon, colorClass, loading }) => {
+  if (loading) {
+    return <div className="bg-white p-6 rounded-2xl shadow-lg animate-pulse h-[124px]"></div>;
+  }
+  return (
+    <div className="bg-white p-6 rounded-2xl shadow-lg flex items-center transform hover:scale-105 transition-transform duration-300">
+      <div className={`p-4 rounded-xl ${colorClass} mr-5`}>
+        {icon}
+      </div>
+      <div>
+        <p className="text-gray-500 text-sm font-medium">{title}</p>
+        <p className="text-4xl font-bold text-gray-800">{value}</p>
+      </div>
+    </div>
+  );
+};
+
+const TotalIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>;
+const PaidIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>;
+const PendingIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>;
+const SearchIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 absolute top-1/2 left-4 -translate-y-1/2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>;
+
 
 // Hook para debounce
 const useDebounce = (value, delay) => {
@@ -36,6 +61,8 @@ const InscriptionsAdminPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
   const [sortConfig, setSortConfig] = useState({ key: 'fechaInscripcion', direction: 'desc' });
+  
+  const [inscriptionStats, setInscriptionStats] = useState(null);
 
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   const secret = searchParams.get('secret');
@@ -67,7 +94,17 @@ const InscriptionsAdminPage = () => {
       }
     };
 
+    const fetchStats = async () => {
+      try {
+        const statsData = await getInscriptionsCount(secret);
+        setInscriptionStats(statsData.data);
+      } catch (err) {
+        toast.error(err.message || 'Error al cargar las estadísticas.');
+      }
+    };
+
     fetchInscriptions();
+    fetchStats();
   }, [currentPage, itemsPerPage, secret, debouncedSearchTerm, sortConfig]);
 
   // Reset page to 1 when searching
@@ -80,15 +117,28 @@ const InscriptionsAdminPage = () => {
       setLoading(true);
       await updateInscriptionPaymentStatus(inscriptionId, newStatus, secret);
 
-      // Actualizar estado local inmediatamente
       const updatedInscriptions = inscriptions.map(inscription =>
         inscription._id === inscriptionId
           ? { ...inscription, paymentStatus: newStatus, paymentDate: newStatus === 'paid' ? new Date() : null }
           : inscription
       );
       setInscriptions(updatedInscriptions);
+      
+      // Actualizar estadísticas
+      if (inscriptionStats) {
+        setInscriptionStats(prevStats => {
+          const newStats = { ...prevStats };
+          if (newStatus === 'paid') {
+            newStats.paid += 1;
+            newStats.pending -= 1;
+          } else { // newStatus === 'pending'
+            newStats.paid -= 1;
+            newStats.pending += 1;
+          }
+          return newStats;
+        });
+      }
 
-      // Si el nuevo estado es 'pagado', enviar el correo de confirmación
       if (newStatus === 'paid') {
         const inscription = updatedInscriptions.find(i => i._id === inscriptionId);
         if (inscription) {
@@ -136,53 +186,92 @@ const InscriptionsAdminPage = () => {
     setCurrentPage(1);
   };
   
-  const exportUrl = `${API_URL}/api/inscriptions/export`;
+  const exportUrl = `${API_URL}/api/inscriptions/export?secret=${secret}`;
 
   return (
-    <div className="container mx-auto px-4 sm:px-8 py-8">
-      <div className="py-8">
-        <div className="flex flex-col sm:flex-row justify-between w-full mb-4 gap-4">
-          <h2 className="text-2xl leading-tight">
-            Panel de Administrador
-          </h2>
-          <div className="flex flex-col sm:flex-row gap-2">
-            <input 
-              type="text"
-              placeholder="Buscar por nombre, apellido, email..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-            <a href={exportUrl} target="_blank" rel="noopener noreferrer" className="px-4 py-2 text-center font-semibold text-white bg-green-600 rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+    <div className="bg-gray-50 min-h-screen">
+      <div className="container mx-auto px-4 sm:px-8 py-12">
+        
+        {/* --- Header --- */}
+        <div className="mb-10">
+          <h1 className="text-4xl font-bold text-gray-800 mb-2">Panel de Administrador</h1>
+          <p className="text-lg text-gray-500">Resumen general de inscripciones.</p>
+        </div>
+
+        {/* --- Stats Cards --- */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+          <StatCard 
+            title="Total Inscripciones" 
+            value={inscriptionStats?.total ?? '...'} 
+            icon={<TotalIcon />} 
+            colorClass="bg-blue-100"
+            loading={!inscriptionStats}
+          />
+          <StatCard 
+            title="Alumnas Pagadas" 
+            value={inscriptionStats?.paid ?? '...'} 
+            icon={<PaidIcon />} 
+            colorClass="bg-green-100"
+            loading={!inscriptionStats}
+          />
+          <StatCard 
+            title="Pagos Pendientes" 
+            value={inscriptionStats?.pending ?? '...'} 
+            icon={<PendingIcon />} 
+            colorClass="bg-yellow-100"
+            loading={!inscriptionStats}
+          />
+        </div>
+
+        {/* --- Main Content Area --- */}
+        <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-lg">
+          {/* --- Search and Export --- */}
+          <div className="flex flex-col md:flex-row justify-between items-center w-full mb-6 gap-4">
+            <div className="relative w-full md:max-w-md">
+              <SearchIcon />
+              <input 
+                type="text"
+                placeholder="Buscar por nombre, apellido, email..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-12 pr-4 py-3 w-full border border-gray-200 bg-gray-50 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors"
+              />
+            </div>
+            <a 
+              href={exportUrl} 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="w-full md:w-auto px-6 py-3 text-center font-semibold text-white bg-green-600 rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200"
+            >
               Exportar a Excel
             </a>
           </div>
+
+          {/* --- Tables --- */}
+          <InscriptionsListMobile 
+            inscriptions={inscriptions} 
+            loading={loading} 
+            handlePaymentStatusUpdate={handlePaymentStatusUpdate} 
+          />
+          <InscriptionsTableDesktop 
+            inscriptions={inscriptions} 
+            loading={loading} 
+            handlePaymentStatusUpdate={handlePaymentStatusUpdate} 
+            sortConfig={sortConfig} 
+            handleSort={handleSort} 
+          />
+
+          {/* --- Pagination --- */}
+          <Pagination 
+            currentPage={currentPage} 
+            totalPages={totalPages} 
+            totalItems={totalItems} 
+            itemsPerPage={itemsPerPage} 
+            handlePrevPage={handlePrevPage} 
+            handleNextPage={handleNextPage} 
+            handleItemsPerPageChange={handleItemsPerPageChange} 
+          />
         </div>
-
-        <InscriptionsListMobile 
-          inscriptions={inscriptions} 
-          loading={loading} 
-          handlePaymentStatusUpdate={handlePaymentStatusUpdate} 
-        />
-
-        <InscriptionsTableDesktop 
-          inscriptions={inscriptions} 
-          loading={loading} 
-          handlePaymentStatusUpdate={handlePaymentStatusUpdate} 
-          sortConfig={sortConfig} 
-          handleSort={handleSort} 
-        />
-
-        <Pagination 
-          currentPage={currentPage} 
-          totalPages={totalPages} 
-          totalItems={totalItems} 
-          itemsPerPage={itemsPerPage} 
-          handlePrevPage={handlePrevPage} 
-          handleNextPage={handleNextPage} 
-          handleItemsPerPageChange={handleItemsPerPageChange} 
-        />
-
       </div>
     </div>
   );

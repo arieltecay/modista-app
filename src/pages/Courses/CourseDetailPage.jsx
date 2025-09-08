@@ -76,7 +76,7 @@ function CourseDetailPage() {
           <h1 className="text-3xl font-bold text-gray-900 mb-2">{course.title}</h1>
           {/* Sección del Video */}
           {youtubeVideoId && (
-            <div className="my-6 aspect-video rounded-lg overflow-hidden shadow-md">
+            <div className="my-6 aspect-w-16 aspect-h-9 rounded-lg overflow-hidden shadow-md">
               <iframe
                 className="w-full h-full"
                 src={`https://www.youtube.com/embed/${youtubeVideoId}`}

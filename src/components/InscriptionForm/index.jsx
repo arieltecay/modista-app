@@ -58,6 +58,7 @@ const InscriptionForm = ({ course }) => {
         coursePrice: course?.price || 0,
         courseShortDescription: course?.shortDescription || 'Descripción corta por defecto',
         courseDeeplink: course?.deeplink || 'https://modista.app', // Añadimos un deeplink por defecto
+        dateYear: new Date().getFullYear(),
       };
 
       // 2. Guardar la inscripción en la base de datos
@@ -66,7 +67,6 @@ const InscriptionForm = ({ course }) => {
       // 3. Enviar el correo de confirmación
       try {
         await sendConfirmationEmail(inscriptionData);
-        console.log('Correo de confirmación enviado exitosamente.');
       } catch (emailError) {
         console.error("Error al enviar el correo de confirmación:", emailError);
       }

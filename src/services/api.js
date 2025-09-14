@@ -111,6 +111,7 @@ export const sendConfirmationEmail = (inscriptionData) => {
       price: inscriptionData.coursePrice, // Corregido: de price a coursePrice
       deeplink: inscriptionData.courseDeeplink, // Corregido: de deeplink a courseDeeplink
       shortDescription: inscriptionData.courseShortDescription, // Corregido: de shortDescription a courseShortDescription
+      year: inscriptionData.dateYear,
     },
   };
   return apiClient.post('/email/send-email', emailPayload);
@@ -129,6 +130,7 @@ export const sendPaymentSuccessEmail = (inscriptionData) => {
     data: {
       name: `${inscriptionData.nombre} ${inscriptionData.apellido}`,
       courseTitle: inscriptionData.courseTitle,
+      year: new Date().getFullYear(),
     },
   };
   return apiClient.post('/email/send-email', emailPayload);

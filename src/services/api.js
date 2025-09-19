@@ -18,6 +18,20 @@ const apiClient = axios.create({
 });
 
 /**
+ * Interceptor de requests de Axios para incluir token JWT.
+ */
+apiClient.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+/**
  * Interceptor de respuestas de Axios.
  * 1. Si la petición es exitosa, extrae y devuelve el `response.data`.
  * 2. Si la petición falla, busca un mensaje de error en la respuesta del backend
@@ -66,33 +80,32 @@ export const createInscription = (formData) =>
  * Obtiene una lista paginada de inscripciones.
  * @param {number} [page=1] - El número de página.
  * @param {number} [limit=10] - El número de inscripciones por página.
- * @param {string} secret - El secreto para autorizar la petición.
+ * @param {string} sortBy - Campo para ordenar.
+ * @param {string} sortOrder - Orden (asc/desc).
+ * @param {string} search - Término de búsqueda.
  * @returns {Promise<object>} Una promesa que resuelve a un objeto con los datos de la paginación y las inscripciones.
  */
-export const getInscriptions = (page = 1, limit = 10, secret, sortBy, sortOrder, search) =>
+export const getInscriptions = (page = 1, limit = 10, sortBy, sortOrder, search) =>
   apiClient.get('/inscriptions', {
-    params: { page, limit, secret, sortBy, sortOrder, search },
+    params: { page, limit, sortBy, sortOrder, search },
   });
 
 /**
  * Obtiene el recuento de inscripciones totales, pagadas y pendientes.
- * @param {string} secret - El secreto para autorizar la petición.
  * @returns {Promise<object>} Una promesa que resuelve al objeto con los recuentos.
  */
-export const getInscriptionsCount = (secret) => 
-  apiClient.get('/inscriptions/count', { params: { secret } });
+export const getInscriptionsCount = () =>
+  apiClient.get('/inscriptions/count');
 
 /**
  * Actualiza el estado de pago de una inscripción.
  * @param {string} inscriptionId - El ID de la inscripción.
  * @param {string} paymentStatus - El nuevo estado de pago ('pending' o 'paid').
- * @param {string} secret - El secreto para autorizar la petición.
  * @returns {Promise<object>} Una promesa que resuelve al objeto de la inscripción actualizada.
  */
-export const updateInscriptionPaymentStatus = (inscriptionId, paymentStatus, secret) =>
+export const updateInscriptionPaymentStatus = (inscriptionId, paymentStatus) =>
   apiClient.patch(`/inscriptions/${inscriptionId}/payment-status`, {
-    paymentStatus,
-    secret
+    paymentStatus
   });
 
 /**
@@ -135,3 +148,19 @@ export const sendPaymentSuccessEmail = (inscriptionData) => {
   };
   return apiClient.post('/email/send-email', emailPayload);
 };
+
+/**
+ * Registra un nuevo usuario.
+ * @param {object} userData - Los datos del usuario (email, password, name, role).
+ * @returns {Promise<object>} Una promesa que resuelve a la respuesta del servidor.
+ */
+export const registerUser = (userData) =>
+  apiClient.post('/auth/register', userData);
+
+/**
+ * Inicia sesión de usuario.
+ * @param {object} credentials - Las credenciales del usuario (email, password).
+ * @returns {Promise<object>} Una promesa que resuelve a la respuesta del servidor con token y datos de usuario.
+ */
+export const loginUser = (credentials) =>
+  apiClient.post('/auth/login', credentials);

@@ -12,6 +12,8 @@ import NotFoundPage from './pages/NotFound/index.jsx';
 import { initMercadoPago } from '@mercadopago/sdk-react';
 import { Layout, WithPaymentLayout } from './components/Layout/index.jsx';
 import InscriptionsAdminPage from './pages/Admin/Inscriptions/index.jsx';
+import LoginPage from './pages/Auth/LoginPage.jsx';
+import ProtectedRoute from './components/ProtectedRoute.jsx';
 import { Toaster } from 'react-hot-toast';
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react"
@@ -42,8 +44,15 @@ function App() {
             <Route path="pending" element={<PendingPage />} />
           </Route>
 
+          {/* Rutas de autenticación */}
+          <Route path="/login" element={<LoginPage />} />
+
           {/* Rutas sin el layout principal (como el admin) */}
-          <Route path="/admin/inscriptions" element={<InscriptionsAdminPage />} />
+          <Route path="/admin/dashboard" element={
+            <ProtectedRoute requireAdmin={true}>
+              <InscriptionsAdminPage />
+            </ProtectedRoute>
+          } />
 
           {/* Página 404 */}
           <Route path="*" element={<NotFoundPage />} />

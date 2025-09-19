@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
 import { getInscriptions, updateInscriptionPaymentStatus, sendPaymentSuccessEmail, getInscriptionsCount } from '../../../services/api';
 import toast from 'react-hot-toast';
 import InscriptionsListMobile from './InscriptionsListMobile';
 import InscriptionsTableDesktop from './InscriptionsTableDesktop';
 import Pagination from './Pagination';
 
-const ADMIN_SECRET_KEY = import.meta.env.VITE_ADMIN_SECRET;
 const API_URL = import.meta.env.VITE_API_URL;
 
 // --- Helper Components ---
@@ -49,7 +47,6 @@ const useDebounce = (value, delay) => {
 };
 
 const InscriptionsAdminPage = () => {
-  const [searchParams] = useSearchParams();
   const [inscriptions, setInscriptions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -65,22 +62,14 @@ const InscriptionsAdminPage = () => {
   const [inscriptionStats, setInscriptionStats] = useState(null);
 
   const totalPages = Math.ceil(totalItems / itemsPerPage);
-  const secret = searchParams.get('secret');
 
   useEffect(() => {
-    if (secret !== ADMIN_SECRET_KEY) {
-      setError('Acceso denegado. Se requiere una clave secreta válida.');
-      setLoading(false);
-      return;
-    }
-
     const fetchInscriptions = async () => {
       setLoading(true);
       try {
         const data = await getInscriptions(
-          currentPage, 
-          itemsPerPage, 
-          secret,
+          currentPage,
+          itemsPerPage,
           sortConfig.key,
           sortConfig.direction,
           debouncedSearchTerm
@@ -96,7 +85,7 @@ const InscriptionsAdminPage = () => {
 
     const fetchStats = async () => {
       try {
-        const statsData = await getInscriptionsCount(secret);
+        const statsData = await getInscriptionsCount();
         setInscriptionStats(statsData.data);
       } catch (err) {
         toast.error(err.message || 'Error al cargar las estadísticas.');
@@ -105,7 +94,7 @@ const InscriptionsAdminPage = () => {
 
     fetchInscriptions();
     fetchStats();
-  }, [currentPage, itemsPerPage, secret, debouncedSearchTerm, sortConfig]);
+  }, [currentPage, itemsPerPage, debouncedSearchTerm, sortConfig]);
 
   // Reset page to 1 when searching
   useEffect(() => {
@@ -115,7 +104,7 @@ const InscriptionsAdminPage = () => {
   const handlePaymentStatusUpdate = async (inscriptionId, newStatus) => {
     try {
       setLoading(true);
-      await updateInscriptionPaymentStatus(inscriptionId, newStatus, secret);
+      await updateInscriptionPaymentStatus(inscriptionId, newStatus);
 
       const updatedInscriptions = inscriptions.map(inscription =>
         inscription._id === inscriptionId
@@ -186,7 +175,7 @@ const InscriptionsAdminPage = () => {
     setCurrentPage(1);
   };
   
-  const exportUrl = `${API_URL}/api/inscriptions/export?secret=${secret}`;
+  const exportUrl = `${API_URL}/api/inscriptions/export`;
 
   return (
     <div className="bg-gray-50 min-h-screen">

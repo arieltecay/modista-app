@@ -37,7 +37,7 @@ const SuccessPage = () => {
           withCredentials: true, // ¡Importante! Envía las cookies al backend
         });
         setCourseData(response.data);
-      } catch (err) {
+      } catch {
         setError('No se pudieron verificar los datos del pago. Por favor, contacta a soporte.');
         // Opcional: redirigir a la página de fallo después de un tiempo
         setTimeout(() => navigate('/payment/failure'), 5000);

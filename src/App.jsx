@@ -12,6 +12,9 @@ import NotFoundPage from './pages/NotFound/index.jsx';
 import { initMercadoPago } from '@mercadopago/sdk-react';
 import { Layout, WithPaymentLayout } from './components/Layout/index.jsx';
 import InscriptionsAdminPage from './pages/Admin/Inscriptions/index.jsx';
+import CoursesAdminPage from './pages/Admin/Courses/index.jsx';
+import AddCoursePage from './pages/Admin/Courses/AddCoursePage.jsx';
+import EditCoursePage from './pages/Admin/Courses/EditCoursePage.jsx';
 import LoginPage from './pages/Auth/LoginPage.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import { Toaster } from 'react-hot-toast';
@@ -51,6 +54,21 @@ function App() {
           <Route path="/admin/dashboard" element={
             <ProtectedRoute requireAdmin={true}>
               <InscriptionsAdminPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/courses" element={
+            <ProtectedRoute requireAdmin={true}>
+              <CoursesAdminPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/courses/add" element={
+            <ProtectedRoute requireAdmin={true}>
+              <AddCoursePage />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/courses/edit/:id" element={
+            <ProtectedRoute requireAdmin={true}>
+              <EditCoursePage />
             </ProtectedRoute>
           } />
 

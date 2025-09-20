@@ -32,7 +32,7 @@ const ImageSelector = ({ selectedImage, onImageSelect }) => {
         Selecciona una imagen para el curso:
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 p-4 border border-gray-200 rounded-lg bg-gray-50">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 p-4 border border-gray-200 rounded-lg bg-gray-50 max-h-80 overflow-y-auto">
         {availableImages.map((imageName) => {
           const imageUrl = `/images/${imageName}`;
           const isSelected = selectedImage === imageUrl;

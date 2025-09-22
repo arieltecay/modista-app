@@ -11,8 +11,3 @@ export const Layout = () => {
     </>
   );
 };
-
-export const WithPaymentLayout = () => {
-  // Layout específico para páginas de pago
-  return <div className="bg-white"><Outlet /></div>;
-};

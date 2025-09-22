@@ -59,14 +59,6 @@ export const getCourses = () => apiClient.get('/courses');
  */
 export const getTestimonials = () => apiClient.get('/courses/testimonials');
 
-/**
- * Crea una preferencia de pago en Mercado Pago.
- * @param {object} course - El objeto del curso.
- * @param {string} external_reference - La referencia externa para la transacción.
- * @returns {Promise<object>} Una promesa que resuelve al objeto de la preferencia de pago.
- */
-export const createPreference = (course, external_reference) =>
-  apiClient.post('/payment/create-preference', { course, external_reference });
 
 /**
  * Registra una nueva inscripción.

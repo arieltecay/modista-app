@@ -1,6 +1,5 @@
 import React from 'react';
 import { FaWhatsapp } from 'react-icons/fa';
-import PaymentButton from '../PaymentButton';
 
 const CoursePurchaseSection = ({ course }) => {
   const isFree = parseFloat(course.price) === 0;
@@ -14,7 +13,6 @@ const CoursePurchaseSection = ({ course }) => {
       <div className="container mx-auto px-4">
         <div className="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-md">
           <div className="flex flex-col items-center space-y-4">
-            <PaymentButton course={course} />
             <a
               href="https://wa.me/3813508796"
               target="_blank"

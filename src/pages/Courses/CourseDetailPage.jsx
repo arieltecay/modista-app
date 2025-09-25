@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import InscriptionForm from '../../components/InscriptionForm';
 import { getCourses } from '../../services/api';
+import { trackCourseView } from '../../services/analytics';
 import CourseImage from '../../components/CourseImage';
 import Spinner from '../../components/Spinner';
 
@@ -18,13 +19,18 @@ function CourseDetailPage() {
         const coursesData = await getCourses();
         const foundCourse = coursesData.find(c => c.id === id);
         setCourse(foundCourse);
+
+        // Enviar evento de visualización del curso a GTM
+        if (foundCourse) {
+          trackCourseView(foundCourse.id, foundCourse.title);
+        }
       } catch (e) {
         setError(e.message);
       } finally {
         setLoading(false);
       }
     };
-    
+
     fetchCourse();
   }, [id]);
 

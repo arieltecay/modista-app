@@ -86,7 +86,7 @@ const CourseForm = ({ initialData = {}, onSubmit, isEditing = false, isSubmittin
               id="title"
               className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                 errors.title ? 'border-red-500' : 'border-gray-300'
-              }`}
+                }`}
               placeholder="Ingresa el título del curso"
             />
           )}
@@ -111,7 +111,7 @@ const CourseForm = ({ initialData = {}, onSubmit, isEditing = false, isSubmittin
               id="category"
               className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                 errors.category ? 'border-red-500' : 'border-gray-300'
-              }`}
+                }`}
               placeholder="Ej: Costura, Diseño, Patronaje"
             />
           )}
@@ -138,11 +138,12 @@ const CourseForm = ({ initialData = {}, onSubmit, isEditing = false, isSubmittin
               step="0.01"
               className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                 errors.price ? 'border-red-500' : 'border-gray-300'
-              }`}
+                }`}
               placeholder="0.00"
             />
           )}
         />
+        <p className="mt-1 text-sm text-gray-400">0 (Cero) es un curso gratis</p>
         {errors.price && (
           <p className="mt-1 text-sm text-red-600">{errors.price.message}</p>
         )}
@@ -163,7 +164,7 @@ const CourseForm = ({ initialData = {}, onSubmit, isEditing = false, isSubmittin
               rows={3}
               className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                 errors.shortDescription ? 'border-red-500' : 'border-gray-300'
-              }`}
+                }`}
               placeholder="Breve descripción del curso (máx. 200 caracteres)"
             />
           )}
@@ -191,7 +192,7 @@ const CourseForm = ({ initialData = {}, onSubmit, isEditing = false, isSubmittin
               rows={6}
               className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                 errors.longDescription ? 'border-red-500' : 'border-gray-300'
-              }`}
+                }`}
               placeholder="Descripción completa del curso con detalles sobre contenido, duración, etc."
             />
           )}
@@ -216,7 +217,7 @@ const CourseForm = ({ initialData = {}, onSubmit, isEditing = false, isSubmittin
               id="deeplink"
               className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                 errors.deeplink ? 'border-red-500' : 'border-gray-300'
-              }`}
+                }`}
               placeholder="https://wa.me/5491234567890"
             />
           )}
@@ -241,7 +242,7 @@ const CourseForm = ({ initialData = {}, onSubmit, isEditing = false, isSubmittin
               id="videoUrl"
               className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                 errors.videoUrl ? 'border-red-500' : 'border-gray-300'
-              }`}
+                }`}
               placeholder="https://youtube.com/watch?v=..."
             />
           )}

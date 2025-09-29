@@ -68,7 +68,7 @@ export const courseSchema = yup.object({
   price: yup
     .number()
     .required('El precio es obligatorio')
-    .positive('El precio debe ser un número positivo')
+    .min(0, 'El precio no puede ser negativo')
     .max(999999, 'El precio no puede exceder $999,999')
     .typeError('El precio debe ser un número válido'),
 

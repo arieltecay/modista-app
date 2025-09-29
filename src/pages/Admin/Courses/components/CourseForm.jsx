@@ -199,9 +199,6 @@ const CourseForm = ({ initialData = {}, onSubmit, isEditing = false, isSubmittin
         {errors.longDescription && (
           <p className="mt-1 text-sm text-red-600">{errors.longDescription.message}</p>
         )}
-        <p className="mt-1 text-xs text-gray-500">
-          {watch('longDescription')?.length || 0}/2000 caracteres
-        </p>
       </div>
 
       {/* Campo de deeplink (opcional) */}

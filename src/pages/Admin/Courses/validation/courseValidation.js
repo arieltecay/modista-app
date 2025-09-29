@@ -26,8 +26,7 @@ export const sanitizeText = (text) => {
   if (!text) return '';
   return text
     .trim()
-    .replace(/[<>]/g, '') // Remover tags HTML
-    .substring(0, 2000); // Limitar longitud
+    .replace(/[<>]/g, ''); // Remover tags HTML
 };
 
 /**
@@ -52,7 +51,6 @@ export const courseSchema = yup.object({
     .string()
     .required('La descripción larga es obligatoria')
     .min(50, 'La descripción larga debe tener al menos 50 caracteres')
-    .max(2000, 'La descripción larga no puede exceder 2000 caracteres')
     .transform(sanitizeText),
 
   imageUrl: yup

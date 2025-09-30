@@ -3,6 +3,20 @@ import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { courseSchema, defaultCourseValues } from '../validation/courseValidation';
 import ImageSelector from './ImageSelector';
+import ReactQuill from 'react-quill-new';
+import 'react-quill-new/dist/quill.snow.css';
+
+// Configuración de módulos para React Quill
+const quillModules = {
+  toolbar: [
+    [{ 'size': ['8px', '10px', '12px', '14px', '16px', '18px', '20px', '24px', '28px', '32px', '36px', '48px', '60px', '72px'] }],
+    ['bold', 'italic', 'underline', 'strike'],
+    [{ 'color': [] }, { 'background': [] }],
+    [{ 'align': [] }],
+    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+    ['link', 'image'],
+  ],
+};
 
 /**
  * Componente de formulario reutilizable para crear/editar cursos
@@ -186,14 +200,13 @@ const CourseForm = ({ initialData = {}, onSubmit, isEditing = false, isSubmittin
           name="longDescription"
           control={control}
           render={({ field }) => (
-            <textarea
-              {...field}
-              id="longDescription"
-              rows={6}
-              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.longDescription ? 'border-red-500' : 'border-gray-300'
-                }`}
+            <ReactQuill
+              value={field.value}
+              onChange={field.onChange}
+              modules={quillModules}
               placeholder="Descripción completa del curso con detalles sobre contenido, duración, etc."
+              className={`quill-editor ${errors.longDescription ? 'border-red-500' : ''}`}
+              style={{ minHeight: '350px', height:'150px' }}
             />
           )}
         />

@@ -5,6 +5,7 @@ import { getCourses } from '../../services/api';
 import { trackCourseView } from '../../services/analytics';
 import CourseImage from '../../components/CourseImage';
 import Spinner from '../../components/Spinner';
+import { formatTextToHtml } from '../../utils/textFormatting';
 
 function CourseDetailPage() {
   const { id } = useParams();
@@ -92,9 +93,10 @@ function CourseDetailPage() {
               ></iframe>
             </div>
           )}
-          <p className="text-gray-700 text-lg mt-4 text-justify whitespace-pre-line">
-            {course.longDescription}
-          </p>
+          <div
+            className="text-gray-700 text-lg mt-4 text-justify"
+            dangerouslySetInnerHTML={{ __html: formatTextToHtml(course.longDescription) }}
+          />
         </div>
       </div>
       <InscriptionForm course={course} />

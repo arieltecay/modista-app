@@ -57,16 +57,6 @@ function CoursesPage({ limit }) {
           <p className="mt-4 text-lg text-gray-500">
             Explora nuestra oferta educativa y encuentra el curso perfecto para ti.
           </p>
-          {/*           <div className="mt-6 max-w-xl mx-auto text-left bg-purple-50 border border-purple-200 rounded p-4 text-sm text-purple-900">
-            <b>¿Cómo probar pagos pendientes o rechazados?</b><br />
-            <ul className="list-disc ml-5 mt-2">
-              <li>Para simular un <b>pago pendiente</b> usa la tarjeta: <span className="font-mono">5031 7557 3453 0604</span></li>
-              <li>Para simular un <b>pago rechazado</b> usa la tarjeta: <span className="font-mono">4000 0000 0000 0119</span></li>
-              <li>Vencimiento: cualquier fecha futura</li>
-              <li>CVV: 123</li>
-            </ul>
-            <span className="block mt-2">Puedes probarlo comprando cualquier curso y eligiendo la tarjeta correspondiente en el checkout de Mercado Pago.</span>
-          </div> */}
         </div>
         <div className="mt-12 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           {coursesToShow.map(course => (

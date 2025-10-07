@@ -174,7 +174,7 @@ const InscriptionsAdminPage = () => {
     setItemsPerPage(Number(e.target.value));
     setCurrentPage(1);
   };
-  
+
   const exportUrl = `${API_URL}/api/inscriptions/export`;
 
   return (

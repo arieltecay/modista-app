@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { createInscription, sendConfirmationEmail } from '../../services/api';
 import Spinner from '../Spinner';
+import { validateNombre, validateApellido, validateEmail, validateCelular } from '../../utils/formValidations';
 
 const InscriptionForm = ({ course }) => {
   const [formData, setFormData] = useState({
@@ -13,21 +14,20 @@ const InscriptionForm = ({ course }) => {
   const [loading, setLoading] = useState(false);
   const [formMessage, setFormMessage] = useState(null);
 
-  const validateEmail = (email) => {
-    const re = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
-    return re.test(String(email).toLowerCase());
-  };
 
   const validateForm = () => {
     const newErrors = {};
-    if (!formData.nombre.trim()) newErrors.nombre = 'El nombre es obligatorio.';
-    if (!formData.apellido.trim()) newErrors.apellido = 'El apellido es obligatorio.';
-    if (!formData.email.trim()) {
-      newErrors.email = 'El email es obligatorio.';
-    } else if (!validateEmail(formData.email)) {
-      newErrors.email = 'El formato del email no es válido.';
-    }
-    if (!formData.celular.trim()) newErrors.celular = 'El celular es obligatorio.';
+    const nombreError = validateNombre(formData.nombre);
+    if (nombreError) newErrors.nombre = nombreError;
+
+    const apellidoError = validateApellido(formData.apellido);
+    if (apellidoError) newErrors.apellido = apellidoError;
+
+    const emailError = validateEmail(formData.email);
+    if (emailError) newErrors.email = emailError;
+
+    const celularError = validateCelular(formData.celular);
+    if (celularError) newErrors.celular = celularError;
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -36,8 +36,14 @@ const InscriptionForm = ({ course }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-    if (errors[name]) {
-      setErrors({ ...errors, [name]: null });
+
+    // Validación en tiempo real para celular
+    if (name === 'celular') {
+      const celularError = validateCelular(value);
+      setErrors(prev => ({ ...prev, celular: celularError }));
+    } else if (errors[name]) {
+      // Limpiar errores para otros campos si estaban presentes
+      setErrors(prev => ({ ...prev, [name]: null }));
     }
   };
 
@@ -155,6 +161,9 @@ const InscriptionForm = ({ course }) => {
                 <label htmlFor="celular" className="block text-sm font-medium text-gray-700 mb-1">
                   Número de celular
                 </label>
+                <p className="text-xs text-gray-500 mb-2">
+                  Ingresa tu número con código de país (ej. +54 para Argentina). Ej: +543811234567 o 543811234567
+                </p>
                 <input
                   id="celular"
                   name="celular"
@@ -164,7 +173,7 @@ const InscriptionForm = ({ course }) => {
                   onChange={handleChange}
                   className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 ${errors.celular ? 'border-red-500' : 'border-gray-300'
                     }`}
-                  placeholder="Tu número de celular"
+                  placeholder="Ej: +543811234567"
                 />
                 {errors.celular && <p className="text-red-500 text-xs mt-1">{errors.celular}</p>}
               </div>

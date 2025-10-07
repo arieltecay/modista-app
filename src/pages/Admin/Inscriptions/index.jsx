@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getInscriptions, updateInscriptionPaymentStatus, sendPaymentSuccessEmail, getInscriptionsCount } from '../../../services/api';
+import { getInscriptions, updateInscriptionPaymentStatus, sendPaymentSuccessEmail, getInscriptionsCount, exportInscriptions } from '../../../services/api';
 import toast from 'react-hot-toast';
 import InscriptionsListMobile from './InscriptionsListMobile';
 import InscriptionsTableDesktop from './InscriptionsTableDesktop';
@@ -50,6 +50,7 @@ const InscriptionsAdminPage = () => {
   const [inscriptions, setInscriptions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isExporting, setIsExporting] = useState(false);
   
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -157,6 +158,19 @@ const InscriptionsAdminPage = () => {
     setCurrentPage(1);
   };
 
+  const handleExport = async () => {
+    setIsExporting(true);
+    await toast.promise(
+      exportInscriptions(),
+      {
+        loading: 'Exportando inscripciones...',
+        success: <b>Archivo descargado con éxito.</b>,
+        error: (err) => <b>{err.message || "Error al exportar"}</b>,
+      }
+    );
+    setIsExporting(false);
+  };
+
   if (error) {
     return (
       <div className="flex items-center justify-center h-screen bg-gray-100">
@@ -174,8 +188,6 @@ const InscriptionsAdminPage = () => {
     setItemsPerPage(Number(e.target.value));
     setCurrentPage(1);
   };
-
-  const exportUrl = `${API_URL}/api/inscriptions/export`;
 
   return (
     <div className="bg-gray-50 min-h-screen">
@@ -209,21 +221,21 @@ const InscriptionsAdminPage = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
           <StatCard 
             title="Total Inscripciones" 
-            value={inscriptionStats?.total ?? '...'} 
+            value={inscriptionStats?.total ?? '...'}
             icon={<TotalIcon />} 
             colorClass="bg-blue-100"
             loading={!inscriptionStats}
           />
           <StatCard 
             title="Alumnas Pagadas" 
-            value={inscriptionStats?.paid ?? '...'} 
+            value={inscriptionStats?.paid ?? '...'}
             icon={<PaidIcon />} 
             colorClass="bg-green-100"
             loading={!inscriptionStats}
           />
           <StatCard 
             title="Pagos Pendientes" 
-            value={inscriptionStats?.pending ?? '...'} 
+            value={inscriptionStats?.pending ?? '...'}
             icon={<PendingIcon />} 
             colorClass="bg-yellow-100"
             loading={!inscriptionStats}
@@ -244,14 +256,13 @@ const InscriptionsAdminPage = () => {
                 className="pl-12 pr-4 py-3 w-full border border-gray-200 bg-gray-50 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors"
               />
             </div>
-            <a 
-              href={exportUrl} 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="w-full md:w-auto px-6 py-3 text-center font-semibold text-white bg-green-600 rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200"
+            <button 
+              onClick={handleExport}
+              disabled={isExporting}
+              className="w-full md:w-auto px-6 py-3 text-center font-semibold text-white bg-green-600 rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed"
             >
-              Exportar a Excel
-            </a>
+              {isExporting ? 'Exportando...' : 'Exportar a Excel'}
+            </button>
           </div>
 
           {/* --- Tables --- */}

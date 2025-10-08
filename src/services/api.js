@@ -75,11 +75,12 @@ export const createInscription = (formData) =>
  * @param {string} sortBy - Campo para ordenar.
  * @param {string} sortOrder - Orden (asc/desc).
  * @param {string} search - Término de búsqueda.
+ * @param {string} [paymentStatusFilter='all'] - Filtro por estado de pago ('all', 'paid', 'pending').
  * @returns {Promise<object>} Una promesa que resuelve a un objeto con los datos de la paginación y las inscripciones.
  */
-export const getInscriptions = (page = 1, limit = 10, sortBy, sortOrder, search) =>
+export const getInscriptions = (page = 1, limit = 10, sortBy, sortOrder, search, paymentStatusFilter = 'all') =>
   apiClient.get('/inscriptions', {
-    params: { page, limit, sortBy, sortOrder, search },
+    params: { page, limit, sortBy, sortOrder, search, paymentStatusFilter },
   });
 
 /**
@@ -199,11 +200,12 @@ export const getCoursesAdmin = (page = 1, limit = 10, sortBy, sortOrder, search)
 /**
  * Exporta las inscripciones a un archivo Excel.
  * Realiza una petición que espera un blob y gestiona la descarga.
+ * @param {string} [paymentStatusFilter='all'] - Filtro por estado de pago ('all', 'paid', 'pending').
  * @returns {Promise<void>}
  */
-export const exportInscriptions = async () => {
+export const exportInscriptions = async (paymentStatusFilter = 'all') => {
   const token = localStorage.getItem('token');
-  
+
   // Usamos una instancia separada de Axios para manejar la respuesta como blob
   // sin que el interceptor global de JSON interfiera.
   const downloadClient = axios.create({
@@ -215,6 +217,7 @@ export const exportInscriptions = async () => {
       headers: {
         Authorization: `Bearer ${token}`,
       },
+      params: { paymentStatusFilter },
       responseType: 'blob', // ¡Muy importante para manejar archivos!
     });
 

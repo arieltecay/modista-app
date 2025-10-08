@@ -59,7 +59,8 @@ const InscriptionsAdminPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
   const [sortConfig, setSortConfig] = useState({ key: 'fechaInscripcion', direction: 'desc' });
-  
+  const [paymentStatusFilter, setPaymentStatusFilter] = useState('all');
+
   const [inscriptionStats, setInscriptionStats] = useState(null);
 
   const totalPages = Math.ceil(totalItems / itemsPerPage);
@@ -73,7 +74,8 @@ const InscriptionsAdminPage = () => {
           itemsPerPage,
           sortConfig.key,
           sortConfig.direction,
-          debouncedSearchTerm
+          debouncedSearchTerm,
+          paymentStatusFilter
         );
         setInscriptions(data.data);
         setTotalItems(data.total);
@@ -95,12 +97,12 @@ const InscriptionsAdminPage = () => {
 
     fetchInscriptions();
     fetchStats();
-  }, [currentPage, itemsPerPage, debouncedSearchTerm, sortConfig]);
+  }, [currentPage, itemsPerPage, debouncedSearchTerm, sortConfig, paymentStatusFilter]);
 
-  // Reset page to 1 when searching
+  // Reset page to 1 when searching or filtering
   useEffect(() => {
     setCurrentPage(1);
-  }, [debouncedSearchTerm]);
+  }, [debouncedSearchTerm, paymentStatusFilter]);
 
   const handlePaymentStatusUpdate = async (inscriptionId, newStatus) => {
     try {
@@ -161,7 +163,7 @@ const InscriptionsAdminPage = () => {
   const handleExport = async () => {
     setIsExporting(true);
     await toast.promise(
-      exportInscriptions(),
+      exportInscriptions(paymentStatusFilter),
       {
         loading: 'Exportando inscripciones...',
         success: <b>Archivo descargado con éxito.</b>,
@@ -244,19 +246,30 @@ const InscriptionsAdminPage = () => {
 
         {/* --- Main Content Area --- */}
         <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-lg">
-          {/* --- Search and Export --- */}
+          {/* --- Search, Filter and Export --- */}
           <div className="flex flex-col md:flex-row justify-between items-center w-full mb-6 gap-4">
-            <div className="relative w-full md:max-w-md">
-              <SearchIcon />
-              <input 
-                type="text"
-                placeholder="Buscar por nombre, apellido, email..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-12 pr-4 py-3 w-full border border-gray-200 bg-gray-50 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors"
-              />
+            <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+              <div className="relative w-full md:max-w-md">
+                <SearchIcon />
+                <input
+                  type="text"
+                  placeholder="Buscar por nombre, apellido, email..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-12 pr-4 py-3 w-full border border-gray-200 bg-gray-50 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors"
+                />
+              </div>
+              <select
+                value={paymentStatusFilter}
+                onChange={(e) => setPaymentStatusFilter(e.target.value)}
+                className="px-4 py-3 border border-gray-200 bg-gray-50 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors"
+              >
+                <option value="all">Todos los pagos</option>
+                <option value="paid">Pagados</option>
+                <option value="pending">Pendientes</option>
+              </select>
             </div>
-            <button 
+            <button
               onClick={handleExport}
               disabled={isExporting}
               className="w-full md:w-auto px-6 py-3 text-center font-semibold text-white bg-green-600 rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed"

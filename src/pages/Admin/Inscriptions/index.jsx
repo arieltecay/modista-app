@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getInscriptions, updateInscriptionPaymentStatus, sendPaymentSuccessEmail, getInscriptionsCount, exportInscriptions } from '../../../services/api';
+import { getInscriptions, updateInscriptionPaymentStatus, sendPaymentSuccessEmail, getInscriptionsCount, exportInscriptions, getCoursesAdmin } from '../../../services/api';
 import toast from 'react-hot-toast';
 import InscriptionsListMobile from './InscriptionsListMobile';
 import InscriptionsTableDesktop from './InscriptionsTableDesktop';
@@ -60,7 +60,10 @@ const InscriptionsAdminPage = () => {
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
   const [sortConfig, setSortConfig] = useState({ key: 'fechaInscripcion', direction: 'desc' });
   const [paymentStatusFilter, setPaymentStatusFilter] = useState('all');
+  const [courseFilter, setCourseFilter] = useState('');
+  const debouncedCourseFilter = useDebounce(courseFilter, 500);
 
+  const [courseSuggestions, setCourseSuggestions] = useState([]);
   const [inscriptionStats, setInscriptionStats] = useState(null);
 
   const totalPages = Math.ceil(totalItems / itemsPerPage);
@@ -75,7 +78,8 @@ const InscriptionsAdminPage = () => {
           sortConfig.key,
           sortConfig.direction,
           debouncedSearchTerm,
-          paymentStatusFilter
+          paymentStatusFilter,
+          debouncedCourseFilter
         );
         setInscriptions(data.data);
         setTotalItems(data.total);
@@ -97,12 +101,30 @@ const InscriptionsAdminPage = () => {
 
     fetchInscriptions();
     fetchStats();
-  }, [currentPage, itemsPerPage, debouncedSearchTerm, sortConfig, paymentStatusFilter]);
+  }, [currentPage, itemsPerPage, debouncedSearchTerm, sortConfig, paymentStatusFilter, debouncedCourseFilter]);
 
   // Reset page to 1 when searching or filtering
   useEffect(() => {
     setCurrentPage(1);
-  }, [debouncedSearchTerm, paymentStatusFilter]);
+  }, [debouncedSearchTerm, paymentStatusFilter, debouncedCourseFilter]);
+
+  // Fetch course suggestions when courseFilter changes
+  useEffect(() => {
+    if (debouncedCourseFilter) {
+      const fetchSuggestions = async () => {
+        try {
+          const data = await getCoursesAdmin(1, 10, undefined, undefined, debouncedCourseFilter);
+          setCourseSuggestions(data.data);
+        } catch (err) {
+          console.error('Error fetching course suggestions:', err);
+        }
+      };
+      fetchSuggestions();
+    } else {
+      setCourseSuggestions([]);
+    }
+  }, [debouncedCourseFilter]);
+
 
   const handlePaymentStatusUpdate = async (inscriptionId, newStatus) => {
     try {
@@ -163,7 +185,7 @@ const InscriptionsAdminPage = () => {
   const handleExport = async () => {
     setIsExporting(true);
     await toast.promise(
-      exportInscriptions(paymentStatusFilter),
+      exportInscriptions(paymentStatusFilter, searchTerm, courseFilter),
       {
         loading: 'Exportando inscripciones...',
         success: <b>Archivo descargado con éxito.</b>,
@@ -220,28 +242,37 @@ const InscriptionsAdminPage = () => {
         </div>
 
         {/* --- Stats Cards --- */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
-          <StatCard 
-            title="Total Inscripciones" 
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+          <StatCard
+            title="Total Inscripciones"
             value={inscriptionStats?.total ?? '...'}
-            icon={<TotalIcon />} 
+            icon={<TotalIcon />}
             colorClass="bg-blue-100"
             loading={!inscriptionStats}
           />
-          <StatCard 
-            title="Alumnas Pagadas" 
+          <StatCard
+            title="Alumnas Pagadas"
             value={inscriptionStats?.paid ?? '...'}
-            icon={<PaidIcon />} 
+            icon={<PaidIcon />}
             colorClass="bg-green-100"
             loading={!inscriptionStats}
           />
-          <StatCard 
-            title="Pagos Pendientes" 
+          <StatCard
+            title="Pagos Pendientes"
             value={inscriptionStats?.pending ?? '...'}
-            icon={<PendingIcon />} 
+            icon={<PendingIcon />}
             colorClass="bg-yellow-100"
             loading={!inscriptionStats}
           />
+          {debouncedCourseFilter && (
+            <StatCard
+              title={`Resultados para "${debouncedCourseFilter}"`}
+              value={totalItems}
+              icon={<SearchIcon />}
+              colorClass="bg-purple-100"
+              loading={loading}
+            />
+          )}
         </div>
 
         {/* --- Main Content Area --- */}
@@ -268,6 +299,31 @@ const InscriptionsAdminPage = () => {
                 <option value="paid">Pagados</option>
                 <option value="pending">Pendientes</option>
               </select>
+              <div className="relative w-full md:max-w-md">
+                <input
+                  type="text"
+                  placeholder="Buscar curso..."
+                  value={courseFilter}
+                  onChange={(e) => setCourseFilter(e.target.value)}
+                  className="px-4 py-3 w-full border border-gray-200 bg-gray-50 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors"
+                />
+                {courseSuggestions.length > 0 && (
+                  <div className="absolute z-10 w-full bg-white border border-gray-200 rounded-lg shadow-lg mt-1 max-h-60 overflow-y-auto">
+                    {courseSuggestions.map(course => (
+                      <div
+                        key={course._id}
+                        className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                        onClick={() => {
+                          setCourseFilter(course.title);
+                          setCourseSuggestions([]);
+                        }}
+                      >
+                        {course.title}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
             <button
               onClick={handleExport}

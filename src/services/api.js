@@ -76,11 +76,12 @@ export const createInscription = (formData) =>
  * @param {string} sortOrder - Orden (asc/desc).
  * @param {string} search - Término de búsqueda.
  * @param {string} [paymentStatusFilter='all'] - Filtro por estado de pago ('all', 'paid', 'pending').
+ * @param {string} [courseFilter] - Filtro por nombre del curso.
  * @returns {Promise<object>} Una promesa que resuelve a un objeto con los datos de la paginación y las inscripciones.
  */
-export const getInscriptions = (page = 1, limit = 10, sortBy, sortOrder, search, paymentStatusFilter = 'all') =>
+export const getInscriptions = (page = 1, limit = 10, sortBy, sortOrder, search, paymentStatusFilter = 'all', courseFilter) =>
   apiClient.get('/inscriptions', {
-    params: { page, limit, sortBy, sortOrder, search, paymentStatusFilter },
+    params: { page, limit, sortBy, sortOrder, search, paymentStatusFilter, courseFilter },
   });
 
 /**
@@ -201,9 +202,11 @@ export const getCoursesAdmin = (page = 1, limit = 10, sortBy, sortOrder, search)
  * Exporta las inscripciones a un archivo Excel.
  * Realiza una petición que espera un blob y gestiona la descarga.
  * @param {string} [paymentStatusFilter='all'] - Filtro por estado de pago ('all', 'paid', 'pending').
+ * @param {string} [search] - Término de búsqueda.
+ * @param {string} [courseFilter] - Filtro por nombre del curso.
  * @returns {Promise<void>}
  */
-export const exportInscriptions = async (paymentStatusFilter = 'all') => {
+export const exportInscriptions = async (paymentStatusFilter = 'all', search, courseFilter) => {
   const token = localStorage.getItem('token');
 
   // Usamos una instancia separada de Axios para manejar la respuesta como blob
@@ -217,7 +220,7 @@ export const exportInscriptions = async (paymentStatusFilter = 'all') => {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-      params: { paymentStatusFilter },
+      params: { paymentStatusFilter, search, courseFilter },
       responseType: 'blob', // ¡Muy importante para manejar archivos!
     });
 

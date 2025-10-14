@@ -38,6 +38,7 @@ const EditCoursePage = () => {
           price: foundCourse.price?.toString() || '',
           deeplink: foundCourse.deeplink || '',
           videoUrl: foundCourse.videoUrl || '',
+          coursePaid: foundCourse.coursePaid || '',
         };
 
         setCourse(formattedCourse);

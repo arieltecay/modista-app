@@ -254,6 +254,32 @@ const CourseForm = ({ initialData = {}, onSubmit, isEditing = false, isSubmittin
         )}
       </div>
 
+      {/* Campo de link del curso pagado (opcional) */}
+      <div>
+        <label htmlFor="coursePaid" className="block text-sm font-medium text-gray-700 mb-2">
+          Link del Curso Pagado (opcional)
+        </label>
+        <Controller
+          name="coursePaid"
+          control={control}
+          render={({ field }) => (
+            <input
+              {...field}
+              type="url"
+              id="coursePaid"
+              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                errors.coursePaid ? 'border-red-500' : 'border-gray-300'
+                }`}
+              placeholder="https://drive.google.com/... o https://..."
+            />
+          )}
+        />
+        {errors.coursePaid && (
+          <p className="mt-1 text-sm text-red-600">{errors.coursePaid.message}</p>
+        )}
+        <p className="mt-1 text-sm text-gray-400">Este link se enviará por email cuando el cliente pague el curso</p>
+      </div>
+
       {/* Botones del formulario */}
       <div className="flex justify-end space-x-4 pt-6 border-t">
         <button

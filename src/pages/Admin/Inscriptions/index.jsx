@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { getInscriptions, updateInscriptionPaymentStatus, sendPaymentSuccessEmail, getInscriptionsCount, exportInscriptions, getCoursesAdmin } from '../../../services/api';
+import {
+  getInscriptions,
+  updateInscriptionPaymentStatus,
+  sendPaymentSuccessEmail,
+  getInscriptionsCount,
+  exportInscriptions,
+  getCoursesAdmin,
+  sendCoursePaidEmail
+} from '../../../services/api';
 import toast from 'react-hot-toast';
 import InscriptionsListMobile from './InscriptionsListMobile';
 import InscriptionsTableDesktop from './InscriptionsTableDesktop';
@@ -51,7 +59,7 @@ const InscriptionsAdminPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isExporting, setIsExporting] = useState(false);
-  
+
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [totalItems, setTotalItems] = useState(0);
@@ -137,7 +145,7 @@ const InscriptionsAdminPage = () => {
           : inscription
       );
       setInscriptions(updatedInscriptions);
-      
+
       // Actualizar estadísticas
       if (inscriptionStats) {
         setInscriptionStats(prevStats => {
@@ -168,6 +176,18 @@ const InscriptionsAdminPage = () => {
       toast.success(`Estado actualizado a ${newStatus === 'paid' ? 'pagado' : 'pendiente'} correctamente`);
     } catch (error) {
       toast.error('Error al actualizar el estado: ' + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSendCourseEmail = async (inscription) => {
+    try {
+      setLoading(true);
+      await sendCoursePaidEmail(inscription);
+      toast.success('Correo con el link del curso enviado exitosamente.');
+    } catch (error) {
+      toast.error('Error al enviar el correo del curso: ' + error.message);
     } finally {
       setLoading(false);
     }
@@ -216,7 +236,7 @@ const InscriptionsAdminPage = () => {
   return (
     <div className="bg-gray-50 min-h-screen">
       <div className="container mx-auto px-4 sm:px-8 py-12">
-        
+
         {/* --- Header --- */}
         <div className="mb-10">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
@@ -335,28 +355,30 @@ const InscriptionsAdminPage = () => {
           </div>
 
           {/* --- Tables --- */}
-          <InscriptionsListMobile 
-            inscriptions={inscriptions} 
-            loading={loading} 
-            handlePaymentStatusUpdate={handlePaymentStatusUpdate} 
+          <InscriptionsListMobile
+            inscriptions={inscriptions}
+            loading={loading}
+            handlePaymentStatusUpdate={handlePaymentStatusUpdate}
+            handleSendCourseEmail={handleSendCourseEmail}
           />
-          <InscriptionsTableDesktop 
-            inscriptions={inscriptions} 
-            loading={loading} 
-            handlePaymentStatusUpdate={handlePaymentStatusUpdate} 
-            sortConfig={sortConfig} 
-            handleSort={handleSort} 
+          <InscriptionsTableDesktop
+            inscriptions={inscriptions}
+            loading={loading}
+            handlePaymentStatusUpdate={handlePaymentStatusUpdate}
+            sortConfig={sortConfig}
+            handleSort={handleSort}
+            handleSendCourseEmail={handleSendCourseEmail}
           />
 
           {/* --- Pagination --- */}
-          <Pagination 
-            currentPage={currentPage} 
-            totalPages={totalPages} 
-            totalItems={totalItems} 
-            itemsPerPage={itemsPerPage} 
-            handlePrevPage={handlePrevPage} 
-            handleNextPage={handleNextPage} 
-            handleItemsPerPageChange={handleItemsPerPageChange} 
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={totalItems}
+            itemsPerPage={itemsPerPage}
+            handlePrevPage={handlePrevPage}
+            handleNextPage={handleNextPage}
+            handleItemsPerPageChange={handleItemsPerPageChange}
           />
         </div>
       </div>

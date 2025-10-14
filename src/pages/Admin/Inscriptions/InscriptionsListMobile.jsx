@@ -1,7 +1,7 @@
 import React from 'react';
 import Spinner from '../../../components/Spinner';
 
-const InscriptionsListMobile = ({ inscriptions, loading, handlePaymentStatusUpdate }) => {
+const InscriptionsListMobile = ({ inscriptions, loading, handlePaymentStatusUpdate, handleSendCourseEmail }) => {
   if (loading) {
     return <div className="flex justify-center items-center p-10"><Spinner /></div>;
   }
@@ -23,19 +23,28 @@ const InscriptionsListMobile = ({ inscriptions, loading, handlePaymentStatusUpda
             </div>
             <div className="flex flex-col items-end gap-2">
               <span className={`px-2 py-1 text-xs rounded-full border ${
-                inscription.paymentStatus === 'paid' 
-                  ? 'bg-green-100 text-green-800 border-green-200' 
+                inscription.paymentStatus === 'paid'
+                  ? 'bg-green-100 text-green-800 border-green-200'
                   : 'bg-yellow-100 text-yellow-800 border-yellow-200'
               }`}>
                 {inscription.paymentStatus === 'paid' ? '✅ Pagado' : '⏳ Pendiente'}
               </span>
               {inscription.paymentStatus === 'pending' && (
-                <button 
+                <button
                   onClick={() => handlePaymentStatusUpdate(inscription._id, 'paid')}
                   className="bg-green-500 text-white px-3 py-1 text-xs rounded hover:bg-green-600 transition-colors"
                   disabled={loading}
                 >
                   {loading ? '...' : 'Marcar Pagado'}
+                </button>
+              )}
+              {inscription.paymentStatus === 'paid' && (
+                <button
+                  onClick={() => handleSendCourseEmail(inscription)}
+                  className="bg-blue-500 text-white px-3 py-1 text-xs rounded hover:bg-blue-600 transition-colors"
+                  disabled={loading}
+                >
+                  {loading ? '...' : 'Enviar Video'}
                 </button>
               )}
             </div>

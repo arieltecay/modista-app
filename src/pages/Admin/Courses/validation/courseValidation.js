@@ -83,6 +83,12 @@ export const courseSchema = yup.object({
     .optional()
     .url('La URL del video debe ser una URL válida')
     .transform((value) => value === '' ? undefined : value),
+
+  coursePaid: yup
+    .string()
+    .optional()
+    .url('El link del curso pagado debe ser una URL válida')
+    .transform((value) => value === '' ? undefined : value),
 });
 
 /**
@@ -97,6 +103,7 @@ export const defaultCourseValues = {
   price: '',
   deeplink: '',
   videoUrl: '',
+  coursePaid: '',
 };
 
 /**

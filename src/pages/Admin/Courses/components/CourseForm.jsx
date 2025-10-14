@@ -33,10 +33,14 @@ const CourseForm = ({ initialData = {}, onSubmit, isEditing = false, isSubmittin
 
   const handleFormSubmit = async (data) => {
     try {
-      // Convertir precio a número
+      // Convertir precio a número y filtrar campos opcionales vacíos
       const formData = {
         ...data,
-        price: parseFloat(data.price)
+        price: parseFloat(data.price),
+        // Convertir campos opcionales vacíos a undefined para que se eliminen en la BD
+        deeplink: data.deeplink === '' ? undefined : data.deeplink,
+        videoUrl: data.videoUrl === '' ? undefined : data.videoUrl,
+        coursePaid: data.coursePaid === '' ? undefined : data.coursePaid,
       };
 
       await onSubmit(formData);

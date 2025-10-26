@@ -4,9 +4,6 @@ import { getCoursesAdmin, updateCourse } from '../../../services/api';
 import CourseForm from './components/CourseForm';
 import toast from 'react-hot-toast';
 
-/**
- * Página para editar un curso existente
- */
 const EditCoursePage = () => {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -19,7 +16,6 @@ const EditCoursePage = () => {
     const fetchCourse = async () => {
       try {
         setLoading(true);
-        // Obtener el curso específico por ID
         const response = await getCoursesAdmin(1, 1000, null, null, null);
         const foundCourse = response.data.find(c => c._id === id);
 

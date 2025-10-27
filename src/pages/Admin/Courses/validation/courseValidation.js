@@ -14,7 +14,12 @@ export const AVAILABLE_IMAGES = [
   '/images/pantalon.jpeg',
   '/images/perfil.jpg',
   '/images/persona.jpeg',
-  '/images/ventana.jpeg'
+  '/images/ventana.jpeg',
+  '/images/WhatsApp Image 2025-10-26 at 12.40.50.jpeg',
+  '/images/WhatsApp Image 2025-10-26 at 12.41.35.jpeg',
+  '/images/WhatsApp Image 2025-10-26 at 12.41.36.jpeg',
+  '/images/WhatsApp Image 2025-10-26 at 12.41.361.jpeg',
+  '/images/WhatsApp Image 2025-10-26 at 13.00.02.jpeg',
 ];
 
 /**

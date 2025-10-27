@@ -18,7 +18,12 @@ const ImageSelector = ({ selectedImage, onImageSelect }) => {
     'pantalon.jpeg',
     'perfil.jpg',
     'persona.jpeg',
-    'ventana.jpeg'
+    'ventana.jpeg',
+    'WhatsApp Image 2025-10-26 at 12.40.50.jpeg',
+    'WhatsApp Image 2025-10-26 at 12.41.35.jpeg',
+    'WhatsApp Image 2025-10-26 at 12.41.36.jpeg',
+    'WhatsApp Image 2025-10-26 at 12.41.361.jpeg',
+    'WhatsApp Image 2025-10-26 at 13.00.02.jpeg',
   ];
 
   const handleImageClick = (imageName) => {

@@ -10,7 +10,7 @@ import axios from 'axios';
  * Instancia de Axios pre-configurada con la URL base de la API.
  * @type {import('axios').AxiosInstance}
  */
-const apiClient = axios.create({
+export const apiClient = axios.create({
   baseURL: `${import.meta.env.VITE_API_URL}/api`,
   headers: {
     'Content-Type': 'application/json',
@@ -52,12 +52,6 @@ apiClient.interceptors.response.use(
  * @returns {Promise<Array<object>>} Una promesa que resuelve a un array de cursos.
  */
 export const getCourses = () => apiClient.get('/courses');
-
-/**
- * Obtiene la lista de todos los testimonios.
- * @returns {Promise<Array<object>>} Una promesa que resuelve a un array de testimonios.
- */
-export const getTestimonials = () => apiClient.get('/courses/testimonials');
 
 
 /**

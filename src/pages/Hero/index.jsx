@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getTestimonials } from '../../services/api';
+import { getTestimonials } from '../../services/testimonials/testimonialsServices';
 import Announcement from '../../components/Announcement';
 
 const Hero = () => {

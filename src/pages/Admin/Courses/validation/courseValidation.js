@@ -20,6 +20,7 @@ export const AVAILABLE_IMAGES = [
   '/images/WhatsApp Image 2025-10-26 at 12.41.36.jpeg',
   '/images/WhatsApp Image 2025-10-26 at 12.41.361.jpeg',
   '/images/WhatsApp Image 2025-10-26 at 13.00.02.jpeg',
+  '/images/PantalonSastrero.jpeg',
 ];
 
 /**
@@ -49,7 +50,7 @@ export const courseSchema = yup.object({
     .string()
     .required('La descripción corta es obligatoria')
     .min(10, 'La descripción corta debe tener al menos 10 caracteres')
-    .max(200, 'La descripción corta no puede exceder 200 caracteres')
+    .max(250, 'La descripción corta no puede exceder 250 caracteres')
     .transform(sanitizeText),
 
   longDescription: yup

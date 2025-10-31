@@ -78,7 +78,7 @@ function CourseDetailPage() {
         </Link>
       </div>
       <div className="bg-white shadow-lg rounded-lg overflow-hidden">
-        <CourseImage course={course} className="w-full h-64 object-contain" />
+        <CourseImage course={course} className="w-full h-auto object-contain" />
         <div className="p-6">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">{course.title}</h1>
           {/* Sección del Video */}

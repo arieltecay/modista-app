@@ -6,12 +6,12 @@ import {
   getInscriptionsCount,
   exportInscriptions,
   getCoursesAdmin,
-  sendCoursePaidEmail
 } from '../../../services/api';
 import toast from 'react-hot-toast';
 import InscriptionsListMobile from './InscriptionsListMobile';
 import InscriptionsTableDesktop from './InscriptionsTableDesktop';
 import Pagination from './Pagination';
+import { sendCoursePaidEmail } from '../../../services/courses/coursesServices';
 
 const API_URL = import.meta.env.VITE_API_URL;
 

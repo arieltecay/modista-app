@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import CourseCard from '../../components/CourseCard'; // Importa el componente reutilizable
-import { getCourses } from '../../services/api';
+import { getCourses } from '../../services/courses/coursesServices';
 import Spinner from '../../components/Spinner';
 import ErrorCard from '../../components/ErrorCard/ErrorCard';
 

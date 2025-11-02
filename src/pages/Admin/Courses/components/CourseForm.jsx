@@ -85,9 +85,9 @@ const CourseForm = ({ initialData = {}, onSubmit, isEditing = false, isSubmittin
           name="title"
           control={control}
           render={({ field }) => (
-            <input
+            <textarea
               {...field}
-              type="text"
+              rows={2}
               id="title"
               className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                 errors.title ? 'border-red-500' : 'border-gray-300'
@@ -166,7 +166,7 @@ const CourseForm = ({ initialData = {}, onSubmit, isEditing = false, isSubmittin
             <textarea
               {...field}
               id="shortDescription"
-              rows={3}
+              rows={5}
               className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                 errors.shortDescription ? 'border-red-500' : 'border-gray-300'
                 }`}
@@ -178,7 +178,7 @@ const CourseForm = ({ initialData = {}, onSubmit, isEditing = false, isSubmittin
           <p className="mt-1 text-sm text-red-600">{errors.shortDescription.message}</p>
         )}
         <p className="mt-1 text-xs text-gray-500">
-          {watch('shortDescription')?.length || 0}/200 caracteres
+          {watch('shortDescription')?.length || 0}/250 caracteres
         </p>
       </div>
 

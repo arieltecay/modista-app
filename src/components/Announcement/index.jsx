@@ -2,7 +2,7 @@ import React from 'react';
 
 const Announcement = () => {
   return (
-    <div className="bg-[var(--color-green-600)] py-8 sm:py-12">
+    <div className="bg-[var(--color-green-600)] rounded-xl m-4 py-8 sm:py-12">
       <div className="mx-auto max-w-7xl px-6 lg:px-8 text-center">
         <div className="mx-auto max-w-2xl">
           <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-black sm:text-4xl">

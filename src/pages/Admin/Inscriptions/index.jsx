@@ -4,9 +4,9 @@ import {
   updateInscriptionPaymentStatus,
   sendPaymentSuccessEmail,
   getInscriptionsCount,
-  exportInscriptions,
   getCoursesAdmin,
 } from '../../../services/api';
+import { exportInscriptions } from '../../../services/inscriptions/inscriptionsServices';
 import toast from 'react-hot-toast';
 import InscriptionsListMobile from './InscriptionsListMobile';
 import InscriptionsTableDesktop from './InscriptionsTableDesktop';

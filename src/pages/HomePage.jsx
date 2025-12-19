@@ -1,5 +1,5 @@
 import React from 'react';
-import Hero from './Hero/index.jsx';
+import Home from './Home/index.tsx';
 import Courses from './Courses/index.jsx';
 import About from './About/index.jsx';
 import Footer from './Footer/index.jsx';
@@ -7,7 +7,7 @@ import Footer from './Footer/index.jsx';
 const HomePage = () => {
   return (
     <>
-      <Hero />
+      <Home />
       <Courses limit={6} />
       <About />
     </>

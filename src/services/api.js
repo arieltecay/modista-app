@@ -148,41 +148,4 @@ export const registerUser = (userData) =>
 export const loginUser = (credentials) =>
   apiClient.post('/auth/login', credentials);
 
-/**
- * Crea un nuevo curso.
- * @param {object} courseData - Los datos del curso a crear.
- * @returns {Promise<object>} Una promesa que resuelve al curso creado.
- */
-export const createCourse = (courseData) =>
-  apiClient.post('/courses', courseData);
 
-/**
- * Actualiza un curso existente.
- * @param {string} courseId - El ID del curso a actualizar.
- * @param {object} courseData - Los datos actualizados del curso.
- * @returns {Promise<object>} Una promesa que resuelve al curso actualizado.
- */
-export const updateCourse = (courseId, courseData) =>
-  apiClient.put(`/courses/${courseId}`, courseData);
-
-/**
- * Elimina un curso.
- * @param {string} courseId - El ID del curso a eliminar.
- * @returns {Promise<object>} Una promesa que resuelve a la confirmación de eliminación.
- */
-export const deleteCourse = (courseId) =>
-  apiClient.delete(`/courses/${courseId}`);
-
-/**
- * Obtiene una lista paginada de cursos para admin.
- * @param {number} [page=1] - El número de página.
- * @param {number} [limit=10] - El número de cursos por página.
- * @param {string} sortBy - Campo para ordenar.
- * @param {string} sortOrder - Orden (asc/desc).
- * @param {string} search - Término de búsqueda.
- * @returns {Promise<object>} Una promesa que resuelve a un objeto con los datos de paginación y cursos.
- */
-export const getCoursesAdmin = (page = 1, limit = 10, sortBy, sortOrder, search) =>
-  apiClient.get('/courses/admin', {
-    params: { page, limit, sortBy, sortOrder, search },
-  });

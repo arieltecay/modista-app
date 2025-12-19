@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getCoursesAdmin, deleteCourse } from '../../../services/api';
+import { getCoursesAdmin, deleteCourse } from '../../../services/courses';
 import toast from 'react-hot-toast';
 import CoursesListMobile from './CoursesListMobile';
 import CoursesListDesktop from './CoursesListDesktop';

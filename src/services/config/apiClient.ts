@@ -11,19 +11,18 @@
  * @principle Separation of Concerns - Configuración HTTP aislada
  */
 
-import axios from 'axios';
+import axios, { AxiosInstance, AxiosResponse, InternalAxiosRequestConfig, AxiosError } from 'axios';
 
 /**
  * Instancia de Axios pre-configurada con la URL base de la API.
  * 
- * @type {import('axios').AxiosInstance}
  * @constant
  * 
  * @example
  * import { apiClient } from '../config/apiClient';
  * const response = await apiClient.get('/users');
  */
-export const apiClient = axios.create({
+export const apiClient: AxiosInstance = axios.create({
     baseURL: `${import.meta.env.VITE_API_URL}/api`,
     headers: {
         'Content-Type': 'application/json',
@@ -38,14 +37,14 @@ export const apiClient = axios.create({
  * @security Añade autorización Bearer automáticamente
  */
 apiClient.interceptors.request.use(
-    (config) => {
+    (config: InternalAxiosRequestConfig) => {
         const token = localStorage.getItem('token');
-        if (token) {
+        if (token && config.headers) {
             config.headers.Authorization = `Bearer ${token}`;
         }
         return config;
     },
-    (error) => Promise.reject(error)
+    (error: AxiosError) => Promise.reject(error)
 );
 
 /**
@@ -64,9 +63,9 @@ apiClient.interceptors.request.use(
  * @error-handling Manejo centralizado de errores HTTP
  */
 apiClient.interceptors.response.use(
-    (response) => response.data,
-    (error) => {
-        if (error.response && error.response.data && error.response.data.message) {
+    <T = any>(response: AxiosResponse<T>): T => response.data,
+    (error: AxiosError<{ message?: string }>) => {
+        if (error.response?.data?.message) {
             return Promise.reject(new Error(error.response.data.message));
         }
         return Promise.reject(error);

@@ -6,3 +6,4 @@
  */
 
 export * from './emailService';
+export type { InscriptionEmailData, EmailPayload } from '../types';

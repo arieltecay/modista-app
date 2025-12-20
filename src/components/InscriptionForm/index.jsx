@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { createInscription, sendConfirmationEmail } from '../../services/api';
+import { createInscription } from '../../services/inscriptions';
+import { sendConfirmationEmail } from '../../services/email';
 import Spinner from '../Spinner';
 import { validateNombre, validateApellido, validateEmail, validateCelular } from '../../utils/formValidations';
 

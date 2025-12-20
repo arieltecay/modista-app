@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
-import { getTestimonials } from '../services/testimonials/testimonialsServices';
+import { useEffect, useState } from 'react';
+import { getTestimonials, Testimonial as ServiceTestimonial } from '../services/testimonials';
 import { TESTIMONIALS_CONFIG } from '../constants/testimonials.constants';
 
-export interface Testimonial {
-    id: string | number;
-    name: string;
-    description: string;
+// Alias local para compatibilidad con el componente
+export interface Testimonial extends Omit<ServiceTestimonial, 'content'> {
+    description: string; // Alias para 'content' por compatibilidad con componentes
+    content?: string;
 }
 
 interface UseTestimonialsReturn {
@@ -33,7 +33,13 @@ export const useTestimonials = (): UseTestimonialsReturn => {
         const fetchTestimonials = async () => {
             try {
                 const data = await getTestimonials();
-                setTestimonials(data as Testimonial[]);
+                // Mapear content a description para compatibilidad
+                const mapped = data.map(t => ({
+                    ...t,
+                    description: t.content,
+                    id: t.id || t._id || ''
+                })) as Testimonial[];
+                setTestimonials(mapped);
                 setLoading(false);
             } catch (err) {
                 setError(err as Error);

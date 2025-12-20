@@ -12,30 +12,29 @@
  */
 
 import { apiClient } from '../config/apiClient';
+import type {
+    Course,
+    CreateCourseData,
+    UpdateCourseData,
+    PaginatedResponse
+} from '../types';
 
 /**
  * Obtiene la lista de todos los cursos (endpoint público).
  * 
- * @returns {Promise<Array<Object>>} Array de cursos disponibles
+ * @returns Array de cursos disponibles
  * 
  * @example
  * const courses = await getCourses();
  */
-export const getCourses = () => apiClient.get('/courses');
+export const getCourses = (): Promise<Course[]> =>
+    apiClient.get('/courses');
 
 /**
  * Crea un nuevo curso (requiere autenticación admin).
  * 
- * @param {Object} courseData - Datos del curso a crear
- * @param {string} courseData.title - Título del curso
- * @param {string} courseData.description - Descripción del curso
- * @param {number} courseData.price - Precio del curso
- * @param {string} [courseData.image] - URL de la imagen del curso
- * @param {string} [courseData.deeplink] - Link del curso
- * @param {string} [courseData.coursePaid] - Link de acceso para alumnos que pagaron
- * 
- * @returns {Promise<Object>} El curso creado
- * 
+ * @param courseData - Datos del curso a crear
+ * @returns El curso creado
  * @throws {Error} Si faltan datos requeridos o el usuario no tiene permisos
  * 
  * @example
@@ -45,17 +44,15 @@ export const getCourses = () => apiClient.get('/courses');
  *   price: 5000
  * });
  */
-export const createCourse = (courseData) =>
+export const createCourse = (courseData: CreateCourseData): Promise<Course> =>
     apiClient.post('/courses', courseData);
 
 /**
  * Actualiza un curso existente (requiere autenticación admin).
  * 
- * @param {string} courseId - ID del curso a actualizar
- * @param {Object} courseData - Datos actualizados del curso
- * 
- * @returns {Promise<Object>} El curso actualizado
- * 
+ * @param courseId - ID del curso a actualizar
+ * @param courseData - Datos actualizados del curso
+ * @returns El curso actualizado
  * @throws {Error} Si el curso no existe o el usuario no tiene permisos
  * 
  * @example
@@ -64,44 +61,43 @@ export const createCourse = (courseData) =>
  *   description: 'Nueva descripción'
  * });
  */
-export const updateCourse = (courseId, courseData) =>
+export const updateCourse = (courseId: string, courseData: UpdateCourseData): Promise<Course> =>
     apiClient.put(`/courses/${courseId}`, courseData);
 
 /**
  * Elimina un curso (requiere autenticación admin).
  * 
- * @param {string} courseId - ID del curso a eliminar
- * 
- * @returns {Promise<Object>} Confirmación de eliminación
- * 
+ * @param courseId - ID del curso a eliminar
+ * @returns Confirmación de eliminación
  * @throws {Error} Si el curso no existe o el usuario no tiene permisos
  * 
  * @example
  * await deleteCourse('64f3b2c1e4b0a1234567890a');
  */
-export const deleteCourse = (courseId) =>
+export const deleteCourse = (courseId: string): Promise<{ message: string }> =>
     apiClient.delete(`/courses/${courseId}`);
 
 /**
  * Obtiene una lista paginada de cursos para el panel admin.
  * Incluye funcionalidades de ordenamiento, búsqueda y paginación.
  * 
- * @param {number} [page=1] - Número de página
- * @param {number} [limit=10] - Cantidad de cursos por página
- * @param {string} [sortBy] - Campo por el cual ordenar
- * @param {string} [sortOrder] - Orden: 'asc' o 'desc'
- * @param {string} [search] - Término de búsqueda
- * 
- * @returns {Promise<Object>} Objeto con datos de paginación y cursos
- * @returns {Array<Object>} return.data - Array de cursos
- * @returns {number} return.totalPages - Total de páginas
- * @returns {number} return.currentPage - Página actual
- * @returns {number} return.totalItems - Total de cursos
+ * @param page - Número de página
+ * @param limit - Cantidad de cursos por página
+ * @param sortBy - Campo por el cual ordenar
+ * @param sortOrder - Orden: 'asc' o 'desc'
+ * @param search - Término de búsqueda
+ * @returns Objeto con datos de paginación y cursos
  * 
  * @example
  * const { data, totalPages } = await getCoursesAdmin(1, 10, 'title', 'asc', 'React');
  */
-export const getCoursesAdmin = (page = 1, limit = 10, sortBy, sortOrder, search) =>
+export const getCoursesAdmin = (
+    page: number = 1,
+    limit: number = 10,
+    sortBy?: string,
+    sortOrder?: 'asc' | 'desc',
+    search?: string
+): Promise<PaginatedResponse<Course>> =>
     apiClient.get('/courses/admin', {
         params: { page, limit, sortBy, sortOrder, search },
     });

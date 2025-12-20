@@ -2,16 +2,15 @@ import React, { useState, useEffect } from 'react';
 import {
   getInscriptions,
   updateInscriptionPaymentStatus,
-  sendPaymentSuccessEmail,
   getInscriptionsCount,
-} from '../../../services/api';
+  exportInscriptions
+} from '../../../services/inscriptions';
+import { sendPaymentSuccessEmail, sendCoursePaidEmail } from '../../../services/email';
 import { getCoursesAdmin } from '../../../services/courses';
-import { exportInscriptions } from '../../../services/inscriptions/inscriptionsServices';
 import toast from 'react-hot-toast';
 import InscriptionsListMobile from './InscriptionsListMobile';
 import InscriptionsTableDesktop from './InscriptionsTableDesktop';
 import Pagination from './Pagination';
-import { sendCoursePaidEmail } from '../../../services/email';
 
 const API_URL = import.meta.env.VITE_API_URL;
 

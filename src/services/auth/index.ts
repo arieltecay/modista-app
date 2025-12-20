@@ -6,3 +6,4 @@
  */
 
 export * from './authService';
+export type { RegisterUserData, LoginCredentials, AuthResponse } from '../types';

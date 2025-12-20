@@ -6,3 +6,4 @@
  */
 
 export * from './coursesService';
+export type { Course, CreateCourseData, UpdateCourseData, CourseFilters } from '../types';

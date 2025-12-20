@@ -11,41 +11,30 @@
  */
 
 import { apiClient } from '../config/apiClient';
+import type { RegisterUserData, LoginCredentials, AuthResponse } from '../types';
 
 /**
  * Registra un nuevo usuario en el sistema.
  * 
- * @param {Object} userData - Datos del usuario a registrar
- * @param {string} userData.email - Email del usuario
- * @param {string} userData.password - Contraseña
- * @param {string} userData.name - Nombre del usuario
- * @param {string} [userData.role] - Rol del usuario (opcional)
- * 
- * @returns {Promise<Object>} Respuesta del servidor con datos del usuario creado
- * 
+ * @param userData - Datos del usuario a registrar
+ * @returns Respuesta del servidor con datos del usuario creado
  * @throws {Error} Si el email ya está registrado o datos inválidos
  * 
  * @example
- * const newUser = await registerUser({
+ * const response = await registerUser({
  *   email: 'usuario@ejemplo.com',
  *   password: 'Password123!',
  *   name: 'Juan Pérez'
  * });
  */
-export const registerUser = (userData) =>
+export const registerUser = (userData: RegisterUserData): Promise<AuthResponse> =>
     apiClient.post('/auth/register', userData);
 
 /**
  * Inicia sesión de usuario.
  * 
- * @param {Object} credentials - Credenciales de acceso
- * @param {string} credentials.email - Email del usuario
- * @param {string} credentials.password - Contraseña
- * 
- * @returns {Promise<Object>} Respuesta del servidor con token JWT y datos de usuario
- * @returns {string} return.token - Token JWT para autenticación
- * @returns {Object} return.user - Datos del usuario autenticado
- * 
+ * @param credentials - Credenciales de acceso
+ * @returns Respuesta del servidor con token JWT y datos de usuario
  * @throws {Error} Si las credenciales son incorrectas
  * 
  * @example
@@ -55,5 +44,5 @@ export const registerUser = (userData) =>
  * });
  * localStorage.setItem('token', token);
  */
-export const loginUser = (credentials) =>
+export const loginUser = (credentials: LoginCredentials): Promise<AuthResponse> =>
     apiClient.post('/auth/login', credentials);

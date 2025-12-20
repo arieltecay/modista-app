@@ -11,22 +11,13 @@
  */
 
 import { apiClient } from '../config/apiClient';
+import type { InscriptionEmailData, EmailPayload, CoursePaidResponse } from '../types';
 
 /**
  * Envía un correo de confirmación de inscripción.
  * 
- * @param {Object} inscriptionData - Datos de la inscripción
- * @param {string} inscriptionData.email - Email del destinatario
- * @param {string} inscriptionData.nombre - Nombre del inscripto
- * @param {string} inscriptionData.apellido - Apellido del inscripto
- * @param {string} inscriptionData.courseTitle - Título del curso
- * @param {number} inscriptionData.coursePrice - Precio del curso
- * @param {string} inscriptionData.courseDeeplink - Link del curso
- * @param {string} inscriptionData.courseShortDescription - Descripción corta
- * @param {number} inscriptionData.dateYear - Año actual
- * 
- * @returns {Promise<Object>} Respuesta del servidor
- * 
+ * @param inscriptionData - Datos de la inscripción
+ * @returns Respuesta del servidor
  * @template teamplate.html
  * 
  * @example
@@ -40,8 +31,8 @@ import { apiClient } from '../config/apiClient';
  *   courseShortDescription: 'Aprende React desde cero'
  * });
  */
-export const sendConfirmationEmail = (inscriptionData) => {
-    const emailPayload = {
+export const sendConfirmationEmail = (inscriptionData: InscriptionEmailData): Promise<{ message: string }> => {
+    const emailPayload: EmailPayload = {
         to: inscriptionData.email,
         subject: `Confirmación de tu Inscripción - ${inscriptionData.courseTitle}`,
         templateName: 'teamplate', // Template general
@@ -60,14 +51,8 @@ export const sendConfirmationEmail = (inscriptionData) => {
 /**
  * Envía un correo de confirmación de pago exitoso.
  * 
- * @param {Object} inscriptionData - Datos de la inscripción
- * @param {string} inscriptionData.email - Email del destinatario
- * @param {string} inscriptionData.nombre - Nombre del inscripto
- * @param {string} inscriptionData.apellido - Apellido del inscripto
- * @param {string} inscriptionData.courseTitle - Título del curso
- * 
- * @returns {Promise<Object>} Respuesta del servidor
- * 
+ * @param inscriptionData - Datos de la inscripción
+ * @returns Respuesta del servidor
  * @template paymentSuccess.html
  * 
  * @example
@@ -78,8 +63,8 @@ export const sendConfirmationEmail = (inscriptionData) => {
  *   courseTitle: 'Curso de React'
  * });
  */
-export const sendPaymentSuccessEmail = (inscriptionData) => {
-    const emailPayload = {
+export const sendPaymentSuccessEmail = (inscriptionData: InscriptionEmailData): Promise<{ message: string }> => {
+    const emailPayload: EmailPayload = {
         to: inscriptionData.email,
         subject: `¡Pago Confirmado! Tu curso "${inscriptionData.courseTitle}"`,
         templateName: 'paymentSuccess',
@@ -97,16 +82,9 @@ export const sendPaymentSuccessEmail = (inscriptionData) => {
  * 
  * Obtiene primero el link del curso desde el backend y luego envía el email.
  * 
- * @param {Object} inscriptionData - Datos de la inscripción
- * @param {string} inscriptionData.email - Email del destinatario
- * @param {string} inscriptionData.nombre - Nombre del inscripto
- * @param {string} inscriptionData.apellido - Apellido del inscripto
- * @param {string} inscriptionData.courseTitle - Título del curso
- * 
- * @returns {Promise<Object>} Respuesta del servidor
- * 
+ * @param inscriptionData - Datos de la inscripción
+ * @returns Respuesta del servidor
  * @throws {Error} Si el curso no tiene un link de acceso configurado
- * 
  * @template coursePaid.html
  * 
  * @example
@@ -117,26 +95,29 @@ export const sendPaymentSuccessEmail = (inscriptionData) => {
  *   courseTitle: 'Curso de React'
  * });
  */
-export const sendCoursePaidEmail = async (inscriptionData) => {
+export const sendCoursePaidEmail = async (inscriptionData: InscriptionEmailData): Promise<{ message: string }> => {
     // Obtener el coursePaid directamente usando el endpoint específico por título
     const encodedCourseTitle = encodeURIComponent(inscriptionData.courseTitle);
-    const courseResponse = await apiClient.get(`/courses/course-paid/${encodedCourseTitle}`);
-    const courseData = courseResponse.data;
 
-    if (!courseResponse?.success || !courseData?.coursePaid) {
+    // El interceptor de apiClient retorna directamente response.data
+    // Por lo tanto, courseData es CoursePaidResponse, no AxiosResponse<CoursePaidResponse>
+    const courseData = await apiClient.get(`/courses/course-paid/${encodedCourseTitle}`) as CoursePaidResponse;
+
+    if (!courseData?.success || !courseData?.data?.coursePaid) {
         throw new Error('El curso no tiene un link de acceso configurado.');
     }
 
-    const emailPayload = {
+    const emailPayload: EmailPayload = {
         to: inscriptionData.email,
-        subject: `¡Tu curso "${courseData.courseTitle}" está listo!`,
+        subject: `¡Tu curso \"${courseData.data.courseTitle}\" está listo!`,
         templateName: 'coursePaid',
         data: {
             name: `${inscriptionData.nombre} ${inscriptionData.apellido}`,
-            courseTitle: courseData.courseTitle,
-            coursePaid: courseData.coursePaid,
+            courseTitle: courseData.data.courseTitle,
+            coursePaid: courseData.data.coursePaid,
             year: new Date().getFullYear(),
         },
     };
+
     return apiClient.post('/email/send-email', emailPayload);
 };

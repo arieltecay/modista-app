@@ -63,7 +63,7 @@ export interface Testimonial {
     _id?: string;
     id?: string;
     name: string;
-    content: string;
+    description: string;
     rating?: number;
     courseTitle?: string;
     createdAt?: Date;

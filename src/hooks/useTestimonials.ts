@@ -1,12 +1,6 @@
 import { useEffect, useState } from 'react';
-import { getTestimonials, Testimonial as ServiceTestimonial } from '../services/testimonials';
+import { getTestimonials, Testimonial } from '../services/testimonials';
 import { TESTIMONIALS_CONFIG } from '../constants/testimonials.constants';
-
-// Alias local para compatibilidad con el componente
-export interface Testimonial extends Omit<ServiceTestimonial, 'content'> {
-    description: string; // Alias para 'content' por compatibilidad con componentes
-    content?: string;
-}
 
 interface UseTestimonialsReturn {
     testimonials: Testimonial[];
@@ -33,10 +27,8 @@ export const useTestimonials = (): UseTestimonialsReturn => {
         const fetchTestimonials = async () => {
             try {
                 const data = await getTestimonials();
-                // Mapear content a description para compatibilidad
                 const mapped = data.map(t => ({
                     ...t,
-                    description: t.content,
                     id: t.id || t._id || ''
                 })) as Testimonial[];
                 setTestimonials(mapped);

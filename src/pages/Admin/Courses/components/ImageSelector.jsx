@@ -19,6 +19,7 @@ const ImageSelector = ({ selectedImage, onImageSelect }) => {
     'perfil.jpg',
     'persona.jpeg',
     'ventana.jpeg',
+    'ChalecoFacil.jpeg',
     'WhatsApp Image 2025-10-26 at 12.40.50.jpeg',
     'WhatsApp Image 2025-10-26 at 12.41.35.jpeg',
     'WhatsApp Image 2025-10-26 at 12.41.36.jpeg',

@@ -15,6 +15,7 @@ export const AVAILABLE_IMAGES = [
   '/images/perfil.jpg',
   '/images/persona.jpeg',
   '/images/ventana.jpeg',
+  '/images/ChalecoFacil.jpeg',
   '/images/WhatsApp Image 2025-10-26 at 12.40.50.jpeg',
   '/images/WhatsApp Image 2025-10-26 at 12.41.35.jpeg',
   '/images/WhatsApp Image 2025-10-26 at 12.41.36.jpeg',

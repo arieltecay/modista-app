@@ -22,6 +22,7 @@ export const AVAILABLE_IMAGES = [
   '/images/WhatsApp Image 2025-10-26 at 12.41.361.jpeg',
   '/images/WhatsApp Image 2025-10-26 at 13.00.02.jpeg',
   '/images/PantalonSastrero.jpeg',
+  '/images/molderia_presencial.jpeg',
 ];
 
 /**

@@ -25,7 +25,8 @@ const ImageSelector = ({ selectedImage, onImageSelect }) => {
     'WhatsApp Image 2025-10-26 at 12.41.36.jpeg',
     'WhatsApp Image 2025-10-26 at 12.41.361.jpeg',
     'WhatsApp Image 2025-10-26 at 13.00.02.jpeg',
-    'PantalonSastrero.jpeg'
+    'PantalonSastrero.jpeg',
+    'molderia_presencial.jpeg',
   ];
 
   const handleImageClick = (imageName) => {

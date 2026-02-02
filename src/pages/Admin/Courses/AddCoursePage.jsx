@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { createCourse } from '../../../services/courses';
 import { defaultCourseValues } from './validation/courseValidation';
 import CourseForm from './components/CourseForm';
@@ -10,7 +10,16 @@ import toast from 'react-hot-toast';
  */
 const AddCoursePage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const isPresencialParam = queryParams.get('type') === 'presencial';
+
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const initialValues = {
+    ...defaultCourseValues,
+    isPresencial: isPresencialParam
+  };
 
   const handleSubmit = async (courseData) => {
     setIsSubmitting(true);
@@ -53,7 +62,7 @@ const AddCoursePage = () => {
         {/* Formulario */}
         <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-lg">
           <CourseForm
-            initialData={defaultCourseValues}
+            initialData={initialValues}
             onSubmit={handleSubmit}
             isEditing={false}
             isSubmitting={isSubmitting}

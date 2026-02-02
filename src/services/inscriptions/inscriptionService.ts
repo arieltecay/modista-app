@@ -60,10 +60,11 @@ export const getInscriptions = (
     sortOrder?: 'asc' | 'desc',
     search?: string,
     paymentStatusFilter: 'all' | 'paid' | 'pending' = 'all',
-    courseFilter?: string
+    courseFilter?: string,
+    excludeWorkshops?: boolean
 ): Promise<PaginatedResponse<Inscription>> =>
     apiClient.get('/inscriptions', {
-        params: { page, limit, sortBy, sortOrder, search, paymentStatusFilter, courseFilter },
+        params: { page, limit, sortBy, sortOrder, search, paymentStatusFilter, courseFilter, excludeWorkshops: excludeWorkshops ? 'true' : 'false' },
     });
 
 /**
@@ -74,8 +75,10 @@ export const getInscriptions = (
  * @example
  * const { total, paid, pending } = await getInscriptionsCount();
  */
-export const getInscriptionsCount = (): Promise<InscriptionsCount> =>
-    apiClient.get('/inscriptions/count');
+export const getInscriptionsCount = (excludeWorkshops?: boolean): Promise<InscriptionsCount> =>
+    apiClient.get('/inscriptions/count', {
+        params: { excludeWorkshops: excludeWorkshops ? 'true' : 'false' }
+    });
 
 /**
  * Actualiza el estado de pago de una inscripción.
@@ -96,6 +99,21 @@ export const updateInscriptionPaymentStatus = (
     });
 
 /**
+ * Actualiza el monto de la seña de una inscripción.
+ * 
+ * @param inscriptionId - El ID de la inscripción
+ * @param depositAmount - El monto de la seña
+ * @returns Una promesa que resuelve al objeto de la inscripción actualizada
+ */
+export const updateInscriptionDeposit = (
+    inscriptionId: string,
+    depositAmount: number
+): Promise<Inscription> =>
+    apiClient.patch(`/inscriptions/${inscriptionId}/deposit`, {
+        depositAmount
+    });
+
+/**
  * Exporta inscripciones a un archivo Excel.
  * Descarga automáticamente el archivo en el navegador.
  * 
@@ -110,7 +128,8 @@ export const updateInscriptionPaymentStatus = (
 export const exportInscriptions = async (
     paymentStatusFilter: 'all' | 'paid' | 'pending' = 'all',
     search?: string,
-    courseFilter?: string
+    courseFilter?: string,
+    excludeWorkshops?: boolean
 ): Promise<void> => {
     const token = localStorage.getItem('token');
 
@@ -125,7 +144,7 @@ export const exportInscriptions = async (
             headers: {
                 Authorization: `Bearer ${token}`,
             },
-            params: { paymentStatusFilter, search, courseFilter },
+            params: { paymentStatusFilter, search, courseFilter, excludeWorkshops: excludeWorkshops ? 'true' : 'false' },
             responseType: 'blob', // ¡Muy importante para manejar archivos!
         });
 

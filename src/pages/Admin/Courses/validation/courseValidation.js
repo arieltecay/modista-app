@@ -96,6 +96,15 @@ export const courseSchema = yup.object({
     .optional()
     .url('El link del curso pagado debe ser una URL válida')
     .transform((value) => value === '' ? undefined : value),
+
+  isPresencial: yup
+    .boolean()
+    .default(false),
+
+  status: yup
+    .string()
+    .oneOf(['active', 'inactive'], 'Estado inválido')
+    .default('active'),
 });
 
 /**
@@ -111,6 +120,8 @@ export const defaultCourseValues = {
   deeplink: '',
   videoUrl: '',
   coursePaid: '',
+  isPresencial: false,
+  status: 'active',
 };
 
 /**

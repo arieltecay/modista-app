@@ -64,13 +64,20 @@ export const sendConfirmationEmail = (inscriptionData: InscriptionEmailData): Pr
  * });
  */
 export const sendPaymentSuccessEmail = (inscriptionData: InscriptionEmailData): Promise<{ message: string }> => {
+    const turno = (inscriptionData as any).turnoId;
+    let details = '';
+    if (turno) {
+        details = `${turno.diaSemana} de ${turno.horaInicio} a ${turno.horaFin} hs`;
+    }
+
     const emailPayload: EmailPayload = {
         to: inscriptionData.email,
-        subject: `¡Pago Confirmado! Tu curso "${inscriptionData.courseTitle}"`,
+        subject: `¡Confirmación de tu lugar! ${inscriptionData.courseTitle}`,
         templateName: 'paymentSuccess',
         data: {
             name: `${inscriptionData.nombre} ${inscriptionData.apellido}`,
             courseTitle: inscriptionData.courseTitle,
+            details: details,
             year: new Date().getFullYear(),
         },
     };
@@ -107,14 +114,21 @@ export const sendCoursePaidEmail = async (inscriptionData: InscriptionEmailData)
         throw new Error('El curso no tiene un link de acceso configurado.');
     }
 
+    const turno = (inscriptionData as any).turnoId;
+    let details = '';
+    if (turno) {
+        details = `${turno.diaSemana} de ${turno.horaInicio} a ${turno.horaFin} hs`;
+    }
+
     const emailPayload: EmailPayload = {
         to: inscriptionData.email,
-        subject: `¡Tu curso \"${courseData.data.courseTitle}\" está listo!`,
+        subject: `¡Felicidades! Estás inscripto en "${courseData.data.courseTitle}"`,
         templateName: 'coursePaid',
         data: {
             name: `${inscriptionData.nombre} ${inscriptionData.apellido}`,
             courseTitle: courseData.data.courseTitle,
             coursePaid: courseData.data.coursePaid,
+            details: details,
             year: new Date().getFullYear(),
         },
     };

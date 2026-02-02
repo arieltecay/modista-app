@@ -11,6 +11,9 @@ import InscriptionsAdminPage from './pages/Admin/Inscriptions/index.jsx';
 import CoursesAdminPage from './pages/Admin/Courses/index.jsx';
 import AddCoursePage from './pages/Admin/Courses/AddCoursePage.jsx';
 import EditCoursePage from './pages/Admin/Courses/EditCoursePage.jsx';
+import AdminCoursePage from './pages/Admin/Courses/AdminCourseSelector.jsx';
+import WorkshopDetailPage from './pages/Admin/Courses/WorkshopDetailPage.jsx';
+import WorkshopSchedulePage from './pages/Admin/Courses/WorkshopSchedulePage.jsx';
 import LoginPage from './pages/Auth/LoginPage.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import { Toaster } from 'react-hot-toast';
@@ -56,6 +59,23 @@ function App() {
           <Route path="/admin/courses/edit/:id" element={
             <ProtectedRoute requireAdmin={true}>
               <EditCoursePage />
+            </ProtectedRoute>
+          } />
+
+          {/* Nuevas rutas de Gestión de Talleres Presenciales */}
+          <Route path="/admin/workshops" element={
+            <ProtectedRoute requireAdmin={true}>
+              <AdminCoursePage />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/workshops/:id" element={
+            <ProtectedRoute requireAdmin={true}>
+              <WorkshopDetailPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/workshops/:id/schedule" element={
+            <ProtectedRoute requireAdmin={true}>
+              <WorkshopSchedulePage />
             </ProtectedRoute>
           } />
 

@@ -1,5 +1,7 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
+import CourseLinks from './components/CourseLinks';
 
 /**
  * Componente de tabla desktop para mostrar cursos
@@ -12,6 +14,7 @@ const CoursesListDesktop = ({
   handleEdit,
   handleDelete
 }) => {
+  const navigate = useNavigate();
   const formatPrice = (price) => {
     return new Intl.NumberFormat('es-AR', {
       style: 'currency',
@@ -56,7 +59,7 @@ const CoursesListDesktop = ({
 
   return (
     <div className="hidden md:block">
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto shadow-sm border border-gray-100 rounded-xl">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
@@ -92,6 +95,18 @@ const CoursesListDesktop = ({
               </th>
               <th
                 scope="col"
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                Tipo
+              </th>
+              <th
+                scope="col"
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                Estado
+              </th>
+              <th
+                scope="col"
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                 onClick={() => handleSort('createdAt')}
               >
@@ -100,8 +115,11 @@ const CoursesListDesktop = ({
                   <span>{getSortIcon('createdAt')}</span>
                 </div>
               </th>
-              <th scope="col" className="relative px-6 py-3">
-                <span className="sr-only">Acciones</span>
+              <th
+                scope="col"
+                className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                Acciones
               </th>
             </tr>
           </thead>
@@ -124,6 +142,8 @@ const CoursesListDesktop = ({
                       <div className="text-sm text-gray-500 max-w-xs truncate">
                         {course.shortDescription}
                       </div>
+                      {/* Enlaces opcionales */}
+                      <CourseLinks course={course} variant="desktop" />
                     </div>
                   </div>
                 </td>
@@ -135,21 +155,56 @@ const CoursesListDesktop = ({
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
                   {formatPrice(course.price)}
                 </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  {course.isPresencial ? (
+                    <span className="inline-flex px-2 py-1 text-xs font-bold rounded-full bg-emerald-100 text-emerald-700">
+                      PRESENCIAL
+                    </span>
+                  ) : (
+                    <span className="inline-flex px-2 py-1 text-xs font-bold rounded-full bg-blue-50 text-blue-600">
+                      ONLINE
+                    </span>
+                  )}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  {course.status === 'active' ? (
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                      <span className="w-2 h-2 mr-1.5 bg-green-500 rounded-full"></span>
+                      Activo
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                      <span className="w-2 h-2 mr-1.5 bg-gray-400 rounded-full"></span>
+                      Oculto
+                    </span>
+                  )}
+                </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   {formatDate(course.createdAt)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <div className="flex justify-end space-x-2">
+                  <div className="flex justify-end items-center space-x-3">
+                    {course.isPresencial && (
+                      <button
+                        onClick={() => navigate(`/admin/workshops/${course.uuid || course.id}/schedule`)}
+                        className="text-emerald-600 hover:text-emerald-900 p-1.5 rounded-lg hover:bg-emerald-50 border border-transparent hover:border-emerald-200 transition-all"
+                        title="Gestionar Horarios / Agenda"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                      </button>
+                    )}
                     <button
                       onClick={() => handleEdit(course._id)}
-                      className="text-indigo-600 hover:text-indigo-900 p-1 rounded hover:bg-indigo-50"
+                      className="text-indigo-600 hover:text-indigo-900 p-1.5 rounded-lg hover:bg-indigo-50 border border-transparent hover:border-indigo-200 transition-all"
                       title="Editar curso"
                     >
                       <PencilIcon className="h-5 w-5" />
                     </button>
                     <button
                       onClick={() => handleDelete(course._id)}
-                      className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50"
+                      className="text-red-600 hover:text-red-900 p-1.5 rounded-lg hover:bg-red-50 border border-transparent hover:border-red-200 transition-all"
                       title="Eliminar curso"
                     >
                       <TrashIcon className="h-5 w-5" />

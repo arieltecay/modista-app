@@ -1,0 +1,22 @@
+{
+  "_id": {
+    "$oid": "68ee37e103c6b9c5cc3d98a2"
+  },
+  "title": "Ropa para niños",
+  "shortDescription": "Aprende a hacer una remera para tus hijos, en tan solo dos clases, desde el molde a medida hasta confeccionarla con tu propia máquina familiar.",
+  "longDescription": "¡Tu camino para coser ropa infantil profesional comienza aquí!\n\nEste curso de costura para niños te llevará desde los cimientos hasta tener tu primera prenda lista con acabados de alta calidad. Perfecto para emprendedores o quienes desean crear el vestuario de los más pequeños.\n\n📌 Temario del curso:\n\nEn este curso de ropa para niños aprenderás paso a paso a crear prendas cómodas y con terminaciones profesionales.\n\nComenzaremos con las bases del moldería, tomando medidas exactas y construyendo los moldes base del cuerpo y de mangas, esenciales para cualquier diseño. Luego, en la segunda clase, aplicarás lo aprendido confeccionando tu primera prenda infantil: una remera o un buzo, aprendiendo a transformar moldes, cortar correctamente las telas y calcular el descuento por elasticidad.\n\nIdeal para quienes quieren empezar un emprendimiento textil, mejorar su técnica o simplemente disfrutar cosiendo para sus hijos. ¡Con este curso vas a entender las bases que lo son todo!\n\nClase 1 – Bases que lo son todo\n• Toma de medidas exactas.\n• Molde base de cuerpo (delantero y trasero).\n• Molde de manga base para todo tipo de prendas.\n\nClase 2 – Primera prenda lista: remera o buzo infantil\n• Transformación de moldes base.\n• Cómo cortar la tela y calcular el descuento por elasticidad.\n• Confección y terminaciones profesionales.\n\n¡Inscríbete y empieza a coser con confianza y precisión!",
+  "imageUrl": "/images/hilos.jpeg",
+  "category": "test",
+  "price": 9999,
+  "createdAt": {
+    "$date": "2025-10-14T11:45:37.104Z"
+  },
+  "updatedAt": {
+    "$date": "2025-10-19T13:10:35.452Z"
+  },
+  "__v": 0,
+  "videoUrl": null,
+  "coursePaid": "https://www.youtube.com/playlist?list=PLlwr7wiLIYqrpV_y37IWAP42x7A1h3_x9",
+  "deeplink": null,
+  "uuid": "0a266266-121d-4c70-8286-6e2c0b0f532b"
+}

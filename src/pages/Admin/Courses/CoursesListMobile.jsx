@@ -1,10 +1,13 @@
 import React from 'react';
-import { PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { useNavigate } from 'react-router-dom';
+import { PencilIcon, TrashIcon, CalendarIcon } from '@heroicons/react/24/outline';
+import CourseLinks from './components/CourseLinks';
 
 /**
  * Componente de lista mobile para mostrar cursos
  */
 const CoursesListMobile = ({ courses, loading, handleEdit, handleDelete }) => {
+  const navigate = useNavigate();
   const formatPrice = (price) => {
     return new Intl.NumberFormat('es-AR', {
       style: 'currency',
@@ -78,7 +81,16 @@ const CoursesListMobile = ({ courses, loading, handleEdit, handleDelete }) => {
                 </div>
 
                 {/* Botones de acción */}
-                <div className="flex space-x-2 ml-2">
+                <div className="flex space-x-1 ml-2">
+                  {course.isPresencial && (
+                    <button
+                      onClick={() => navigate(`/admin/workshops/${course.uuid || course.id}/schedule`)}
+                      className="p-2 text-emerald-600 hover:text-emerald-900 hover:bg-emerald-50 rounded-lg"
+                      title="Gestionar Agenda"
+                    >
+                      <CalendarIcon className="h-5 w-5" />
+                    </button>
+                  )}
                   <button
                     onClick={() => handleEdit(course._id)}
                     className="p-2 text-indigo-600 hover:text-indigo-900 hover:bg-indigo-50 rounded-lg"
@@ -102,6 +114,11 @@ const CoursesListMobile = ({ courses, loading, handleEdit, handleDelete }) => {
                   <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
                     {course.category}
                   </span>
+                  {course.isPresencial && (
+                    <span className="inline-flex px-2 py-1 text-xs font-bold rounded-full bg-emerald-100 text-emerald-700">
+                      PRESENCIAL
+                    </span>
+                  )}
                   <span className="text-sm font-medium text-gray-900">
                     {formatPrice(course.price)}
                   </span>
@@ -112,30 +129,7 @@ const CoursesListMobile = ({ courses, loading, handleEdit, handleDelete }) => {
               </div>
 
               {/* Enlaces opcionales */}
-              {(course.deeplink || course.videoUrl) && (
-                <div className="mt-2 flex space-x-2">
-                  {course.deeplink && (
-                    <a
-                      href={course.deeplink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-xs text-blue-600 hover:text-blue-800 underline"
-                    >
-                      WhatsApp
-                    </a>
-                  )}
-                  {course.videoUrl && (
-                    <a
-                      href={course.videoUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-xs text-red-600 hover:text-red-800 underline"
-                    >
-                      Video
-                    </a>
-                  )}
-                </div>
-              )}
+              <CourseLinks course={course} variant="mobile" />
             </div>
           </div>
         </div>

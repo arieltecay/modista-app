@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { createInscription } from '../../services/inscriptions';
 import { sendConfirmationEmail } from '../../services/email';
 import Spinner from '../Spinner';
+import TurnoSelector from '../Courses/TurnoSelector';
 import { validateNombre, validateApellido, validateEmail, validateCelular } from '../../utils/formValidations';
 
 const InscriptionForm = ({ course }) => {
@@ -11,6 +12,7 @@ const InscriptionForm = ({ course }) => {
     email: '',
     celular: '',
   });
+  const [selectedTurnoId, setSelectedTurnoId] = useState(null);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [formMessage, setFormMessage] = useState(null);
@@ -29,6 +31,10 @@ const InscriptionForm = ({ course }) => {
 
     const celularError = validateCelular(formData.celular);
     if (celularError) newErrors.celular = celularError;
+
+    if (course?.isPresencial && !selectedTurnoId) {
+      newErrors.turno = 'Por favor, selecciona un horario disponible';
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -66,6 +72,7 @@ const InscriptionForm = ({ course }) => {
         courseShortDescription: course?.shortDescription || 'Descripción corta por defecto',
         courseDeeplink: course?.deeplink || 'https://modista.app', // Añadimos un deeplink por defecto
         dateYear: new Date().getFullYear(),
+        turnoId: selectedTurnoId,
       };
 
       // 2. Guardar la inscripción en la base de datos
@@ -178,6 +185,20 @@ const InscriptionForm = ({ course }) => {
                 />
                 {errors.celular && <p className="text-red-500 text-xs mt-1">{errors.celular}</p>}
               </div>
+
+              {course?.isPresencial && (
+                <div className="pt-2">
+                  <TurnoSelector
+                    courseId={course.courseId || course._id || course.id}
+                    onSelect={(id) => {
+                      setSelectedTurnoId(id);
+                      setErrors(prev => ({ ...prev, turno: null }));
+                    }}
+                    selectedTurnoId={selectedTurnoId}
+                  />
+                  {errors.turno && <p className="text-red-500 text-sm mt-1">{errors.turno}</p>}
+                </div>
+              )}
 
               <div className="flex flex-col items-center space-y-4 pt-4">
                 <button

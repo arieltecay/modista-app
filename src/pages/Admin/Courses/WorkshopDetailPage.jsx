@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getInscriptions, updateInscriptionPaymentStatus, updateInscriptionDeposit } from '../../../services/inscriptions/inscriptionService';
+import { getWorkshopInscriptions, updateInscriptionPaymentStatus, updateInscriptionDeposit } from '../../../services/inscriptions';
 import { sendPaymentSuccessEmail } from '../../../services/email/emailService';
 import { getCoursesAdmin } from '../../../services/courses/coursesService';
+import { getTurnosByCourse } from '../../../services/turnos/turnoService';
 import toast from 'react-hot-toast';
 import Spinner from '../../../components/Spinner';
 import DepositModal from '../Inscriptions/components/DepositModal';
 
-// Reutilizamos componentes del dashboard original para mantener consistencia
-import InscriptionsTableDesktop from '../Inscriptions/InscriptionsTableDesktop';
-import InscriptionsListMobile from '../Inscriptions/InscriptionsListMobile';
+// Componentes especializados para talleres para segregar lógica de cursos online
+import WorkshopInscriptionsTable from './components/WorkshopInscriptionsTable';
+import WorkshopInscriptionsList from './components/WorkshopInscriptionsList';
 import Pagination from '../Inscriptions/Pagination';
 
 const WorkshopDetailPage = () => {
@@ -23,6 +24,9 @@ const WorkshopDetailPage = () => {
   const [totalItems, setTotalItems] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
   const [paymentFilter, setPaymentFilter] = useState('all');
+  const [turnoFilter, setTurnoFilter] = useState('all');
+  const [availableTurnos, setAvailableTurnos] = useState([]);
+  const [sortConfig, setSortConfig] = useState({ key: 'fechaInscripcion', direction: 'desc' });
 
   // Estado para el modal de seña
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
@@ -45,16 +49,20 @@ const WorkshopDetailPage = () => {
           return;
         }
 
-        // 2. Filtrar inscripciones por UUID del curso (exacto)
-        const response = await getInscriptions(
-          currentPage,
-          itemsPerPage,
-          'fechaInscripcion',
-          'desc',
-          '',  // sin búsqueda de texto
-          paymentFilter,
-          currentCourse.uuid || currentCourse.id  // Filtrar por UUID exacto del curso
-        );
+        // 2. Obtener turnos del taller
+        const { data: turnos } = await getTurnosByCourse(currentCourse.uuid || currentCourse.id);
+        setAvailableTurnos(turnos || []);
+
+        // 3. Filtrar inscripciones usando el servicio dedicado para talleres
+        const response = await getWorkshopInscriptions(currentCourse.uuid || currentCourse.id, {
+          page: currentPage,
+          limit: itemsPerPage,
+          sortBy: sortConfig.key,
+          sortOrder: sortConfig.direction,
+          search: searchTerm,
+          paymentStatusFilter: paymentFilter,
+          turnoFilter: turnoFilter !== 'all' ? turnoFilter : undefined
+        });
         setInscriptions(response.data);
         setTotalItems(response.total);
       } catch (error) {
@@ -65,7 +73,7 @@ const WorkshopDetailPage = () => {
     };
 
     fetchWorkshopData();
-  }, [id, currentPage, itemsPerPage, searchTerm, paymentFilter]);
+  }, [id, currentPage, itemsPerPage, searchTerm, paymentFilter, turnoFilter, sortConfig]);
 
   const handlePaymentStatusUpdate = async (inscriptionId, newStatus) => {
     try {
@@ -113,6 +121,15 @@ const WorkshopDetailPage = () => {
     } finally {
       setIsSubmittingDeposit(false);
     }
+  };
+
+  const handleSort = (key) => {
+    let direction = 'asc';
+    if (sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    setSortConfig({ key, direction });
+    setCurrentPage(1);
   };
 
   if (loading && !course) return <div className="min-h-screen flex items-center justify-center"><Spinner /></div>;
@@ -167,26 +184,65 @@ const WorkshopDetailPage = () => {
               <option value="paid">Pagados</option>
               <option value="pending">Pendientes</option>
             </select>
+            <select
+              value={turnoFilter}
+              onChange={(e) => {
+                setTurnoFilter(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
+            >
+              <option value="all">Todos los horarios</option>
+              {availableTurnos.map(turno => (
+                <option key={turno._id} value={turno._id}>
+                  {turno.diaSemana} - {turno.horaInicio} hs
+                </option>
+              ))}
+            </select>
           </div>
 
           {/* Listado */}
           <div className="p-0">
-            <InscriptionsTableDesktop
-              inscriptions={inscriptions}
-              loading={loading}
-              handlePaymentStatusUpdate={handlePaymentStatusUpdate}
-              sortConfig={{ key: 'fechaInscripcion', direction: 'desc' }}
-              showDepositFeature={true}
-              onDepositClick={handleDepositClick}
-            />
-            <InscriptionsListMobile
-              inscriptions={inscriptions}
-              loading={loading}
-              handlePaymentStatusUpdate={handlePaymentStatusUpdate}
-              handleSendCourseEmail={null} // O el que corresponda
-              showDepositFeature={true}
-              onDepositClick={handleDepositClick}
-            />
+            {inscriptions.length > 0 ? (
+              <>
+                <WorkshopInscriptionsTable
+                  inscriptions={inscriptions}
+                  loading={loading}
+                  handlePaymentStatusUpdate={handlePaymentStatusUpdate}
+                  sortConfig={sortConfig}
+                  handleSort={handleSort}
+                  onDepositClick={handleDepositClick}
+                />
+                <WorkshopInscriptionsList
+                  inscriptions={inscriptions}
+                  loading={loading}
+                  handlePaymentStatusUpdate={handlePaymentStatusUpdate}
+                  onDepositClick={handleDepositClick}
+                />
+              </>
+            ) : (
+              <div className="flex flex-col items-center justify-center p-12 text-center bg-white">
+                <div className="bg-gray-100 p-4 rounded-full mb-4">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-bold text-gray-800 mb-2">No hay inscriptos</h3>
+                <p className="text-gray-500 max-w-sm">No se encontraron inscripciones que coincidan con los filtros seleccionados para este taller.</p>
+                {(searchTerm || paymentFilter !== 'all' || turnoFilter !== 'all') && (
+                  <button
+                    onClick={() => {
+                      setSearchTerm('');
+                      setPaymentFilter('all');
+                      setTurnoFilter('all');
+                    }}
+                    className="mt-6 text-indigo-600 font-semibold hover:text-indigo-800 transition-colors"
+                  >
+                    Limpiar todos los filtros
+                  </button>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Paginación */}

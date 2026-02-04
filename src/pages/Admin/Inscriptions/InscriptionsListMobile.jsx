@@ -7,7 +7,8 @@ const InscriptionsListMobile = ({
   handlePaymentStatusUpdate,
   handleSendCourseEmail,
   showDepositFeature = false,
-  onDepositClick
+  onDepositClick,
+  hideCourseTitle = false
 }) => {
   if (loading) {
     return <div className="flex justify-center items-center p-10"><Spinner /></div>;
@@ -16,16 +17,23 @@ const InscriptionsListMobile = ({
   return (
     <div className="md:hidden">
       {inscriptions.map((inscription) => (
-        <div key={inscription._id} className="bg-white p-4 rounded-lg shadow mb-4">
+        <div key={inscription._id} className="bg-white p-4 rounded-lg shadow mb-4 border border-gray-100">
           <div className="flex justify-between items-start mb-2">
-            <p className="font-bold text-gray-900 whitespace-normal">{inscription.nombre} {inscription.apellido}</p>
+            <div>
+              <p className="font-bold text-gray-900 whitespace-normal">{inscription.nombre} {inscription.apellido}</p>
+              {inscription.turnoId && typeof inscription.turnoId === 'object' && (
+                <p className="text-xs text-indigo-600 font-bold bg-indigo-50 inline-block px-1.5 py-0.5 rounded mt-0.5">
+                  {inscription.turnoId.diaSemana} - {inscription.turnoId.horaInicio} hs
+                </p>
+              )}
+            </div>
             <span className="text-xs text-gray-600 whitespace-nowrap">{new Date(inscription.fechaInscripcion).toLocaleDateString('es-AR')}</span>
           </div>
-          <p className="text-sm text-gray-700 break-all">{inscription.email}</p>
-          <p className="text-sm text-gray-700">{inscription.celular}</p>
-          <div className="mt-2 flex justify-between items-center">
+          <p className="text-sm text-gray-500 break-all">{inscription.email}</p>
+          <p className="text-sm text-gray-500">{inscription.celular}</p>
+          <div className="mt-3 flex justify-between items-end">
             <div>
-              <p className="text-sm font-medium text-gray-700">{inscription.courseTitle || 'N/A'}</p>
+              {!hideCourseTitle && <p className="text-sm font-medium text-gray-700 mb-1">{inscription.courseTitle || 'N/A'}</p>}
               <div className="flex items-center gap-2">
                 <p className="text-sm text-green-600 font-bold">${inscription.coursePrice || 0}</p>
                 {showDepositFeature && inscription.depositAmount > 0 && (
@@ -37,8 +45,8 @@ const InscriptionsListMobile = ({
             </div>
             <div className="flex flex-col items-end gap-2">
               <span className={`px-2 py-1 text-xs rounded-full border ${inscription.paymentStatus === 'paid'
-                  ? 'bg-green-100 text-green-800 border-green-200'
-                  : 'bg-yellow-100 text-yellow-800 border-yellow-200'
+                ? 'bg-green-100 text-green-800 border-green-200'
+                : 'bg-yellow-100 text-yellow-800 border-yellow-200'
                 }`}>
                 {inscription.paymentStatus === 'paid' ? '✅ Pagado' : '⏳ Pendiente'}
               </span>

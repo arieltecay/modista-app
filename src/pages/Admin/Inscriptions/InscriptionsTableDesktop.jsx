@@ -31,7 +31,8 @@ const InscriptionsTableDesktop = ({
   handleSort,
   handleSendCourseEmail,
   showDepositFeature = false,
-  onDepositClick
+  onDepositClick,
+  hideCourseTitle = false
 }) => {
   if (loading) {
     return <div className="flex justify-center items-center p-10"><Spinner /></div>;
@@ -46,7 +47,8 @@ const InscriptionsTableDesktop = ({
               <SortableHeader name="nombre" sortConfig={sortConfig} onSort={handleSort}>Nombre Completo</SortableHeader>
               <SortableHeader name="email" sortConfig={sortConfig} onSort={handleSort}>Email</SortableHeader>
               <SortableHeader name="celular" sortConfig={sortConfig} onSort={handleSort}>Celular</SortableHeader>
-              <SortableHeader name="courseTitle" sortConfig={sortConfig} onSort={handleSort}>Taller</SortableHeader>
+              {!hideCourseTitle && <SortableHeader name="courseTitle" sortConfig={sortConfig} onSort={handleSort}>Taller</SortableHeader>}
+              <SortableHeader name="horario" sortConfig={sortConfig} onSort={handleSort}>Horario</SortableHeader>
               <SortableHeader name="coursePrice" sortConfig={sortConfig} onSort={handleSort}>Precio</SortableHeader>
               {showDepositFeature && <SortableHeader name="depositAmount" sortConfig={sortConfig} onSort={handleSort}>Seña</SortableHeader>}
               <SortableHeader name="paymentStatus" sortConfig={sortConfig} onSort={handleSort}>Estado Pago</SortableHeader>
@@ -66,12 +68,18 @@ const InscriptionsTableDesktop = ({
                 <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                   <p className="text-gray-900 whitespace-no-wrap">{inscription.celular}</p>
                 </td>
+                {!hideCourseTitle && (
+                  <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                    <p className="text-gray-900 font-medium">{inscription.courseTitle || 'N/A'}</p>
+                  </td>
+                )}
                 <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                  <p className="text-gray-900 font-medium">{inscription.courseTitle || 'N/A'}</p>
-                  {inscription.turnoId && typeof inscription.turnoId === 'object' && (
-                    <p className="text-xs text-indigo-600 font-bold bg-indigo-50 inline-block px-1.5 py-0.5 rounded mt-1">
+                  {inscription.turnoId && typeof inscription.turnoId === 'object' ? (
+                    <p className="text-xs text-indigo-600 font-bold bg-indigo-50 inline-block px-1.5 py-0.5 rounded">
                       {inscription.turnoId.diaSemana} - {inscription.turnoId.horaInicio} hs
                     </p>
+                  ) : (
+                    <span className="text-gray-400 italic">No asignado</span>
                   )}
                 </td>
                 <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">

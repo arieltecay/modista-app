@@ -3,7 +3,7 @@ import { apiClient } from '../config/apiClient';
 /**
  * Obtener turnos por curso (público)
  */
-export const getTurnosByCourse = (courseId: string) =>
+export const getTurnosByCourse = (courseId: string): Promise<any[]> =>
   apiClient.get(`/turnos/course/${courseId}`);
 
 /**

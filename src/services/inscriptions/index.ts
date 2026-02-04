@@ -6,6 +6,7 @@
  */
 
 export * from './inscriptionService';
+export * from './workshopInscriptionService';
 export type {
     Inscription,
     CreateInscriptionData,

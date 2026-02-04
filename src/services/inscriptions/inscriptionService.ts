@@ -20,6 +20,13 @@ import type {
     InscriptionsCount
 } from '../types';
 
+export type {
+    Inscription,
+    CreateInscriptionData,
+    PaginatedResponse,
+    InscriptionsCount
+};
+
 /**
  * Registra una nueva inscripción.
  * 
@@ -53,19 +60,48 @@ export const createInscription = (formData: CreateInscriptionData): Promise<Insc
  * @example
  * const { data, totalPages } = await getInscriptions(1, 10, 'createdAt', 'desc', '', 'all');
  */
-export const getInscriptions = (
-    page: number = 1,
-    limit: number = 10,
-    sortBy?: string,
-    sortOrder?: 'asc' | 'desc',
-    search?: string,
-    paymentStatusFilter: 'all' | 'paid' | 'pending' = 'all',
-    courseFilter?: string,
-    excludeWorkshops?: boolean
-): Promise<PaginatedResponse<Inscription>> =>
-    apiClient.get('/inscriptions', {
-        params: { page, limit, sortBy, sortOrder, search, paymentStatusFilter, courseFilter, excludeWorkshops: excludeWorkshops ? 'true' : 'false' },
+export interface GetInscriptionsParams {
+    page?: number;
+    limit?: number;
+    sortBy?: string;
+    sortOrder?: 'asc' | 'desc';
+    search?: string;
+    paymentStatusFilter?: 'all' | 'paid' | 'pending';
+    courseFilter?: string;
+    turnoFilter?: string;
+    excludeWorkshops?: boolean;
+}
+
+/**
+ * Obtiene una lista paginada de inscripciones.
+ */
+export const getInscriptions = (params: GetInscriptionsParams): Promise<PaginatedResponse<Inscription>> => {
+    const {
+        page = 1,
+        limit = 10,
+        sortBy,
+        sortOrder,
+        search,
+        paymentStatusFilter = 'all',
+        courseFilter,
+        turnoFilter,
+        excludeWorkshops = false
+    } = params;
+
+    return apiClient.get('/inscriptions', {
+        params: {
+            page,
+            limit,
+            sortBy,
+            sortOrder,
+            search,
+            paymentStatusFilter,
+            courseFilter,
+            turnoFilter,
+            excludeWorkshops: excludeWorkshops ? 'true' : 'false'
+        },
     });
+};
 
 /**
  * Obtiene el recuento de inscripciones totales, pagadas y pendientes.

@@ -79,16 +79,16 @@ const InscriptionsAdminPage = () => {
     const fetchInscriptions = async () => {
       setLoading(true);
       try {
-        const data = await getInscriptions(
-          currentPage,
-          itemsPerPage,
-          sortConfig.key,
-          sortConfig.direction,
-          debouncedSearchTerm,
+        const data = await getInscriptions({
+          page: currentPage,
+          limit: itemsPerPage,
+          sortBy: sortConfig.key,
+          sortOrder: sortConfig.direction,
+          search: debouncedSearchTerm,
           paymentStatusFilter,
-          debouncedCourseFilter,
-          true // excludeWorkshops - Solo cursos online en dashboard principal
-        );
+          courseFilter: debouncedCourseFilter,
+          excludeWorkshops: true
+        });
         setInscriptions(data.data);
         setTotalItems(data.total);
       } catch (err) {

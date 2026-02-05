@@ -49,8 +49,8 @@ const WorkshopDetailPage = () => {
           return;
         }
 
-        // 2. Obtener turnos del taller
-        const { data: turnos } = await getTurnosByCourse(currentCourse.uuid || currentCourse.id);
+        // 2. Obtener turnos del taller (pasando true para admin)
+        const { data: turnos } = await getTurnosByCourse(currentCourse.uuid || currentCourse.id, true);
         setAvailableTurnos(turnos || []);
 
         // 3. Filtrar inscripciones usando el servicio dedicado para talleres

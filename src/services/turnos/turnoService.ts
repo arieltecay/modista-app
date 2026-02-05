@@ -3,8 +3,8 @@ import { apiClient } from '../config/apiClient';
 /**
  * Obtener turnos por curso (público)
  */
-export const getTurnosByCourse = (courseId: string): Promise<any[]> =>
-  apiClient.get(`/turnos/course/${courseId}`);
+export const getTurnosByCourse = (courseId: string, admin: boolean = false): Promise<any> =>
+  apiClient.get(`/turnos/course/${courseId}${admin ? '?admin=true' : ''}`);
 
 /**
  * Crear un nuevo turno (Admin)

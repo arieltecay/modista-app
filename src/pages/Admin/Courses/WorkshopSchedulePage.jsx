@@ -30,7 +30,7 @@ const WorkshopSchedulePage = () => {
         const foundCourse = courses.data.find(c => c._id === id || c.uuid === id);
         setCourse(foundCourse);
 
-        const response = await getTurnosByCourse(id);
+        const response = await getTurnosByCourse(id, true);
         // Asegurar que turnos sea siempre un arreglo
         const turnosData = Array.isArray(response) ? response : (response?.data || []);
         setTurnos(turnosData);

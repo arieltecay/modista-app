@@ -115,15 +115,13 @@ const WorkshopInscriptionsTable = ({
                       >
                         Completar Pago
                       </button>
-                      {!inscription.depositAmount && (
-                        <button
-                          onClick={() => onDepositClick(inscription)}
-                          className="w-full bg-white text-indigo-600 border border-indigo-200 px-3 py-1.5 text-xs rounded-lg font-bold hover:bg-indigo-50 transition-all active:scale-95"
-                          disabled={loading}
-                        >
-                          Cargar Seña
-                        </button>
-                      )}
+                      <button
+                        onClick={() => onDepositClick(inscription)}
+                        className="w-full bg-white text-indigo-600 border border-indigo-200 px-3 py-1.5 text-xs rounded-lg font-bold hover:bg-indigo-50 transition-all active:scale-95"
+                        disabled={loading}
+                      >
+                        {inscription.depositAmount ? 'Modificar Seña' : 'Cargar Seña'}
+                      </button>
                     </>
                   ) : (
                     <button

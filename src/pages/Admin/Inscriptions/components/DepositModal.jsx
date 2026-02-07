@@ -1,8 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 
 const DepositModal = ({ isOpen, onClose, onSubmit, inscription, isSubmitting }) => {
   const [amount, setAmount] = useState('');
+
+  useEffect(() => {
+    if (inscription && inscription.depositAmount > 0) {
+      setAmount(String(inscription.depositAmount));
+    } else {
+      setAmount('');
+    }
+  }, [inscription]);
 
   if (!isOpen) return null;
 
@@ -42,11 +50,12 @@ const DepositModal = ({ isOpen, onClose, onSubmit, inscription, isSubmitting }) 
                 </div>
                 <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
                   <h3 className="text-xl leading-6 font-bold !text-gray-900" id="modal-title">
-                    Registrar Seña
+                    {inscription?.depositAmount > 0 ? 'Modificar Seña' : 'Registrar Seña'}
                   </h3>
                   <div className="mt-2 text-sm space-y-3">
                     <p className="!text-gray-600 font-medium">
-                      Ingresa el monto de la seña para <span className="font-bold !text-indigo-600">{inscription.nombre} {inscription.apellido}</span>.
+                      {inscription?.depositAmount > 0 ? 'Modifica el monto de la seña para ' : 'Ingresa el monto de la seña para '}
+                      <span className="font-bold !text-indigo-600">{inscription.nombre} {inscription.apellido}</span>.
                     </p>
                     <div className="!bg-indigo-50/50 p-4 rounded-xl border border-indigo-100">
                       <p className="!text-indigo-900 font-medium text-sm">Taller: <span className="!text-indigo-700">{inscription.courseTitle}</span></p>

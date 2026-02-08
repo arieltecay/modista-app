@@ -14,6 +14,7 @@ import EditCoursePage from './pages/Admin/Courses/EditCoursePage.jsx';
 import AdminCoursePage from './pages/Admin/Courses/AdminCourseSelector.jsx';
 import WorkshopDetailPage from './pages/Admin/Courses/WorkshopDetailPage.jsx';
 import WorkshopSchedulePage from './pages/Admin/Courses/WorkshopSchedulePage.jsx';
+import WorkshopDetailsPage from './pages/Admin/WorkshopDetailsPage.tsx';
 import LoginPage from './pages/Auth/LoginPage.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import { Toaster } from 'react-hot-toast';
@@ -76,6 +77,11 @@ function App() {
           <Route path="/admin/workshops/:id/schedule" element={
             <ProtectedRoute requireAdmin={true}>
               <WorkshopSchedulePage />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/workshops/more-info/:id" element={
+            <ProtectedRoute requireAdmin={true}>
+              <WorkshopDetailsPage />
             </ProtectedRoute>
           } />
 

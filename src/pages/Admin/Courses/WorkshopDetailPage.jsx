@@ -63,8 +63,12 @@ const WorkshopDetailPage = () => {
           paymentStatusFilter: paymentFilter,
           turnoFilter: turnoFilter !== 'all' ? turnoFilter : undefined
         });
-        setInscriptions(response.data);
-        setTotalItems(response.total);
+        if (response && response.data) {
+          setInscriptions(response.data);
+          setTotalItems(response.total);
+        } else {
+          setInscriptions([]);
+        }
       } catch (error) {
         toast.error('Error al cargar datos del taller');
       } finally {

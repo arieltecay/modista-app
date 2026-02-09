@@ -1,90 +1,66 @@
-/**
- * @file Servicio de Inscripciones de Talleres (Presencial)
- * @module services/inscriptions/workshopInscriptionService
- */
-
-import axios from 'axios';
 import { apiClient } from '../config/apiClient';
-import type { Inscription, PaginatedResponse, GetInscriptionsParams } from './inscriptionService';
-import type {
-  WorkshopDetailsResponse,
-  WorkshopInscription,
-  WorkshopInscriptionData,
-  WorkshopInscriptionsPaginatedResponse
-} from './types';
-
-export type {
-  WorkshopDetailsResponse,
-  WorkshopInscription,
-  WorkshopInscriptionData,
-  WorkshopInscriptionsPaginatedResponse
-};
+import { WorkshopDetailsResponse, WorkshopInscriptionData } from './types';
+import { PaginatedResponse } from '../types';
 
 /**
- * Obtiene datos limpios y organizados del taller para la página de detalles.
- * Incluye resúmenes calculados e inscripciones agrupadas por turno.
- * @param workshopId - ID del taller/curso
+ * Fetches a list of inscriptions for a specific workshop with pagination and filters.
+ * @param workshopId The ID of the workshop.
+ * @param params Query parameters for filtering and pagination.
  */
-export const getWorkshopDetails = (
-  workshopId: string
-): Promise<WorkshopDetailsResponse> => {
-  return apiClient.get(`/workshop-inscriptions/${workshopId}/details`) as Promise<WorkshopDetailsResponse>;
-};
+export const getWorkshopInscriptions = async (workshopId: string, params: any = {}): Promise<PaginatedResponse<WorkshopInscriptionData>> => {
+  const {
+    page = 1,
+    limit = 10,
+    sortBy,
+    sortOrder,
+    search,
+    paymentStatusFilter = 'all',
+    turnoFilter
+  } = params;
 
-/**
- * Obtiene inscripciones de un taller con paginación.
- * @param workshopId - ID del taller/curso
- * @param params - Parámetros de paginación y filtrado
- */
-export const getWorkshopInscriptions = (
-  workshopId: string,
-  params: GetInscriptionsParams
-): Promise<PaginatedResponse<Inscription>> => {
-  return apiClient.get(`/workshop-inscriptions/${workshopId}`, { params });
-};
-
-/**
- * Exporta inscripciones de un taller a Excel.
- * @param workshopId - ID del taller/curso
- * @param params - Filtros de exportación
- */
-export const exportWorkshopInscriptions = async (
-  workshopId: string,
-  params: { paymentStatusFilter?: string; search?: string; turnoFilter?: string; }
-): Promise<void> => {
-  const token = localStorage.getItem('token');
-  const downloadClient = axios.create({
-    baseURL: `${import.meta.env.VITE_API_URL}/api`,
-  });
-
-  try {
-    const response = await downloadClient.get(`/workshop-inscriptions/${workshopId}/export`, {
-      headers: { Authorization: `Bearer ${token}` },
-      params,
-      responseType: 'blob',
-    });
-
-    const url = window.URL.createObjectURL(new Blob([response.data]));
-    const link = document.createElement('a');
-    link.href = url;
-
-    const contentDisposition = response.headers['content-disposition'];
-    let filename = `taller_${workshopId}.xlsx`;
-
-    if (contentDisposition) {
-      const filenameMatch = contentDisposition.match(/filename="?(.+)"?/);
-      if (filenameMatch && filenameMatch.length > 1) {
-        filename = filenameMatch[1];
-      }
+  const response = await apiClient.get<PaginatedResponse<WorkshopInscriptionData>>(`/workshop-inscriptions/${workshopId}`, {
+    params: {
+      page,
+      limit,
+      sortBy,
+      sortOrder,
+      search,
+      paymentStatusFilter,
+      turnoFilter
     }
-
-    link.setAttribute('download', filename);
-    document.body.appendChild(link);
-    link.click();
-
-    if (link.parentNode) link.parentNode.removeChild(link);
-    window.URL.revokeObjectURL(url);
-  } catch {
-    throw new Error('Error al descargar el archivo del taller.');
-  }
+  });
+  return response as any;
 };
+
+/**
+ * Fetches detailed information about a specific workshop, including inscriptions grouped by turnos.
+ * @param workshopId The ID of the workshop.
+ * @returns A promise that resolves to WorkshopDetailsResponse.
+ */
+export const getWorkshopDetails = async (workshopId: string): Promise<WorkshopDetailsResponse> => {
+  const response = await apiClient.get<WorkshopDetailsResponse>(`/workshop-inscriptions/${workshopId}/details`);
+  return response as any;
+};
+
+/**
+ * Updates the schedule of an existing inscription.
+ * @param inscriptionId The ID of the inscription to update.
+ * @param newTurnoId The ID of the new turno (schedule slot) to assign.
+ * @returns A promise that resolves to the updated inscription data.
+ */
+export const updateInscriptionSchedule = async (inscriptionId: string, newTurnoId: string): Promise<WorkshopInscriptionData> => {
+  const response = await apiClient.put<WorkshopInscriptionData>(`/workshop-inscriptions/${inscriptionId}/schedule`, { newTurnoId });
+  return response as any;
+};
+
+/**
+ * Fetches available turnos for rescheduling a specific inscription, validating capacity on the server.
+ * @param inscriptionId The ID of the inscription to reschedule.
+ * @returns List of available Turno objects.
+ */
+export const getAvailableTurnosForInscription = async (inscriptionId: string): Promise<any[]> => {
+  const response = await apiClient.get<any[]>(`/workshop-inscriptions/inscription/${inscriptionId}/available-turnos`);
+  return response as any;
+};
+// You might also want to export the InscriptionData and WorkshopDetailsResponse types
+// export type { InscriptionData, WorkshopDetailsResponse };

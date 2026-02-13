@@ -7,7 +7,7 @@ import { Routes, Route } from 'react-router-dom';
 import NotFoundPage from './pages/NotFound';
 import { Layout } from './components/Layout';
 
-import InscriptionsListPage from './pages/admin/inscriptions/pages/InscriptionsListPage.tsx';
+import InscriptionsListPage from '@/pages/admin/inscriptions/pages/InscriptionsListPage';
 import CourseListPage from './pages/admin/courses/pages/CourseListPage.tsx';
 import CourseAddPage from './pages/admin/courses/pages/CourseAddPage.tsx';
 import CourseEditPage from './pages/admin/courses/pages/CourseEditPage.tsx';

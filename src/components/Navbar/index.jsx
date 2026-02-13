@@ -26,7 +26,7 @@ export default function Navbar() {
         <div className="flex lg:flex-1">
           <NavLink to="/" className="-m-1.5 p-1.5 flex items-center space-x-2">
             <GiSewingMachine className="h-8 w-auto text-[var(--color-green-600)]" />
-            <span className="text-xl font-bold text-gray-900">ModistaApp</span>
+            <img src="/images/Micaela%20MARCA%20DE%20AGUA.png" alt="Micaela Modista" className="h-10 w-auto object-contain -ml-2" />
           </NavLink>
         </div>
         <div className="flex lg:hidden">
@@ -69,7 +69,7 @@ export default function Navbar() {
           <div className="flex items-center justify-between">
             <NavLink to="/" tabIndex={mobileMenuOpen ? 0 : -1} className="-m-1.5 p-1.5 flex items-center space-x-2">
               <GiSewingMachine className="h-8 w-auto text-[var(--color-green-600)]" />
-              <span className="text-xl font-bold text-gray-900">ModistaApp</span>
+              <img src="/images/Micaela%20MARCA%20DE%20AGUA.png" alt="Micaela Modista" className="h-10 w-auto object-contain -ml-2" />
             </NavLink>
             <button
               type="button"

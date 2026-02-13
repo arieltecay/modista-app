@@ -7,14 +7,14 @@ import { Routes, Route } from 'react-router-dom';
 import NotFoundPage from './pages/NotFound';
 import { Layout } from './components/Layout';
 
-import InscriptionsListPage from '@/pages/admin/inscriptions/pages/InscriptionsListPage';
-import CourseListPage from '@/pages/admin/courses/pages/CourseListPage';
-import CourseAddPage from '@/pages/admin/courses/pages/CourseAddPage';
-import CourseEditPage from '@/pages/admin/courses/pages/CourseEditPage';
-import WorkshopSelectorPage from '@/pages/admin/workshops/pages/WorkshopSelectorPage';
-import WorkshopInscriptionsPage from '@/pages/admin/workshops/pages/WorkshopInscriptionsPage';
-import WorkshopSchedulePage from '@/pages/admin/workshops/pages/WorkshopSchedulePage';
-import WorkshopAnalyticsPage from '@/pages/admin/workshops/pages/WorkshopAnalyticsPage';
+import InscriptionsListPage from '@/pages/Admin/inscriptions/pages/InscriptionsListPage';
+import CourseListPage from '@/pages/Admin/Courses/pages/CourseListPage';
+import CourseAddPage from '@/pages/Admin/Courses/pages/CourseAddPage';
+import CourseEditPage from '@/pages/Admin/Courses/pages/CourseEditPage';
+import WorkshopSelectorPage from '@/pages/Admin/workshops/pages/WorkshopSelectorPage';
+import WorkshopInscriptionsPage from '@/pages/Admin/workshops/pages/WorkshopInscriptionsPage';
+import WorkshopSchedulePage from '@/pages/Admin/workshops/pages/WorkshopSchedulePage';
+import WorkshopAnalyticsPage from '@/pages/Admin/workshops/pages/WorkshopAnalyticsPage';
 
 import LoginPage from './pages/Auth/LoginPage';
 import ProtectedRoute from './components/ProtectedRoute';

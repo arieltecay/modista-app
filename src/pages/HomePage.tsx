@@ -1,10 +1,9 @@
 import React from 'react';
 import Home from './Home/index.tsx';
-import Courses from './Courses/index.jsx';
-import About from './About/index.jsx';
-import Footer from './Footer/index.jsx';
+import Courses from './Courses/index.tsx';
+import About from './About/index.tsx';
 
-const HomePage = () => {
+const HomePage: React.FC = () => {
   return (
     <>
       <Home />

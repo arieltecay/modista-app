@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { createCourse } from '../../../services/courses';
-import { defaultCourseValues } from './validation/courseValidation';
-import CourseForm from './components/CourseForm';
+import { createCourse } from '../../../../services/courses';
+import { defaultCourseValues } from '../validation/courseValidation';
+import CourseForm from '../components/CourseForm';
 import toast from 'react-hot-toast';
 
 /**

@@ -1,7 +1,40 @@
+import type { FC } from 'react';
 import React from 'react';
 import Spinner from '../../../../components/Spinner';
 
-const WorkshopInscriptionsList = ({
+interface Turno {
+  _id: string;
+  diaSemana: string;
+  horaInicio: string;
+  horaFin: string;
+  cupoMaximo: number;
+  cuposInscriptos: number;
+  courseId: string;
+}
+
+interface Inscription {
+  _id: string;
+  nombre: string;
+  apellido: string;
+  email: string;
+  celular: string;
+  paymentStatus: 'paid' | 'pending';
+  coursePrice: number;
+  depositAmount: number;
+  depositDate?: string;
+  isReserved: boolean;
+  fechaInscripcion: string;
+  turnoId: Turno | string;
+}
+
+interface WorkshopInscriptionsListProps {
+  inscriptions: Inscription[];
+  loading: boolean;
+  handlePaymentStatusUpdate: (inscriptionId: string, newStatus: 'paid' | 'pending') => Promise<void>;
+  onDepositClick: (inscription: Inscription) => void;
+}
+
+const WorkshopInscriptionsList: FC<WorkshopInscriptionsListProps> = ({
   inscriptions,
   loading,
   handlePaymentStatusUpdate,
@@ -17,7 +50,7 @@ const WorkshopInscriptionsList = ({
 
   return (
     <div className="md:hidden space-y-4">
-      {inscriptions.map((inscription) => (
+      {inscriptions.map((inscription: Inscription) => (
         <div key={inscription._id} className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col gap-4">
           <div className="flex justify-between items-start">
             <div className="flex-1">

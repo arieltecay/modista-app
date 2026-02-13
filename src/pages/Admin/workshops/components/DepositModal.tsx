@@ -1,8 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import type { FC } from 'react';
+import React, { useState, useEffect, FormEvent } from 'react';
 import toast from 'react-hot-toast';
 
-const DepositModal = ({ isOpen, onClose, onSubmit, inscription, isSubmitting }) => {
-  const [amount, setAmount] = useState('');
+interface Inscription {
+  _id: string;
+  nombre: string;
+  apellido: string;
+  depositAmount: number;
+  coursePrice: number;
+  courseTitle: string;
+}
+
+interface DepositModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (inscriptionId: string, amount: number) => Promise<void>;
+  inscription: Inscription;
+  isSubmitting: boolean;
+}
+
+const DepositModal: FC<DepositModalProps> = ({ isOpen, onClose, onSubmit, inscription, isSubmitting }) => {
+  const [amount, setAmount] = useState<string>('');
 
   useEffect(() => {
     if (inscription && inscription.depositAmount > 0) {
@@ -14,7 +32,7 @@ const DepositModal = ({ isOpen, onClose, onSubmit, inscription, isSubmitting }) 
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     const numAmount = parseFloat(amount);
     if (isNaN(numAmount) || numAmount <= 0) {

@@ -1,22 +1,33 @@
+import type { FC } from 'react';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getCoursesAdmin } from '../../../services/courses/coursesService';
-import Spinner from '../../../components/Spinner';
+import { getCoursesAdmin } from '../../../../services/courses/coursesService';
+import Spinner from '../../../../components/Spinner';
 
-const AdminCourseSelector = () => {
-  const [courses, setCourses] = useState([]);
-  const [loading, setLoading] = useState(true);
+interface Course {
+  _id: string;
+  uuid?: string;
+  id?: string;
+  title: string;
+  isPresencial: boolean;
+  imageUrl: string;
+  shortDescription: string;
+}
+
+const WorkshopSelectorPage: FC = () => {
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCourses = async () => {
       try {
         setLoading(true);
-        const response = await getCoursesAdmin(1, 100);
+        const response: { data: Course[] } = await getCoursesAdmin(1, 100);
         // Filtrar solo los cursos presenciales (o todos si decides que todos pueden tener turnos)
-        const presencialCourses = response.data.filter(c => c.isPresencial);
+        const presencialCourses: Course[] = response.data.filter(c => c.isPresencial);
         setCourses(presencialCourses);
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error fetching courses:', error);
       } finally {
         setLoading(false);
@@ -122,4 +133,4 @@ const AdminCourseSelector = () => {
   );
 };
 
-export default AdminCourseSelector;
+export default WorkshopSelectorPage;

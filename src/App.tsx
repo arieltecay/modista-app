@@ -1,22 +1,23 @@
-
-import GoogleTagManager from './components/GoogleTagManager/index.jsx';
+import GoogleTagManager from './components/GoogleTagManager';
 import HomePage from './pages/HomePage';
-import About from './pages/About/index.jsx';
-import Courses from './pages/Courses/index.jsx';
-import CourseDetailPage from './pages/Courses/CourseDetailPage.jsx';
+import About from './pages/About';
+import Courses from './pages/Courses';
+import CourseDetailPage from './pages/Courses/CourseDetailPage';
 import { Routes, Route } from 'react-router-dom';
-import NotFoundPage from './pages/NotFound/index.jsx';
-import { Layout } from './components/Layout/index.jsx';
-import InscriptionsAdminPage from './pages/Admin/Inscriptions/index.jsx';
-import CoursesAdminPage from './pages/Admin/Courses/index.jsx';
-import AddCoursePage from './pages/Admin/Courses/AddCoursePage.jsx';
-import EditCoursePage from './pages/Admin/Courses/EditCoursePage.jsx';
-import AdminCoursePage from './pages/Admin/Courses/AdminCourseSelector.jsx';
-import WorkshopDetailPage from './pages/Admin/Courses/WorkshopDetailPage.jsx';
-import WorkshopSchedulePage from './pages/Admin/Courses/WorkshopSchedulePage.jsx';
-import WorkshopDetailsPage from './pages/Admin/WorkshopDetailsPage.tsx';
-import LoginPage from './pages/Auth/LoginPage.jsx';
-import ProtectedRoute from './components/ProtectedRoute.jsx';
+import NotFoundPage from './pages/NotFound';
+import { Layout } from './components/Layout';
+
+import InscriptionsListPage from './pages/admin/inscriptions/pages/InscriptionsListPage';
+import CourseListPage from './pages/admin/courses/pages/CourseListPage';
+import CourseAddPage from './pages/admin/courses/pages/CourseAddPage';
+import CourseEditPage from './pages/admin/courses/pages/CourseEditPage';
+import WorkshopSelectorPage from './pages/admin/workshops/pages/WorkshopSelectorPage';
+import WorkshopInscriptionsPage from './pages/admin/workshops/pages/WorkshopInscriptionsPage';
+import WorkshopSchedulePage from './pages/admin/workshops/pages/WorkshopSchedulePage';
+import WorkshopAnalyticsPage from './pages/admin/workshops/pages/WorkshopAnalyticsPage';
+
+import LoginPage from './pages/Auth/LoginPage';
+import ProtectedRoute from './components/ProtectedRoute';
 import { Toaster } from 'react-hot-toast';
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react"
@@ -41,37 +42,37 @@ function App() {
           {/* Rutas de autenticación */}
           <Route path="/login" element={<LoginPage />} />
 
-          {/* Rutas sin el layout principal (como el admin) */}
+          {/* Rutas de Admin */}
           <Route path="/admin/dashboard" element={
             <ProtectedRoute requireAdmin={true}>
-              <InscriptionsAdminPage />
+              <InscriptionsListPage />
             </ProtectedRoute>
           } />
           <Route path="/admin/courses" element={
             <ProtectedRoute requireAdmin={true}>
-              <CoursesAdminPage />
+              <CourseListPage />
             </ProtectedRoute>
           } />
           <Route path="/admin/courses/add" element={
             <ProtectedRoute requireAdmin={true}>
-              <AddCoursePage />
+              <CourseAddPage />
             </ProtectedRoute>
           } />
           <Route path="/admin/courses/edit/:id" element={
             <ProtectedRoute requireAdmin={true}>
-              <EditCoursePage />
+              <CourseEditPage />
             </ProtectedRoute>
           } />
 
-          {/* Nuevas rutas de Gestión de Talleres Presenciales */}
+          {/* Rutas de Gestión de Talleres Presenciales */}
           <Route path="/admin/workshops" element={
             <ProtectedRoute requireAdmin={true}>
-              <AdminCoursePage />
+              <WorkshopSelectorPage />
             </ProtectedRoute>
           } />
           <Route path="/admin/workshops/:id" element={
             <ProtectedRoute requireAdmin={true}>
-              <WorkshopDetailPage />
+              <WorkshopInscriptionsPage />
             </ProtectedRoute>
           } />
           <Route path="/admin/workshops/:id/schedule" element={
@@ -81,7 +82,7 @@ function App() {
           } />
           <Route path="/admin/workshops/more-info/:id" element={
             <ProtectedRoute requireAdmin={true}>
-              <WorkshopDetailsPage />
+              <WorkshopAnalyticsPage />
             </ProtectedRoute>
           } />
 

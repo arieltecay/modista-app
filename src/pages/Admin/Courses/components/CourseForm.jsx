@@ -2,7 +2,7 @@ import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { courseSchema, defaultCourseValues } from '../validation/courseValidation';
-import ImageSelector from './ImageSelector';
+import ImageSelector from '../../shared/components/ImageSelector';
 
 
 /**

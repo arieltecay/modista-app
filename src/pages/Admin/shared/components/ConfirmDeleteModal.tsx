@@ -1,10 +1,19 @@
+import type { FC } from 'react';
 import React from 'react';
 import { XMarkIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+
+interface ConfirmDeleteModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: () => Promise<void>;
+  courseTitle: string;
+  isDeleting?: boolean;
+}
 
 /**
  * Modal de confirmación para eliminar cursos
  */
-const ConfirmDeleteModal = ({ isOpen, onClose, onConfirm, courseTitle, isDeleting = false }) => {
+const ConfirmDeleteModal: FC<ConfirmDeleteModalProps> = ({ isOpen, onClose, onConfirm, courseTitle, isDeleting = false }) => {
   if (!isOpen) return null;
 
   const handleConfirm = async () => {

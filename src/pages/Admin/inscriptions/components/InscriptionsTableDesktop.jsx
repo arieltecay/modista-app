@@ -1,5 +1,5 @@
 import React from 'react';
-import Spinner from '../../../components/Spinner';
+import Spinner from '../../../../components/Spinner';
 import { FaSort, FaSortUp, FaSortDown } from 'react-icons/fa';
 
 const SortableHeader = ({ children, name, sortConfig, onSort }) => {

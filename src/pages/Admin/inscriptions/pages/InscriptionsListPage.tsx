@@ -4,13 +4,13 @@ import {
   updateInscriptionPaymentStatus,
   getInscriptionsCount,
   exportInscriptions
-} from '../../../services/inscriptions';
-import { sendPaymentSuccessEmail, sendCoursePaidEmail } from '../../../services/email';
-import { getCoursesAdmin } from '../../../services/courses';
+} from '../../../../services/inscriptions';
+import { sendPaymentSuccessEmail, sendCoursePaidEmail } from '../../../../services/email';
+import { getCoursesAdmin } from '../../../../services/courses';
 import toast from 'react-hot-toast';
-import InscriptionsListMobile from './InscriptionsListMobile';
-import InscriptionsTableDesktop from './InscriptionsTableDesktop';
-import Pagination from './Pagination';
+import InscriptionsListMobile from '../components/InscriptionsListMobile';
+import InscriptionsTableDesktop from '../components/InscriptionsTableDesktop';
+import Pagination from '../../shared/components/Pagination';
 
 const API_URL = import.meta.env.VITE_API_URL;
 

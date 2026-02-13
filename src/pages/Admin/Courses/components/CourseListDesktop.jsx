@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
-import CourseLinks from './components/CourseLinks';
+import CourseLinks from './CourseLinks';
 
 /**
  * Componente de tabla desktop para mostrar cursos

@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type FC } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
-import { getWorkshopDetails } from '../../services/inscriptions/workshopInscriptionService';
-import { WorkshopDetailsResponse, WorkshopInscriptionItem } from '../../services/inscriptions/types';
-import Spinner from '../../components/Spinner';
-import ScheduleUpdateModal from '../../components/ScheduleUpdateModal';
+import { getWorkshopDetails } from '../../../../services/inscriptions/workshopInscriptionService';
+import { WorkshopDetailsResponse, WorkshopInscriptionItem } from '../../../../services/inscriptions/types';
+import Spinner from '../../../../components/Spinner';
+import ScheduleUpdateModal from '../../../../components/ScheduleUpdateModal';
 
 // Type for the inscription object passed to the modal
 interface ModalInscription {
@@ -17,7 +17,7 @@ interface ModalInscription {
   coursePrice: number;
 }
 
-const WorkshopDetailsPage = () => {
+const WorkshopAnalyticsPage: FC = () => {
   const { id: workshopId } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [data, setData] = useState<WorkshopDetailsResponse | null>(null);
@@ -181,4 +181,4 @@ const WorkshopDetailsPage = () => {
   );
 };
 
-export default WorkshopDetailsPage;
+export default WorkshopAnalyticsPage;

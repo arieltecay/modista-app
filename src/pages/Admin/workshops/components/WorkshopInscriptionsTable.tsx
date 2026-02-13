@@ -1,8 +1,46 @@
+import type { FC } from 'react';
 import React from 'react';
 import Spinner from '../../../../components/Spinner';
 import { FaSort, FaSortUp, FaSortDown } from 'react-icons/fa';
 
-const SortableHeader = ({ children, name, sortConfig, onSort }) => {
+interface Turno {
+  _id: string;
+  diaSemana: string;
+  horaInicio: string;
+  horaFin: string;
+  cupoMaximo: number;
+  cuposInscriptos: number;
+  courseId: string;
+}
+
+interface Inscription {
+  _id: string;
+  nombre: string;
+  apellido: string;
+  email: string;
+  celular: string;
+  paymentStatus: 'paid' | 'pending';
+  coursePrice: number;
+  depositAmount: number;
+  depositDate?: string;
+  isReserved: boolean;
+  fechaInscripcion: string;
+  turnoId: Turno | string;
+}
+
+interface SortConfig {
+  key: string;
+  direction: 'asc' | 'desc';
+}
+
+interface SortableHeaderProps {
+  children: React.ReactNode;
+  name: string;
+  sortConfig: SortConfig;
+  onSort: (name: string) => void;
+}
+
+const SortableHeader: FC<SortableHeaderProps> = ({ children, name, sortConfig, onSort }) => {
   const isSorted = sortConfig.key === name;
   const direction = isSorted ? sortConfig.direction : undefined;
 
@@ -25,7 +63,16 @@ const SortableHeader = ({ children, name, sortConfig, onSort }) => {
   );
 };
 
-const WorkshopInscriptionsTable = ({
+interface WorkshopInscriptionsTableProps {
+  inscriptions: Inscription[];
+  loading: boolean;
+  handlePaymentStatusUpdate: (inscriptionId: string, newStatus: 'paid' | 'pending') => Promise<void>;
+  sortConfig: SortConfig;
+  handleSort: (key: string) => void;
+  onDepositClick: (inscription: Inscription) => void;
+}
+
+const WorkshopInscriptionsTable: FC<WorkshopInscriptionsTableProps> = ({
   inscriptions,
   loading,
   handlePaymentStatusUpdate,

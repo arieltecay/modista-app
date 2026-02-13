@@ -1,47 +1,87 @@
+import type { FC } from 'react';
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getWorkshopInscriptions, updateInscriptionPaymentStatus, updateInscriptionDeposit } from '../../../services/inscriptions';
-import { sendPaymentSuccessEmail } from '../../../services/email/emailService';
-import { getCoursesAdmin } from '../../../services/courses/coursesService';
-import { getTurnosByCourse } from '../../../services/turnos/turnoService';
+import { getWorkshopInscriptions, updateInscriptionPaymentStatus, updateInscriptionDeposit } from '../../../../services/inscriptions';
+import { sendPaymentSuccessEmail } from '../../../../services/email/emailService';
+import { getCoursesAdmin } from '../../../../services/courses/coursesService';
+import { getTurnosByCourse } from '../../../../services/turnos/turnoService';
 import toast from 'react-hot-toast';
-import Spinner from '../../../components/Spinner';
-import DepositModal from '../Inscriptions/components/DepositModal';
+import Spinner from '../../../../components/Spinner';
+import DepositModal from '../components/DepositModal';
 
 // Componentes especializados para talleres para segregar lógica de cursos online
-import WorkshopInscriptionsTable from './components/WorkshopInscriptionsTable';
-import WorkshopInscriptionsList from './components/WorkshopInscriptionsList';
-import Pagination from '../Inscriptions/Pagination';
+import WorkshopInscriptionsTable from '../components/WorkshopInscriptionsTable';
+import WorkshopInscriptionsList from '../components/WorkshopInscriptionsList';
+import Pagination from '../../shared/components/Pagination';
 
-const WorkshopDetailPage = () => {
-  const { id } = useParams();
+interface Course {
+  _id: string;
+  uuid?: string;
+  id?: string;
+  title: string;
+  isPresencial: boolean;
+  // Añadir otras propiedades necesarias
+}
+
+interface Turno {
+  _id: string;
+  diaSemana: string;
+  horaInicio: string;
+  horaFin: string;
+  cupoMaximo: number;
+  cuposInscriptos?: number; // Puede que no siempre venga
+}
+
+interface Inscription {
+  _id: string;
+  nombre: string;
+  apellido: string;
+  email: string;
+  celular: string;
+  paymentStatus: 'paid' | 'pending';
+  coursePrice: number;
+  depositAmount: number;
+  depositDate?: string;
+  isReserved: boolean;
+  fechaInscripcion: string;
+  turnoId: string | Turno;
+  courseTitle: string;
+}
+
+interface SortConfig {
+  key: string;
+  direction: 'asc' | 'desc';
+}
+
+const WorkshopInscriptionsPage: FC = () => {
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [course, setCourse] = useState(null);
-  const [inscriptions, setInscriptions] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalItems, setTotalItems] = useState(0);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [paymentFilter, setPaymentFilter] = useState('all');
-  const [turnoFilter, setTurnoFilter] = useState('all');
-  const [availableTurnos, setAvailableTurnos] = useState([]);
-  const [sortConfig, setSortConfig] = useState({ key: 'fechaInscripcion', direction: 'desc' });
+  const [course, setCourse] = useState<Course | null>(null);
+  const [inscriptions, setInscriptions] = useState<Inscription[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [itemsPerPage, setItemsPerPage] = useState<number>(10);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalItems, setTotalItems] = useState<number>(0);
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [paymentFilter, setPaymentFilter] = useState<'all' | 'paid' | 'pending'>('all');
+  const [turnoFilter, setTurnoFilter] = useState<string>('all');
+  const [availableTurnos, setAvailableTurnos] = useState<Turno[]>([]);
+  const [sortConfig, setSortConfig] = useState<SortConfig>({ key: 'fechaInscripcion', direction: 'desc' });
 
   // Estado para el modal de seña
-  const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
-  const [selectedInscription, setSelectedInscription] = useState(null);
-  const [isSubmittingDeposit, setIsSubmittingDeposit] = useState(false);
+  const [isDepositModalOpen, setIsDepositModalOpen] = useState<boolean>(false);
+  const [selectedInscription, setSelectedInscription] = useState<Inscription | null>(null);
+  const [isSubmittingDeposit, setIsSubmittingDeposit] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchWorkshopData = async () => {
       try {
         setLoading(true);
         // 1. Obtener info del curso
-        const courses = await getCoursesAdmin(1, 100);
+        const coursesResponse: { data: Course[] } = await getCoursesAdmin(1, 100);
         // Buscar por UUID (id viene en la URL ahora es el UUID)
-        const currentCourse = courses.data.find(c => c.uuid === id || c.id === id);
-        setCourse(currentCourse);
+        const currentCourse = coursesResponse.data.find(c => c.uuid === id || c.id === id);
+        setCourse(currentCourse || null);
 
         if (!currentCourse) {
           toast.error('Taller no encontrado');
@@ -50,11 +90,11 @@ const WorkshopDetailPage = () => {
         }
 
         // 2. Obtener turnos del taller (pasando true para admin)
-        const { data: turnos } = await getTurnosByCourse(currentCourse.uuid || currentCourse.id, true);
+        const { data: turnos } = await getTurnosByCourse(currentCourse.uuid || currentCourse.id || '', true);
         setAvailableTurnos(turnos || []);
 
         // 3. Filtrar inscripciones usando el servicio dedicado para talleres
-        const response = await getWorkshopInscriptions(currentCourse.uuid || currentCourse.id, {
+        const response: { data: Inscription[]; total: number } = await getWorkshopInscriptions(currentCourse.uuid || currentCourse.id || '', {
           page: currentPage,
           limit: itemsPerPage,
           sortBy: sortConfig.key,
@@ -69,7 +109,7 @@ const WorkshopDetailPage = () => {
         } else {
           setInscriptions([]);
         }
-      } catch (error) {
+      } catch (error: any) {
         toast.error('Error al cargar datos del taller');
       } finally {
         setLoading(false);
@@ -79,7 +119,7 @@ const WorkshopDetailPage = () => {
     fetchWorkshopData();
   }, [id, currentPage, itemsPerPage, searchTerm, paymentFilter, turnoFilter, sortConfig]);
 
-  const handlePaymentStatusUpdate = async (inscriptionId, newStatus) => {
+  const handlePaymentStatusUpdate = async (inscriptionId: string, newStatus: 'paid' | 'pending') => {
     try {
       await updateInscriptionPaymentStatus(inscriptionId, newStatus);
       const updatedList = inscriptions.map(inv =>
@@ -89,22 +129,24 @@ const WorkshopDetailPage = () => {
 
       if (newStatus === 'paid') {
         const student = updatedList.find(i => i._id === inscriptionId);
-        await sendPaymentSuccessEmail(student);
-        toast.success('Pago confirmado y correo enviado');
+        if (student) {
+          await sendPaymentSuccessEmail(student);
+          toast.success('Pago confirmado y correo enviado');
+        }
       } else {
         toast.success('Estado actualizado a pendiente');
       }
-    } catch (error) {
+    } catch (error: any) {
       toast.error('Error al actualizar estado de pago');
     }
   };
 
-  const handleDepositClick = (inscription) => {
+  const handleDepositClick = (inscription: Inscription) => {
     setSelectedInscription(inscription);
     setIsDepositModalOpen(true);
   };
 
-  const handleDepositSubmit = async (inscriptionId, amount) => {
+  const handleDepositSubmit = async (inscriptionId: string, amount: number) => {
     try {
       setIsSubmittingDeposit(true);
       const response = await updateInscriptionDeposit(inscriptionId, amount);
@@ -119,7 +161,7 @@ const WorkshopDetailPage = () => {
 
       toast.success('Seña registrada y correo enviado exitosamente');
       setIsDepositModalOpen(false);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error recording deposit:', error);
       toast.error(error.response?.data?.message || 'Error al registrar la seña');
     } finally {
@@ -127,8 +169,8 @@ const WorkshopDetailPage = () => {
     }
   };
 
-  const handleSort = (key) => {
-    let direction = 'asc';
+  const handleSort = (key: string) => {
+    let direction: 'asc' | 'desc' = 'asc';
     if (sortConfig.key === key && sortConfig.direction === 'asc') {
       direction = 'desc';
     }
@@ -290,4 +332,4 @@ const WorkshopDetailPage = () => {
   );
 };
 
-export default WorkshopDetailPage;
+export default WorkshopInscriptionsPage;

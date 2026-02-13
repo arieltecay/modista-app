@@ -1,11 +1,15 @@
+import type { FC } from 'react';
 import React from 'react';
+
+interface ImageSelectorProps {
+  selectedImage: string;
+  onImageSelect: (imageUrl: string) => void;
+}
 
 /**
  * Componente para seleccionar imágenes existentes de la carpeta public/images
- * @param {string} selectedImage - La imagen actualmente seleccionada
- * @param {function} onImageSelect - Función callback cuando se selecciona una imagen
  */
-const ImageSelector = ({ selectedImage, onImageSelect }) => {
+const ImageSelector: FC<ImageSelectorProps> = ({ selectedImage, onImageSelect }) => {
   // Lista de imágenes disponibles en public/images
   const availableImages = [
     'caricatura.jpeg',

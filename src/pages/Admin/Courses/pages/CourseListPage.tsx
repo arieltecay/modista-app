@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getCoursesAdmin, deleteCourse } from '../../../services/courses';
+import { getCoursesAdmin, deleteCourse } from '../../../../services/courses';
 import toast from 'react-hot-toast';
-import CoursesListMobile from './CoursesListMobile';
-import CoursesListDesktop from './CoursesListDesktop';
-import ConfirmDeleteModal from './components/ConfirmDeleteModal';
+import CoursesListMobile from '../components/CourseListMobile';
+import CoursesListDesktop from '../components/CourseListDesktop';
+import ConfirmDeleteModal from '../../shared/components/ConfirmDeleteModal';
 
 // --- Helper Components ---
 

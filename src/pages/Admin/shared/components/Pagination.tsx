@@ -1,6 +1,17 @@
+import type { FC } from 'react';
 import React from 'react';
 
-const Pagination = ({ 
+interface PaginationProps {
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
+  itemsPerPage: number;
+  handlePrevPage: () => void;
+  handleNextPage: () => void;
+  handleItemsPerPageChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+}
+
+const Pagination: FC<PaginationProps> = ({ 
   currentPage, 
   totalPages, 
   totalItems, 

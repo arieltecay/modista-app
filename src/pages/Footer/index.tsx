@@ -1,7 +1,8 @@
+import React from 'react';
 import { FaWhatsapp, FaEnvelope, FaInstagram, FaTiktok } from 'react-icons/fa';
 import { whatsappNumber } from '../../utils/constants';
 
-const Footer = () => {
+const Footer: React.FC = () => {
   return (
     <footer id="contact" className="bg-[var(--color-green-600)] text-black py-12">
       <div className="container mx-auto px-6 text-center">

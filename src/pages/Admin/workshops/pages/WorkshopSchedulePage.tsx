@@ -1,23 +1,51 @@
-import React, { useState, useEffect } from 'react';
+import type { FC } from 'react';
+import React, { useState, useEffect, FormEvent } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getTurnosByCourse, createTurno, updateTurno, deleteTurno } from '../../../services/turnos/turnoService';
-import { getCoursesAdmin } from '../../../services/courses/coursesService';
+import { getTurnosByCourse, createTurno, updateTurno, deleteTurno } from '../../../../services/turnos/turnoService';
+import { getCoursesAdmin } from '../../../../services/courses/coursesService';
 import toast from 'react-hot-toast';
-import Spinner from '../../../components/Spinner';
+import Spinner from '../../../../components/Spinner';
 
-const WorkshopSchedulePage = () => {
-  const { id } = useParams();
+interface Course {
+  _id: string;
+  uuid?: string;
+  id?: string;
+  title: string;
+  courseId?: string;
+}
+
+interface Turno {
+  _id: string;
+  diaSemana: string;
+  horaInicio: string;
+  horaFin: string;
+  cupoMaximo: number;
+  cuposInscriptos: number;
+  courseId: string;
+  isBlocked: boolean;
+}
+
+interface NewTurno {
+  diaSemana: string;
+  horaInicio: string;
+  horaFin: string;
+  cupoMaximo: number;
+  courseId: string;
+}
+
+const WorkshopSchedulePage: FC = () => {
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [course, setCourse] = useState(null);
-  const [turnos, setTurnos] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [isAdding, setIsAdding] = useState(false);
-  const [newTurno, setNewTurno] = useState({
+  const [course, setCourse] = useState<Course | null>(null);
+  const [turnos, setTurnos] = useState<Turno[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [isAdding, setIsAdding] = useState<boolean>(false);
+  const [newTurno, setNewTurno] = useState<NewTurno>({
     diaSemana: 'Lunes',
     horaInicio: '09:00',
     horaFin: '11:00',
     cupoMaximo: 4,
-    courseId: id
+    courseId: id || ''
   });
 
   const dias = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
@@ -26,21 +54,18 @@ const WorkshopSchedulePage = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const courses = await getCoursesAdmin(1, 100);
-        const foundCourse = courses.data.find(c => c._id === id || c.uuid === id);
-        setCourse(foundCourse);
+        const coursesResponse: { data: Course[] } = await getCoursesAdmin(1, 100);
+        const foundCourse = coursesResponse.data.find(c => c._id === id || c.uuid === id);
+        setCourse(foundCourse || null);
 
-        const response = await getTurnosByCourse(id, true);
-        // Asegurar que turnos sea siempre un arreglo
+        const response: Turno[] | { data: Turno[] } = await getTurnosByCourse(id || '', true);
         const turnosData = Array.isArray(response) ? response : (response?.data || []);
         setTurnos(turnosData);
 
-        // IMPORTANTE: Una vez que tenemos el curso, actualizar el courseId del nuevo turno
-        // con el _id real de MongoDB para evitar problemas de tipos, aunque el backend ya lo resuelve.
         if (foundCourse) {
           setNewTurno(prev => ({ ...prev, courseId: foundCourse.courseId || foundCourse._id }));
         }
-      } catch (error) {
+      } catch (error: any) {
         toast.error('Error al cargar la agenda');
       } finally {
         setLoading(false);
@@ -49,35 +74,35 @@ const WorkshopSchedulePage = () => {
     fetchData();
   }, [id]);
 
-  const handleAddTurno = async (e) => {
+  const handleAddTurno = async (e: FormEvent) => {
     e.preventDefault();
     try {
-      const response = await createTurno(newTurno);
+      const response: { data: Turno } = await createTurno(newTurno);
       setTurnos([...turnos, response.data]);
       setIsAdding(false);
       toast.success('Horario agregado con éxito');
-    } catch (error) {
+    } catch (error: any) {
       toast.error('Error al agregar horario');
     }
   };
 
-  const handleToggleBlock = async (turno) => {
+  const handleToggleBlock = async (turno: Turno) => {
     try {
-      const updated = await updateTurno(turno._id, { isBlocked: !turno.isBlocked });
+      const updated: { data: Turno } = await updateTurno(turno._id, { isBlocked: !turno.isBlocked });
       setTurnos(turnos.map(t => t._id === turno._id ? updated.data : t));
       toast.success(updated.data.isBlocked ? 'Horario bloqueado' : 'Horario habilitado');
-    } catch (error) {
+    } catch (error: any) {
       toast.error('Error al actualizar estado');
     }
   };
 
-  const handleDelete = async (turnoId) => {
+  const handleDelete = async (turnoId: string) => {
     if (!window.confirm('¿Estás seguro de eliminar este horario?')) return;
     try {
       await deleteTurno(turnoId);
       setTurnos(turnos.filter(t => t._id !== turnoId));
       toast.success('Horario eliminado');
-    } catch (error) {
+    } catch (error: any) {
       toast.error('Error al eliminar');
     }
   };

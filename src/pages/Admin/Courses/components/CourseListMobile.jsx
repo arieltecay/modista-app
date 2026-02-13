@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PencilIcon, TrashIcon, CalendarIcon } from '@heroicons/react/24/outline';
-import CourseLinks from './components/CourseLinks';
+import CourseLinks from './CourseLinks';
 
 /**
  * Componente de lista mobile para mostrar cursos

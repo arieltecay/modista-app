@@ -8,13 +8,13 @@ import NotFoundPage from './pages/NotFound';
 import { Layout } from './components/Layout';
 
 import InscriptionsListPage from '@/pages/admin/inscriptions/pages/InscriptionsListPage';
-import CourseListPage from './pages/admin/courses/pages/CourseListPage.tsx';
-import CourseAddPage from './pages/admin/courses/pages/CourseAddPage.tsx';
-import CourseEditPage from './pages/admin/courses/pages/CourseEditPage.tsx';
-import WorkshopSelectorPage from './pages/admin/workshops/pages/WorkshopSelectorPage.tsx';
-import WorkshopInscriptionsPage from './pages/admin/workshops/pages/WorkshopInscriptionsPage.tsx';
-import WorkshopSchedulePage from './pages/admin/workshops/pages/WorkshopSchedulePage.tsx';
-import WorkshopAnalyticsPage from './pages/admin/workshops/pages/WorkshopAnalyticsPage.tsx';
+import CourseListPage from '@/pages/admin/courses/pages/CourseListPage';
+import CourseAddPage from '@/pages/admin/courses/pages/CourseAddPage';
+import CourseEditPage from '@/pages/admin/courses/pages/CourseEditPage';
+import WorkshopSelectorPage from '@/pages/admin/workshops/pages/WorkshopSelectorPage';
+import WorkshopInscriptionsPage from '@/pages/admin/workshops/pages/WorkshopInscriptionsPage';
+import WorkshopSchedulePage from '@/pages/admin/workshops/pages/WorkshopSchedulePage';
+import WorkshopAnalyticsPage from '@/pages/admin/workshops/pages/WorkshopAnalyticsPage';
 
 import LoginPage from './pages/Auth/LoginPage';
 import ProtectedRoute from './components/ProtectedRoute';

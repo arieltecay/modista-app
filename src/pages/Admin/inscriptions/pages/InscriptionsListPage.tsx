@@ -12,8 +12,6 @@ import InscriptionsListMobile from '../components/InscriptionsListMobile';
 import InscriptionsTableDesktop from '../components/InscriptionsTableDesktop';
 import Pagination from '../../shared/components/Pagination';
 
-const API_URL = import.meta.env.VITE_API_URL;
-
 // --- Helper Components ---
 
 const StatCard = ({ title, value, icon, colorClass, loading }) => {

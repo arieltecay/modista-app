@@ -3,6 +3,7 @@ import HomePage from './pages/HomePage';
 import About from './pages/About';
 import Courses from './pages/Courses';
 import CourseDetailPage from './pages/Courses/CourseDetailPage';
+import TariffPage from './pages/Tariff'; // Importar la nueva página de Tarifario
 import { Routes, Route } from 'react-router-dom';
 import NotFoundPage from './pages/NotFound';
 import { Layout } from './components/Layout';
@@ -37,6 +38,7 @@ function App() {
             <Route path="sobre-mi" element={<About />} />
             <Route path="cursos" element={<Courses />} />
             <Route path="cursos/:id" element={<CourseDetailPage />} />
+            <Route path="tarifario" element={<TariffPage />} /> {/* Nueva ruta para Tarifario */}
           </Route>
 
           {/* Rutas de autenticación */}

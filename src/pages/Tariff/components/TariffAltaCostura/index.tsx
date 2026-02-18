@@ -1,58 +1,46 @@
 import type { FC } from 'react';
-import { DynamicItem } from '../../../../services/tariff/types';
+import { TariffSection } from '../../../../api/types/shared-tariff-types.js'; // Importación corregida
 import DynamicTariffSection from '../DynamicTariffSection';
 import { TariffAltaCosturaProps } from './types';
 
 
 const TariffAltaCostura: FC<TariffAltaCosturaProps> = ({ tariffData }) => {
   const { content } = tariffData;
+  const sections: TariffSection[] = [];
 
-  return (
-    <div className="space-y-6">
-      {content.categorias && (
-        <>
-          {Object.keys(content.categorias).map((key) => {
-            const categoria = content.categorias[key];
-            const additionalNotes: DynamicItem[] = [];
-            if (categoria.nota_agregado_bordado) {
-              additionalNotes.push({ item: categoria.nota_agregado_bordado, precio: undefined });
-            }
-            if (categoria.nota_agregado) {
-              additionalNotes.push({ item: categoria.nota_agregado, precio: undefined });
-            }
+  if (content.categorias) {
+    Object.keys(content.categorias).forEach((key) => {
+      const categoria = content.categorias[key];
+      if (categoria.nombre && categoria.prendas && categoria.prendas.length > 0) {
+        const items = [...categoria.prendas];
+        if (categoria.nota_agregado_bordado) {
+          items.push({ item: `Nota: ${categoria.nota_agregado_bordado}`, descripcion: categoria.nota_agregado_bordado, precio: undefined });
+        }
+        if (categoria.nota_agregado) {
+          items.push({ item: `Nota: ${categoria.nota_agregado}`, descripcion: categoria.nota_agregado, precio: undefined });
+        }
+        sections.push({ title: categoria.nombre, items: items });
+      }
+    });
+  }
 
-            return (
-              <div key={key}>
-                <DynamicTariffSection
-                  title={categoria.nombre}
-                  items={categoria.prendas}
-                />
-                {additionalNotes.length > 0 && (
-                  <div className="ml-8 -mt-4 mb-6 text-sm text-gray-600 space-y-1">
-                    {additionalNotes.map((note, idx) => (
-                      <p key={idx} className="italic">&#x2022; {note.item}</p>
-                    ))}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </>
-      )}
-      {content.tarifas_por_hora && (
-        <DynamicTariffSection
-          title="Tarifas por Hora"
-          items={content.tarifas_por_hora}
-        />
-      )}
-      {content.metro_lineal && (
-        <DynamicTariffSection
-          title="Tarifas por Metro Lineal"
-          items={content.metro_lineal}
-        />
-      )}
-    </div>
-  );
+  if (content.tarifas_por_hora && content.tarifas_por_hora.length > 0) {
+    sections.push({ title: "Tarifas por Hora", items: content.tarifas_por_hora });
+  }
+
+  if (content.metro_lineal && content.metro_lineal.length > 0) {
+    sections.push({ title: "Tarifas por Metro Lineal", items: content.metro_lineal });
+  }
+
+  if (sections.length === 0) {
+    return (
+      <div className="text-center py-4 text-gray-500">
+        No hay datos de Alta Costura disponibles.
+      </div>
+    );
+  }
+
+  return <DynamicTariffSection sections={sections} />;
 };
 
 export default TariffAltaCostura;

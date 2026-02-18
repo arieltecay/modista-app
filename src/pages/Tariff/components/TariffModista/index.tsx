@@ -1,47 +1,29 @@
 import type { FC } from 'react';
 import DynamicTariffSection from '../DynamicTariffSection';
 import { TariffModistaProps } from './types';
+import { TariffCostureraContent, TariffSection, TariffModistaNewContent } from '../../../../services/tariff/types';
 
 
 const TariffModista: FC<TariffModistaProps> = ({ tariffData }) => {
-  const { content } = tariffData;
+  const { content, type } = tariffData;
 
-  return (
-    <div className="space-y-6">
-      {content.tarifas_por_hora && (
-        <DynamicTariffSection
-          title="Tarifas por Hora"
-          items={content.tarifas_por_hora}
-        />
-      )}
-      {content.prendas_principales && (
-        <DynamicTariffSection
-          title="Prendas Principales"
-          items={content.prendas_principales}
-        />
-      )}
-      {content.agregados && (
-        <DynamicTariffSection
-          title="Agregados"
-          items={content.agregados.map((item: any) => ({ item: item.descripcion }))}
-        />
-      )}
-      {content.anexos && (
-        <>
-          {Object.keys(content.anexos).map((key) => {
-            const anexo = content.anexos[key];
-            return (
-              <DynamicTariffSection
-                key={key}
-                title={anexo.nombre}
-                items={anexo.items}
-              />
-            );
-          })}
-        </>
-      )}
-    </div>
-  );
+  if (type === 'costurera') {
+    const sections: TariffSection[] = [];
+    const costureraContent = content as TariffCostureraContent;
+    if (costureraContent.servicios && costureraContent.servicios.length > 0) {
+      sections.push({ title: "Servicios Generales", items: costureraContent.servicios });
+    }
+    return <DynamicTariffSection sections={sections} />;
+  }
+
+  const sections: TariffSection[] = [];
+  const modistaContent = content as TariffModistaNewContent;
+
+  if (modistaContent.serviciosModista && modistaContent.serviciosModista.length > 0) {
+    sections.push({ title: tariffData.metadata.titulo, items: modistaContent.serviciosModista });
+  }
+
+  return <DynamicTariffSection sections={sections} />;
 };
 
 export default TariffModista;

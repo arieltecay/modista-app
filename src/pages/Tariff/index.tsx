@@ -3,11 +3,12 @@ import { useState, useEffect, useMemo } from 'react';
 import {
   TariffData,
   AvailableTariffMeta,
+  SearchResultItem,
 } from '../../services/tariff/types';
 import Spinner from '../../components/Spinner';
 import ErrorCard from '../../components/ErrorCard/ErrorCard';
-import { getAvailableTariffMetadata as fetchAvailableTariffMetadata, getTariffs as fetchTariffs } from '../../services/tariff/tariffService';
-import { TariffModista, TariffAltaCostura, TariffArreglos } from './components';
+import { getAvailableTariffMetadata as fetchAvailableTariffMetadata, getTariffs as fetchTariffs, searchTariffItems } from '../../services/tariff/tariffService';
+import { TariffModista, TariffAltaCostura, TariffArreglos, DynamicTariffSection } from './components';
 
 const useAvailableTariffsMeta = () => {
   const [meta, setMeta] = useState<AvailableTariffMeta[]>([]);
@@ -39,6 +40,48 @@ const TariffPage: FC = () => {
   const [tariff, setTariff] = useState<TariffData | null>(null);
   const [loadingTariff, setLoadingTariff] = useState(false);
   const [errorTariff, setErrorTariff] = useState<string | null>(null);
+
+  const [searchText, setSearchText] = useState<string>('');
+  const [searchResults, setSearchResults] = useState<SearchResultItem[]>([]);
+  const [searchLoading, setSearchLoading] = useState<boolean>(false);
+
+  const uniqueTypes = useMemo(() => {
+    const types = meta.map(m => m.type);
+    return Array.from(new Set(types));
+  }, [meta]);
+
+  const availablePeriodsForSelectedType = useMemo(() => {
+    return meta
+      .filter(m => m.type === selectedType)
+      .sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime());
+  }, [meta, selectedType]);
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchText(e.target.value);
+  };
+
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(async () => {
+      if (searchText.trim() === '') {
+        setSearchResults([]);
+        return;
+      }
+
+      if (!selectedType || !selectedPeriodIdentifier) return;
+
+      setSearchLoading(true);
+      try {
+        const results = await searchTariffItems(selectedType, selectedPeriodIdentifier, searchText);
+        setSearchResults(results);
+      } catch (err) {
+        console.error('Error searching tariff items:', err);
+      } finally {
+        setSearchLoading(false);
+      }
+    }, 500);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchText, selectedType, selectedPeriodIdentifier]);
 
   useEffect(() => {
     if (meta.length > 0 && !selectedType) {
@@ -76,31 +119,22 @@ const TariffPage: FC = () => {
     fetchTariff();
   }, [selectedType, selectedPeriodIdentifier]);
 
-  const availablePeriodsForSelectedType = useMemo(() => {
-    return meta
-      .filter(m => m.type === selectedType)
-      .sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime());
-  }, [meta, selectedType]);
+  const searchSections = useMemo(() => {
+    if (searchText.trim() === '' || searchResults.length === 0) return [];
 
-  const uniqueTypes = useMemo(() => {
-    return Array.from(new Set(meta.map(m => m.type)));
-  }, [meta]);
+    const groupedResults: { [key: string]: SearchResultItem[] } = {};
+    searchResults.forEach(item => {
+      if (!groupedResults[item.sectionTitle]) {
+        groupedResults[item.sectionTitle] = [];
+      }
+      groupedResults[item.sectionTitle].push(item);
+    });
 
-
-  if (loadingMeta) {
-    return <Spinner text="Cargando configuración de tarifarios..." />;
-  }
-
-  if (errorMeta) {
-    return (
-      <div className="py-12">
-        <ErrorCard
-          title="Error al cargar tarifarios"
-          message={errorMeta}
-        />
-      </div>
-    );
-  }
+    return Object.keys(groupedResults).map(title => ({
+      title: title,
+      items: groupedResults[title]
+    }));
+  }, [searchText, searchResults]);
 
   const renderTariffComponent = (tariffData: TariffData) => {
     switch (tariffData.type) {
@@ -108,6 +142,8 @@ const TariffPage: FC = () => {
         return <TariffModista tariffData={tariffData} />;
       case 'alta-costura':
         return <TariffAltaCostura tariffData={tariffData} />;
+      case 'costurera':
+        return <TariffModista tariffData={tariffData} />;
       case 'arreglos':
         return <TariffArreglos tariffData={tariffData} />;
       default:
@@ -122,12 +158,34 @@ const TariffPage: FC = () => {
           <h1 className="text-4xl font-extrabold text-gray-900 sm:text-5xl mb-4">
             {tariff?.metadata?.titulo || 'Tarifarios de Confección'}
           </h1>
-          {tariff?.metadata?.periodo?.inicio && tariff?.metadata?.periodo?.fin && (
-            <p className="mt-3 text-xl text-gray-600 max-w-2xl mx-auto">
-              {tariff.metadata.periodo.inicio} a {tariff.metadata.periodo.fin}
-            </p>
+          {tariff?.metadata?.notas && tariff.metadata.notas.length > 0 && (
+            <div className="mt-8 mx-auto max-w-4xl p-6 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl shadow-lg border border-purple-200">
+              <h3 className="text-xl font-bold text-purple-800 mb-3 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Notas Importantes
+              </h3>
+              <ul className="list-disc list-inside text-gray-700 space-y-2 text-left">
+                {tariff.metadata.notas.map((nota, index) => (
+                  <li key={index} className="flex items-start"><span className="mr-2">&#x2022;</span><span>{nota}</span></li>
+                ))}
+              </ul>
+            </div>
           )}
         </header>
+
+        {tariff && (
+          <div className="mb-8 max-w-md mx-auto">
+            <input
+              type="text"
+              placeholder="Buscar ítems en el tarifario actual..."
+              value={searchText}
+              onChange={handleSearchChange}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+            />
+          </div>
+        )}
 
         {uniqueTypes.length > 1 && (
           <div className="mb-8 border-b border-gray-200">
@@ -137,6 +195,7 @@ const TariffPage: FC = () => {
                   key={type}
                   onClick={() => {
                     setSelectedType(type);
+                    setSearchText('');
                     const periodsForNewType = meta.filter(m => m.type === type).sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime());
                     if (periodsForNewType.length > 0) {
                       setSelectedPeriodIdentifier(periodsForNewType[0].periodIdentifier);
@@ -177,10 +236,22 @@ const TariffPage: FC = () => {
           </div>
         )}
 
-        {loadingTariff ? (
-          <Spinner text="Cargando tarifario..." />
+        {loadingTariff || searchLoading ? (
+          <Spinner text={searchLoading ? "Buscando..." : "Cargando tarifario..."} />
         ) : errorTariff ? (
           <ErrorCard title="Error al cargar tarifario" message={errorTariff} />
+        ) : searchText.trim() !== '' ? (
+          <div className="bg-white shadow overflow-hidden sm:rounded-lg border border-gray-100">
+            <div className="p-4 sm:p-6">
+              {searchSections.length > 0 ? (
+                <DynamicTariffSection sections={searchSections} />
+              ) : (
+                <div className="text-center py-10 text-gray-500">
+                   <p>No se encontraron resultados para "{searchText}".</p>
+                </div>
+              )}
+            </div>
+          </div>
         ) : tariff ? (
           <div className="bg-white shadow overflow-hidden sm:rounded-lg border border-gray-100">
             <div className="p-4 sm:p-6">

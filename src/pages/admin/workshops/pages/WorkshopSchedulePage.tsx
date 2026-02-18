@@ -4,7 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { getTurnosByCourse, createTurno, updateTurno, deleteTurno } from '../../../../services/turnos/turnoService';
 import { getCoursesAdmin } from '../../../../services/courses/coursesService';
 import toast from 'react-hot-toast';
-import Spinner from '../../../../components/Spinner';
+import { Spinner } from '@/components';
 
 interface Course {
   _id: string;

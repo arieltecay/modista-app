@@ -6,7 +6,7 @@ import { sendPaymentSuccessEmail } from '../../../../services/email/emailService
 import { getCoursesAdmin } from '../../../../services/courses/coursesService';
 import { getTurnosByCourse } from '../../../../services/turnos/turnoService';
 import toast from 'react-hot-toast';
-import Spinner from '../../../../components/Spinner';
+import { Spinner } from '@/components';
 import DepositModal from '../components/DepositModal';
 
 // Componentes especializados para talleres para segregar lógica de cursos online

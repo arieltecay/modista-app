@@ -1,6 +1,7 @@
 import React from 'react';
+import { CourseImageProps } from './types';
 
-const CourseImage = ({ course, className }) => {
+const CourseImage: React.FC<CourseImageProps> = ({ course, className }) => {
   const isFree = parseFloat(course.price) === 0;
 
   return (

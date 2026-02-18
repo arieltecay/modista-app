@@ -1,8 +1,9 @@
 import React from 'react';
-import Spinner from '../../../../components/Spinner';
+import { Spinner } from '@/components';
 import { FaSort, FaSortUp, FaSortDown } from 'react-icons/fa';
+import { SortableHeaderProps, InscriptionsTableDesktopProps, TurnoData } from './types';
 
-const SortableHeader = ({ children, name, sortConfig, onSort }) => {
+const SortableHeader: React.FC<SortableHeaderProps> = ({ children, name, sortConfig, onSort }) => {
   const isSorted = sortConfig.key === name;
   const direction = isSorted ? sortConfig.direction : undefined;
 
@@ -23,7 +24,7 @@ const SortableHeader = ({ children, name, sortConfig, onSort }) => {
   );
 };
 
-const InscriptionsTableDesktop = ({
+const InscriptionsTableDesktop: React.FC<InscriptionsTableDesktopProps> = ({
   inscriptions,
   loading,
   handlePaymentStatusUpdate,
@@ -76,7 +77,7 @@ const InscriptionsTableDesktop = ({
                 <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                   {inscription.turnoId && typeof inscription.turnoId === 'object' ? (
                     <p className="text-xs text-indigo-600 font-bold bg-indigo-50 inline-block px-1.5 py-0.5 rounded">
-                      {inscription.turnoId.diaSemana} - {inscription.turnoId.horaInicio} hs
+                      {(inscription.turnoId as TurnoData).diaSemana} - {(inscription.turnoId as TurnoData).horaInicio} hs
                     </p>
                   ) : (
                     <span className="text-gray-400 italic">No asignado</span>
@@ -87,7 +88,7 @@ const InscriptionsTableDesktop = ({
                 </td>
                 {showDepositFeature && (
                   <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                    {inscription.depositAmount > 0 ? (
+                    {inscription.depositAmount && inscription.depositAmount > 0 ? (
                       <div>
                         <p className="text-green-600 font-bold whitespace-no-wrap">${inscription.depositAmount}</p>
                         <p className="text-[10px] text-gray-400">
@@ -118,7 +119,7 @@ const InscriptionsTableDesktop = ({
                         >
                           {loading ? '...' : 'Marcar Pagado'}
                         </button>
-                        {showDepositFeature && !inscription.depositAmount && (
+                        {showDepositFeature && !(inscription.depositAmount && inscription.depositAmount > 0) && (
                           <button
                             onClick={() => onDepositClick(inscription)}
                             className="bg-indigo-500 text-white px-3 py-1 text-xs rounded hover:bg-indigo-600 transition-colors"

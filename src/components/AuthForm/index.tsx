@@ -1,22 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, ChangeEvent, FormEvent } from 'react';
+import { AuthFormProps, AuthFormData, AuthFormErrors, AuthMode } from './types';
 
-const AuthForm = ({ mode, onSubmit, loading, error }) => {
-  const [formData, setFormData] = useState({
+const AuthForm: React.FC<AuthFormProps> = ({ mode, onSubmit, loading, error }) => {
+  const [formData, setFormData] = useState<AuthFormData>({
     email: '',
     password: '',
     name: '',
     role: 'user',
   });
 
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<AuthFormErrors>({});
 
-  const validateEmail = (email) => {
+  const validateEmail = (email: string): boolean => {
     const re = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
     return re.test(String(email).toLowerCase());
   };
 
-  const validateForm = () => {
-    const newErrors = {};
+  const validateForm = (): boolean => {
+    const newErrors: AuthFormErrors = {};
 
     if (!formData.email.trim()) {
       newErrors.email = 'El email es obligatorio.';
@@ -31,7 +32,7 @@ const AuthForm = ({ mode, onSubmit, loading, error }) => {
     }
 
     if (mode === 'register') {
-      if (!formData.name.trim()) {
+      if (!formData.name?.trim()) {
         newErrors.name = 'El nombre es obligatorio.';
       }
     }
@@ -40,19 +41,19 @@ const AuthForm = ({ mode, onSubmit, loading, error }) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleChange = (e) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-    if (errors[name]) {
-      setErrors({ ...errors, [name]: null });
+    if (errors[name as keyof AuthFormErrors]) {
+      setErrors({ ...errors, [name as keyof AuthFormErrors]: null });
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!validateForm()) return;
 
-    const submitData = mode === 'login'
+    const submitData: AuthFormData = mode === 'login'
       ? { email: formData.email, password: formData.password }
       : { email: formData.email, password: formData.password, name: formData.name, role: formData.role };
 
@@ -82,7 +83,7 @@ const AuthForm = ({ mode, onSubmit, loading, error }) => {
               name="name"
               type="text"
               required
-              value={formData.name}
+              value={formData.name || ''}
               onChange={handleChange}
               className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
                 errors.name ? 'border-red-500' : 'border-gray-300'

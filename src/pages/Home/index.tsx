@@ -1,6 +1,6 @@
 import React from 'react';
 import HomeSection from '../../components/HomeSection';
-import Announcement from '../../components/Announcement';
+import { Announcement } from '@/components';
 import TestimonialsSection from '../../components/TestimonialsSection';
 
 /**

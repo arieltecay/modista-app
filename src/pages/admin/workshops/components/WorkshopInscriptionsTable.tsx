@@ -1,6 +1,6 @@
 import type { FC } from 'react';
 import React from 'react';
-import Spinner from '../../../../components/Spinner';
+import { Spinner } from '@/components';
 import { FaSort, FaSortUp, FaSortDown } from 'react-icons/fa';
 
 interface Turno {

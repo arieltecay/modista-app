@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import InscriptionForm from '../../components/InscriptionForm';
+
 import { getCourses } from '../../services/courses';
 import { trackCourseView } from '../../services/analytics';
-import CourseImage from '../../components/CourseImage';
-import Spinner from '../../components/Spinner';
+import { CourseImage, InscriptionForm, Spinner } from '@/components';
 import { formatTextToHtml } from '../../utils/textFormatting';
 
 function CourseDetailPage() {

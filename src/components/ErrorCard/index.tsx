@@ -1,6 +1,12 @@
 import React from 'react';
+import { ErrorCardProps } from './types';
 
-function ErrorCard({ title = "No se pudieron cargar los cursos", message, onRetry, showRetry = true }) {
+const ErrorCard: React.FC<ErrorCardProps> = ({ 
+  title = "No se pudieron cargar los cursos", 
+  message, 
+  onRetry, 
+  showRetry = true 
+}) => {
   return (
     <div className="max-w-2xl mx-auto mt-12 p-6 bg-white border border-gray-200 rounded-lg shadow-sm text-center">
       <div className="flex flex-col items-center gap-4">
@@ -30,6 +36,6 @@ function ErrorCard({ title = "No se pudieron cargar los cursos", message, onRetr
       </div>
     </div>
   );
-}
+};
 
 export default ErrorCard;

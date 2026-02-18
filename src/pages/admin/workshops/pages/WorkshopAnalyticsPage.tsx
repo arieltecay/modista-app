@@ -3,8 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import { getWorkshopDetails } from '../../../../services/inscriptions/workshopInscriptionService';
 import { WorkshopDetailsResponse, WorkshopInscriptionItem } from '../../../../services/inscriptions/types';
-import Spinner from '../../../../components/Spinner';
-import ScheduleUpdateModal from '../../../../components/ScheduleUpdateModal';
+import { Spinner } from '@/components';
+import ScheduleUpdateModal from '@/components/ScheduleUpdateModal';
 
 // Type for the inscription object passed to the modal
 interface ModalInscription {

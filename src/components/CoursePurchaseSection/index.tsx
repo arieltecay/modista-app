@@ -1,7 +1,8 @@
 import React from 'react';
 import { FaWhatsapp } from 'react-icons/fa';
+import { CoursePurchaseSectionProps } from './types';
 
-const CoursePurchaseSection = ({ course }) => {
+const CoursePurchaseSection: React.FC<CoursePurchaseSectionProps> = ({ course }) => {
   const isFree = parseFloat(course.price) === 0;
 
   if (isFree) {

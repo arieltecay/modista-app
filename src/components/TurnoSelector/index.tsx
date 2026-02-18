@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { getTurnosByCourse } from '../../services/turnos/turnoService';
 import Spinner from '../Spinner';
+import { Turno, TurnoSelectorProps } from './types';
 
-const TurnoSelector = ({ courseId, onSelect, selectedTurnoId }) => {
-  const [turnos, setTurnos] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+const TurnoSelector: React.FC<TurnoSelectorProps> = ({ courseId, onSelect, selectedTurnoId }) => {
+  const [turnos, setTurnos] = useState<Turno[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchTurnos = async () => {
@@ -67,7 +68,7 @@ const TurnoSelector = ({ courseId, onSelect, selectedTurnoId }) => {
             >
               <div className="flex justify-between items-start mb-1">
                 <span className={`font-bold ${isSelected ? 'text-indigo-700' : 'text-gray-900'}`}>
-                  {turno.diaSemana || new Date(turno.fecha).toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long' })}
+                  {turno.diaSemana || new Date(turno.fecha!).toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long' })}
                 </span>
                 {isFull ? (
                   <span className="text-[10px] uppercase font-bold px-2 py-0.5 bg-red-100 text-red-600 rounded-full">Lleno</span>

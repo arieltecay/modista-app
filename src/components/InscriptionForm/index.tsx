@@ -1,25 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { createInscription } from '../../services/inscriptions';
 import { sendConfirmationEmail } from '../../services/email';
 import Spinner from '../Spinner';
-import TurnoSelector from '../Courses/TurnoSelector';
+import TurnoSelector from '../TurnoSelector'; // Ruta corregida
 import { validateNombre, validateApellido, validateEmail, validateCelular } from '../../utils/formValidations';
+import { InscriptionFormProps, InscriptionFormData, InscriptionFormErrors, FormMessage } from './types';
 
-const InscriptionForm = ({ course }) => {
-  const [formData, setFormData] = useState({
+const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
+  const [formData, setFormData] = useState<InscriptionFormData>({
     nombre: '',
     apellido: '',
     email: '',
     celular: '',
   });
-  const [selectedTurnoId, setSelectedTurnoId] = useState(null);
-  const [errors, setErrors] = useState({});
-  const [loading, setLoading] = useState(false);
-  const [formMessage, setFormMessage] = useState(null);
+  const [selectedTurnoId, setSelectedTurnoId] = useState<string | null>(null);
+  const [errors, setErrors] = useState<InscriptionFormErrors>({});
+  const [loading, setLoading] = useState<boolean>(false);
+  const [formMessage, setFormMessage] = useState<FormMessage | null>(null);
 
-
-  const validateForm = () => {
-    const newErrors = {};
+  const validateForm = (): boolean => {
+    const newErrors: InscriptionFormErrors = {};
     const nombreError = validateNombre(formData.nombre);
     if (nombreError) newErrors.nombre = nombreError;
 
@@ -40,21 +40,19 @@ const InscriptionForm = ({ course }) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleChange = (e) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
 
-    // Validación en tiempo real para celular
     if (name === 'celular') {
       const celularError = validateCelular(value);
       setErrors(prev => ({ ...prev, celular: celularError }));
-    } else if (errors[name]) {
-      // Limpiar errores para otros campos si estaban presentes
-      setErrors(prev => ({ ...prev, [name]: null }));
+    } else if (errors[name as keyof InscriptionFormErrors]) {
+      setErrors(prev => ({ ...prev, [name as keyof InscriptionFormErrors]: null }));
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setFormMessage(null);
 
@@ -66,19 +64,17 @@ const InscriptionForm = ({ course }) => {
     try {
       const inscriptionData = {
         ...formData,
-        courseId: course?.id || '1',
+        courseId: course?.id || course?._id || '1',
         courseTitle: course?.title || 'Curso por defecto',
         coursePrice: course?.price || 0,
         courseShortDescription: course?.shortDescription || 'Descripción corta por defecto',
-        courseDeeplink: course?.deeplink || 'https://modista.app', // Añadimos un deeplink por defecto
+        courseDeeplink: course?.deeplink || 'https://modista.app',
         dateYear: new Date().getFullYear(),
         turnoId: selectedTurnoId,
       };
 
-      // 2. Guardar la inscripción en la base de datos
       await createInscription(inscriptionData);
 
-      // 3. Enviar el correo de confirmación
       try {
         await sendConfirmationEmail(inscriptionData);
       } catch (emailError) {
@@ -86,8 +82,9 @@ const InscriptionForm = ({ course }) => {
       }
       setFormMessage({ type: 'success', text: '¡Gracias por inscribirte! Revisa tu correo para ver la confirmación. Nos pondremos en contacto contigo pronto.' });
       setFormData({ nombre: '', apellido: '', email: '', celular: '' });
+      setSelectedTurnoId(null); // Clear selected turno after successful inscription
 
-    } catch (error) {
+    } catch (error: any) {
       const errorMessage = error.message || 'Ocurrió un error al enviar tu inscripción. Por favor, intenta de nuevo.';
       setFormMessage({ type: 'error', text: errorMessage });
     } finally {
@@ -95,7 +92,7 @@ const InscriptionForm = ({ course }) => {
     }
   };
 
-  const isFree = parseFloat(course?.price || 0) === 0;
+  const isFree = parseFloat(course?.price?.toString() || '0') === 0;
 
   return (
     <section className="bg-gray-100 py-12">
@@ -189,7 +186,7 @@ const InscriptionForm = ({ course }) => {
               {course?.isPresencial && (
                 <div className="pt-2">
                   <TurnoSelector
-                    courseId={course.courseId || course._id || course.id}
+                    courseId={course.id || course._id || ''}
                     onSelect={(id) => {
                       setSelectedTurnoId(id);
                       setErrors(prev => ({ ...prev, turno: null }));

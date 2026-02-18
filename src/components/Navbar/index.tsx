@@ -4,16 +4,21 @@ import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import { GiSewingMachine } from "react-icons/gi";
 import { NavLink } from 'react-router-dom';
 
-const navigation = [
+interface NavItem {
+  name: string;
+  href: string;
+}
+
+const navigation: NavItem[] = [
   { name: 'Inicio', href: '/' },
   // { name: 'Tarifas', href: '/tarifario' },
   { name: 'Cursos', href: '/cursos' },
   { name: 'Sobre Mí', href: '/sobre-mi' },
 ];
 
-export default function Navbar() {
+export const Navbar: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const openMenuButtonRef = useRef(null);
+  const openMenuButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (!mobileMenuOpen) {
@@ -107,4 +112,4 @@ export default function Navbar() {
       </Dialog>
     </header>
   );
-}
+};

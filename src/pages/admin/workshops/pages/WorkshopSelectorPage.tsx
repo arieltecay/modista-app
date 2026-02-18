@@ -2,7 +2,7 @@ import type { FC } from 'react';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getCoursesAdmin } from '../../../../services/courses/coursesService';
-import Spinner from '../../../../components/Spinner';
+import { Spinner } from '@/components';
 
 interface Course {
   _id: string;

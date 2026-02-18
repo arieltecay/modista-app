@@ -5,8 +5,7 @@ import {
   AvailableTariffMeta,
   SearchResultItem,
 } from '../../services/tariff/types';
-import Spinner from '../../components/Spinner';
-import ErrorCard from '../../components/ErrorCard/ErrorCard';
+import { Spinner, ErrorCard } from '@/components';
 import { getAvailableTariffMetadata as fetchAvailableTariffMetadata, getTariffs as fetchTariffs, searchTariffItems } from '../../services/tariff/tariffService';
 import { TariffModista, TariffAltaCostura, TariffArreglos, DynamicTariffSection } from './components';
 

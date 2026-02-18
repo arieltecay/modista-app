@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Announcement = () => {
+const Announcement: React.FC = () => {
   return (
     <div className="bg-[var(--color-green-600)] rounded-xl m-4 py-8 sm:py-12">
       <div className="mx-auto max-w-7xl px-6 lg:px-8 text-center">

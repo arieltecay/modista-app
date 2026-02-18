@@ -1,7 +1,8 @@
 import React from 'react';
-import Spinner from '../../../../components/Spinner';
+import { Spinner } from '@/components';
+import { TurnoData, InscriptionsListMobileProps } from './types';
 
-const InscriptionsListMobile = ({
+const InscriptionsListMobile: React.FC<InscriptionsListMobileProps> = ({
   inscriptions,
   loading,
   handlePaymentStatusUpdate,
@@ -23,7 +24,7 @@ const InscriptionsListMobile = ({
               <p className="font-bold text-gray-900 whitespace-normal">{inscription.nombre} {inscription.apellido}</p>
               {inscription.turnoId && typeof inscription.turnoId === 'object' && (
                 <p className="text-xs text-indigo-600 font-bold bg-indigo-50 inline-block px-1.5 py-0.5 rounded mt-0.5">
-                  {inscription.turnoId.diaSemana} - {inscription.turnoId.horaInicio} hs
+                  {(inscription.turnoId as TurnoData).diaSemana} - {(inscription.turnoId as TurnoData).horaInicio} hs
                 </p>
               )}
             </div>
@@ -36,11 +37,11 @@ const InscriptionsListMobile = ({
               {!hideCourseTitle && <p className="text-sm font-medium text-gray-700 mb-1">{inscription.courseTitle || 'N/A'}</p>}
               <div className="flex items-center gap-2">
                 <p className="text-sm text-green-600 font-bold">${inscription.coursePrice || 0}</p>
-                {showDepositFeature && inscription.depositAmount > 0 && (
+                {showDepositFeature && inscription.depositAmount && inscription.depositAmount > 0 ? (
                   <span className="text-[10px] bg-green-50 text-green-700 px-1.5 py-0.5 rounded border border-green-100 font-bold">
                     Seña: ${inscription.depositAmount}
                   </span>
-                )}
+                ) : null}
               </div>
             </div>
             <div className="flex flex-col items-end gap-2">
@@ -59,7 +60,7 @@ const InscriptionsListMobile = ({
                   >
                     {loading ? '...' : 'Pagado'}
                   </button>
-                  {showDepositFeature && !inscription.depositAmount && (
+                  {showDepositFeature && !(inscription.depositAmount && inscription.depositAmount > 0) && (
                     <button
                       onClick={() => onDepositClick(inscription)}
                       className="bg-indigo-500 text-white px-3 py-1 text-xs rounded hover:bg-indigo-600 transition-colors"

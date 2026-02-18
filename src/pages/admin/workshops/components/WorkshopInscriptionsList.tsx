@@ -1,6 +1,5 @@
 import type { FC } from 'react';
-import React from 'react';
-import Spinner from '../../../../components/Spinner';
+import { Spinner } from '@/components';
 
 interface Turno {
   _id: string;

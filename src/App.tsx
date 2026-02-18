@@ -18,7 +18,7 @@ import WorkshopSchedulePage from '@/pages/admin/workshops/pages/WorkshopSchedule
 import WorkshopAnalyticsPage from '@/pages/admin/workshops/pages/WorkshopAnalyticsPage';
 
 import LoginPage from './pages/Auth/LoginPage';
-import ProtectedRoute from './components/ProtectedRoute';
+import { ProtectedRoute } from '@/components';
 import { Toaster } from 'react-hot-toast';
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react"

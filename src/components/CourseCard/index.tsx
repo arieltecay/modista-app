@@ -1,8 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import CourseImage from '../CourseImage'; // Importa el nuevo componente
+import CourseImage from '../CourseImage';
+import { CourseCardProps } from './types';
 
-function CourseCard({ course }) {
+function CourseCard({ course }: CourseCardProps) {
   const isFree = parseFloat(course.price) === 0;
 
   return (
@@ -21,7 +22,7 @@ function CourseCard({ course }) {
           ) : (
             <>
               <span className="text-2xl font-bold text-green-600 mb-4">${course.price}</span>
-              <Link 
+              <Link
                 to={`/cursos/${course.id}`}
                 className="w-full bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 text-center transition-colors duration-200"
               >

@@ -4,18 +4,21 @@ import {
   updateInscriptionPaymentStatus,
   getInscriptionsCount,
   exportInscriptions
-} from '../../../../services/inscriptions';
-import { sendPaymentSuccessEmail, sendCoursePaidEmail } from '../../../../services/email';
-import { getCoursesAdmin } from '../../../../services/courses';
+} from '../../../../../services/inscriptions';
+import { sendPaymentSuccessEmail, sendCoursePaidEmail } from '../../../../../services/email';
+import { getCoursesAdmin } from '../../../../../services/courses';
 import toast from 'react-hot-toast';
-import InscriptionsListMobile from '../components/InscriptionsListMobile';
-import InscriptionsTableDesktop from '../components/InscriptionsTableDesktop';
-import Pagination from '../../shared/components/Pagination';
-import { useDebounce } from '../../shared/hooks/useDebounce';
+import InscriptionsListMobile from '../../components/InscriptionsListMobile';
+import InscriptionsTableDesktop from '../../components/InscriptionsTableDesktop';
+import Pagination from '../../../shared/components/Pagination';
+import { useDebounce } from '../../../shared/hooks/useDebounce';
+import type { InscriptionsCount } from '../../../../../services/types';
+import type { Inscription } from '../../components/types';
+import type { StatCardProps, SortConfig } from './types';
 
 // --- Helper Components ---
 
-const StatCard = ({ title, value, icon, colorClass, loading }) => {
+const StatCard: React.FC<StatCardProps> = ({ title, value, icon, colorClass, loading }) => {
   if (loading) {
     return <div className="bg-white p-6 rounded-2xl shadow-lg animate-pulse h-[124px]"></div>;
   }
@@ -32,32 +35,32 @@ const StatCard = ({ title, value, icon, colorClass, loading }) => {
   );
 };
 
-const TotalIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>;
-const PaidIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>;
-const PendingIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>;
-const SearchIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 absolute top-1/2 left-4 -translate-y-1/2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>;
+const TotalIcon: React.FC = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>;
+const PaidIcon: React.FC = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>;
+const PendingIcon: React.FC = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>;
+const SearchIcon: React.FC = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 absolute top-1/2 left-4 -translate-y-1/2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>;
 
 
 
-const InscriptionsAdminPage = () => {
-  const [inscriptions, setInscriptions] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [isExporting, setIsExporting] = useState(false);
+const InscriptionsAdminPage: React.FC = () => {
+  const [inscriptions, setInscriptions] = useState<Inscription[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isExporting, setIsExporting] = useState<boolean>(false);
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [totalItems, setTotalItems] = useState(0);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [itemsPerPage, setItemsPerPage] = useState<number>(10);
+  const [totalItems, setTotalItems] = useState<number>(0);
 
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState<string>('');
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
-  const [sortConfig, setSortConfig] = useState({ key: 'fechaInscripcion', direction: 'desc' });
-  const [paymentStatusFilter, setPaymentStatusFilter] = useState('all');
-  const [courseFilter, setCourseFilter] = useState('');
+  const [sortConfig, setSortConfig] = useState<SortConfig>({ key: 'fechaInscripcion', direction: 'desc' });
+  const [paymentStatusFilter, setPaymentStatusFilter] = useState<'all' | 'pending' | 'paid'>('all');
+  const [courseFilter, setCourseFilter] = useState<string>('');
   const debouncedCourseFilter = useDebounce(courseFilter, 500);
 
-  const [courseSuggestions, setCourseSuggestions] = useState([]);
-  const [inscriptionStats, setInscriptionStats] = useState(null);
+  const [courseSuggestions, setCourseSuggestions] = useState<any[]>([]);
+  const [inscriptionStats, setInscriptionStats] = useState<InscriptionsCount | null>(null);
 
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
@@ -75,9 +78,9 @@ const InscriptionsAdminPage = () => {
           courseFilter: debouncedCourseFilter,
           excludeWorkshops: true
         });
-        setInscriptions(data.data);
-        setTotalItems(data.total);
-      } catch (err) {
+        setInscriptions(data.data as unknown as Inscription[]);
+        setTotalItems(data.totalItems);
+      } catch (err: any) {
         setError(err.message || 'Error al cargar las inscripciones.');
       } finally {
         setLoading(false);
@@ -87,8 +90,8 @@ const InscriptionsAdminPage = () => {
     const fetchStats = async () => {
       try {
         const statsData = await getInscriptionsCount(true); // excludeWorkshops - Solo cursos online
-        setInscriptionStats(statsData.data);
-      } catch (err) {
+        setInscriptionStats('data' in statsData ? (statsData as any).data : statsData);
+      } catch (err: any) {
         toast.error(err.message || 'Error al cargar las estadísticas.');
       }
     };
@@ -107,9 +110,9 @@ const InscriptionsAdminPage = () => {
     if (debouncedCourseFilter) {
       const fetchSuggestions = async () => {
         try {
-          const data = await getCoursesAdmin(1, 10, undefined, undefined, debouncedCourseFilter);
+          const data = await getCoursesAdmin(1, 10, undefined, undefined, debouncedCourseFilter as string);
           setCourseSuggestions(data.data);
-        } catch (err) {
+        } catch (err: any) {
           console.error('Error fetching course suggestions:', err);
         }
       };
@@ -120,7 +123,7 @@ const InscriptionsAdminPage = () => {
   }, [debouncedCourseFilter]);
 
 
-  const handlePaymentStatusUpdate = async (inscriptionId, newStatus) => {
+  const handlePaymentStatusUpdate = async (inscriptionId: string, newStatus: 'paid' | 'pending') => {
     try {
       setLoading(true);
       await updateInscriptionPaymentStatus(inscriptionId, newStatus);
@@ -135,6 +138,7 @@ const InscriptionsAdminPage = () => {
       // Actualizar estadísticas
       if (inscriptionStats) {
         setInscriptionStats(prevStats => {
+          if (!prevStats) return prevStats;
           const newStats = { ...prevStats };
           if (newStatus === 'paid') {
             newStats.paid += 1;
@@ -151,36 +155,36 @@ const InscriptionsAdminPage = () => {
         const inscription = updatedInscriptions.find(i => i._id === inscriptionId);
         if (inscription) {
           try {
-            await sendPaymentSuccessEmail(inscription);
+            await sendPaymentSuccessEmail(inscription as any);
             toast.success('Correo de confirmación de pago enviado.');
-          } catch (emailError) {
+          } catch (emailError: any) {
             toast.error(`Error al enviar el correo: ${emailError.message}`);
           }
         }
       }
 
       toast.success(`Estado actualizado a ${newStatus === 'paid' ? 'pagado' : 'pendiente'} correctamente`);
-    } catch (error) {
+    } catch (error: any) {
       toast.error('Error al actualizar el estado: ' + error.message);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSendCourseEmail = async (inscription) => {
+  const handleSendCourseEmail = async (inscription: Inscription) => {
     try {
       setLoading(true);
-      await sendCoursePaidEmail(inscription);
+      await sendCoursePaidEmail(inscription as any);
       toast.success('Correo con el link del curso enviado exitosamente.');
-    } catch (error) {
+    } catch (error: any) {
       toast.error('Error al enviar el correo del curso: ' + error.message);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSort = (key) => {
-    let direction = 'asc';
+  const handleSort = (key: string) => {
+    let direction: 'asc' | 'desc' = 'asc';
     if (sortConfig.key === key && sortConfig.direction === 'asc') {
       direction = 'desc';
     }
@@ -191,11 +195,11 @@ const InscriptionsAdminPage = () => {
   const handleExport = async () => {
     setIsExporting(true);
     await toast.promise(
-      exportInscriptions(paymentStatusFilter, debouncedSearchTerm, debouncedCourseFilter, true), // excludeWorkshops
+      exportInscriptions(paymentStatusFilter, debouncedSearchTerm as string, debouncedCourseFilter as string, true), // excludeWorkshops
       {
         loading: 'Exportando inscripciones...',
         success: <b>Archivo descargado con éxito.</b>,
-        error: (err) => <b>{err.message || "Error al exportar"}</b>,
+        error: (err: any) => <b>{err.message || "Error al exportar"}</b>,
       }
     );
     setIsExporting(false);
@@ -214,7 +218,7 @@ const InscriptionsAdminPage = () => {
 
   const handlePrevPage = () => setCurrentPage(prev => Math.max(prev - 1, 1));
   const handleNextPage = () => setCurrentPage(prev => Math.min(prev + 1, totalPages));
-  const handleItemsPerPageChange = (e) => {
+  const handleItemsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setItemsPerPage(Number(e.target.value));
     setCurrentPage(1);
   };
@@ -311,7 +315,7 @@ const InscriptionsAdminPage = () => {
               </div>
               <select
                 value={paymentStatusFilter}
-                onChange={(e) => setPaymentStatusFilter(e.target.value)}
+                onChange={(e) => setPaymentStatusFilter(e.target.value as 'all' | 'pending' | 'paid')}
                 className="px-4 py-3 border border-gray-200 bg-gray-50 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors"
               >
                 <option value="all">Todos los pagos</option>
@@ -359,6 +363,7 @@ const InscriptionsAdminPage = () => {
             loading={loading}
             handlePaymentStatusUpdate={handlePaymentStatusUpdate}
             handleSendCourseEmail={handleSendCourseEmail}
+            onDepositClick={() => {}}
           />
           <InscriptionsTableDesktop
             inscriptions={inscriptions}
@@ -367,6 +372,7 @@ const InscriptionsAdminPage = () => {
             sortConfig={sortConfig}
             handleSort={handleSort}
             handleSendCourseEmail={handleSendCourseEmail}
+            onDepositClick={() => {}}
           />
 
           {/* --- Pagination --- */}

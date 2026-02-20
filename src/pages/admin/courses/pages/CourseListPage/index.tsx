@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getCoursesAdmin, deleteCourse } from '../../../../services/courses';
+import { getCoursesAdmin, deleteCourse } from '../../../../../services/courses';
 import toast from 'react-hot-toast';
-import CoursesListMobile from '../components/CourseListMobile';
-import CoursesListDesktop from '../components/CourseListDesktop';
-import ConfirmDeleteModal from '../../shared/components/ConfirmDeleteModal';
-import { useDebounce } from '../../shared/hooks/useDebounce';
+import CoursesListMobile from '../../components/CourseListMobile';
+import CoursesListDesktop from '../../components/CourseListDesktop';
+import ConfirmDeleteModal from '../../../shared/components/ConfirmDeleteModal';
+import { useDebounce } from '../../../shared/hooks/useDebounce';
+import type { Course } from '../../../../../services/types';
+import type { StatCardProps, SortConfig, CoursesStats, DeleteModalState } from './types';
 
 // --- Helper Components ---
 
-const StatCard = ({ title, value, icon, colorClass, loading }) => {
+const StatCard: React.FC<StatCardProps> = ({ title, value, icon, colorClass, loading }) => {
   if (loading) {
     return <div className="bg-white p-6 rounded-2xl shadow-lg animate-pulse h-[124px]"></div>;
   }
@@ -26,27 +28,27 @@ const StatCard = ({ title, value, icon, colorClass, loading }) => {
   );
 };
 
-const SearchIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 absolute top-1/2 left-4 -translate-y-1/2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>;
-const BookIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>;
+const SearchIcon: React.FC = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 absolute top-1/2 left-4 -translate-y-1/2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>;
+const BookIcon: React.FC = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>;
 
 
-const CoursesAdminPage = () => {
+const CoursesAdminPage: React.FC = () => {
   const navigate = useNavigate();
-  const [courses, setCourses] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [totalItems, setTotalItems] = useState(0);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [itemsPerPage, setItemsPerPage] = useState<number>(10);
+  const [totalItems, setTotalItems] = useState<number>(0);
 
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState<string>('');
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
-  const [sortConfig, setSortConfig] = useState({ key: 'createdAt', direction: 'desc' });
+  const [sortConfig, setSortConfig] = useState<SortConfig>({ key: 'createdAt', direction: 'desc' });
 
-  const [coursesStats, setCoursesStats] = useState(null);
-  const [deleteModal, setDeleteModal] = useState({ isOpen: false, courseId: null, courseTitle: '' });
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [coursesStats, setCoursesStats] = useState<CoursesStats | null>(null);
+  const [deleteModal, setDeleteModal] = useState<DeleteModalState>({ isOpen: false, courseId: null, courseTitle: '' });
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
 
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
@@ -62,15 +64,15 @@ const CoursesAdminPage = () => {
           debouncedSearchTerm
         );
         setCourses(data.data);
-        setTotalItems(data.total);
+        setTotalItems(data.totalItems);
 
         // Calcular estadísticas
-        const totalCourses = data.total;
+        const totalCourses = data.totalItems;
         setCoursesStats({
           total: totalCourses,
         });
 
-      } catch (err) {
+      } catch (err: any) {
         setError(err.message || 'Error al cargar los cursos.');
       } finally {
         setLoading(false);
@@ -96,13 +98,14 @@ const CoursesAdminPage = () => {
 
       // Actualizar estadísticas
       if (coursesStats) {
-        setCoursesStats(prev => ({
+        setCoursesStats(prev => prev ? ({
+          ...prev,
           total: prev.total - 1,
-        }));
+        }) : prev);
       }
 
       toast.success('Curso eliminado exitosamente');
-    } catch (error) {
+    } catch (error: any) {
       // Revertir cambios en caso de error
       setCourses(prev => [...prev]);
       toast.error('Error al eliminar el curso: ' + error.message);
@@ -112,11 +115,11 @@ const CoursesAdminPage = () => {
     }
   };
 
-  const handleEdit = (courseId) => {
+  const handleEdit = (courseId: string) => {
     navigate(`/admin/courses/edit/${courseId}`);
   };
 
-  const handleDelete = (courseId) => {
+  const handleDelete = (courseId: string) => {
     const course = courses.find(c => c._id === courseId);
     if (course) {
       setDeleteModal({
@@ -127,8 +130,8 @@ const CoursesAdminPage = () => {
     }
   };
 
-  const handleSort = (key) => {
-    let direction = 'asc';
+  const handleSort = (key: string) => {
+    let direction: 'asc' | 'desc' = 'asc';
     if (sortConfig.key === key && sortConfig.direction === 'asc') {
       direction = 'desc';
     }
@@ -138,7 +141,7 @@ const CoursesAdminPage = () => {
 
   const handlePrevPage = () => setCurrentPage(prev => Math.max(prev - 1, 1));
   const handleNextPage = () => setCurrentPage(prev => Math.min(prev + 1, totalPages));
-  const handleItemsPerPageChange = (e) => {
+  const handleItemsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setItemsPerPage(Number(e.target.value));
     setCurrentPage(1);
   };

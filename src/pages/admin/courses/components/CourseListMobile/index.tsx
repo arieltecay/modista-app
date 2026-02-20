@@ -1,21 +1,24 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PencilIcon, TrashIcon, CalendarIcon } from '@heroicons/react/24/outline';
-import CourseLinks from './CourseLinks';
+import CourseLinks from '../CourseLinks';
+import { CourseListMobileProps } from './types';
 
 /**
  * Componente de lista mobile para mostrar cursos
  */
-const CoursesListMobile = ({ courses, loading, handleEdit, handleDelete }) => {
+const CoursesListMobile: React.FC<CourseListMobileProps> = ({ courses, loading, handleEdit, handleDelete }) => {
   const navigate = useNavigate();
-  const formatPrice = (price) => {
+  const formatPrice = (price: number | undefined) => {
+    if (price === undefined) return '';
     return new Intl.NumberFormat('es-AR', {
       style: 'currency',
       currency: 'ARS'
     }).format(price);
   };
 
-  const formatDate = (dateString) => {
+  const formatDate = (dateString: Date | string | undefined) => {
+    if (!dateString) return '';
     return new Date(dateString).toLocaleDateString('es-AR', {
       year: 'numeric',
       month: 'short',
@@ -63,7 +66,7 @@ const CoursesListMobile = ({ courses, loading, handleEdit, handleDelete }) => {
             <div className="flex-shrink-0">
               <img
                 className="w-16 h-16 rounded-lg object-cover"
-                src={course.imageUrl}
+                src={course.imageUrl || course.image}
                 alt={course.title}
               />
             </div>
@@ -82,9 +85,9 @@ const CoursesListMobile = ({ courses, loading, handleEdit, handleDelete }) => {
 
                 {/* Botones de acción */}
                 <div className="flex space-x-1 ml-2">
-                  {course.isPresencial && (
+                  {(course.isPresencial || course.isWorkshop) && (
                     <button
-                      onClick={() => navigate(`/admin/workshops/${course.uuid || course.id}/schedule`)}
+                      onClick={() => navigate(`/admin/workshops/${course.uuid || course.id || course._id}/schedule`)}
                       className="p-2 text-emerald-600 hover:text-emerald-900 hover:bg-emerald-50 rounded-lg"
                       title="Gestionar Agenda"
                     >
@@ -92,14 +95,14 @@ const CoursesListMobile = ({ courses, loading, handleEdit, handleDelete }) => {
                     </button>
                   )}
                   <button
-                    onClick={() => handleEdit(course._id)}
+                    onClick={() => handleEdit((course._id || course.id) as string)}
                     className="p-2 text-indigo-600 hover:text-indigo-900 hover:bg-indigo-50 rounded-lg"
                     title="Editar curso"
                   >
                     <PencilIcon className="h-5 w-5" />
                   </button>
                   <button
-                    onClick={() => handleDelete(course._id)}
+                    onClick={() => handleDelete((course._id || course.id) as string)}
                     className="p-2 text-red-600 hover:text-red-900 hover:bg-red-50 rounded-lg"
                     title="Eliminar curso"
                   >
@@ -112,9 +115,9 @@ const CoursesListMobile = ({ courses, loading, handleEdit, handleDelete }) => {
               <div className="mt-3 flex items-center justify-between">
                 <div className="flex items-center space-x-4">
                   <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                    {course.category}
+                    {course.category || course.categoria || '-'}
                   </span>
-                  {course.isPresencial && (
+                  {(course.isPresencial || course.isWorkshop) && (
                     <span className="inline-flex px-2 py-1 text-xs font-bold rounded-full bg-emerald-100 text-emerald-700">
                       PRESENCIAL
                     </span>

@@ -1,11 +1,12 @@
 import React from 'react';
+import { CourseLinksProps } from './types';
 
 /**
  * Componente para mostrar enlaces opcionales de un curso
  * @param {Object} course - Objeto del curso con propiedades de enlaces
  * @param {string} variant - 'mobile' | 'desktop' para ajustar estilos
  */
-const CourseLinks = ({ course, variant = 'mobile' }) => {
+const CourseLinks: React.FC<CourseLinksProps> = ({ course, variant = 'mobile' }) => {
   const { deeplink, videoUrl, coursePaid } = course;
 
   // Si no hay ningún enlace, no renderizar nada
@@ -39,7 +40,7 @@ const CourseLinks = ({ course, variant = 'mobile' }) => {
 
   const linkBaseClass = 'text-xs underline';
 
-  const colorClasses = {
+  const colorClasses: Record<string, string> = {
     blue: 'text-blue-600 hover:text-blue-800',
     red: 'text-red-600 hover:text-red-800',
     green: 'text-green-600 hover:text-green-800'

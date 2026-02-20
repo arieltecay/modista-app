@@ -38,10 +38,24 @@ export interface AvailableTariffMeta {
   type: string;
   title: string;
   periodIdentifier: string;
+  periodDescription?: string;
   startDate: string;
 }
 
-export { DynamicItem, TariffSection, SearchResultItem } from '../../../api/types/shared-tariff-types.js';
+export interface DynamicItem {
+  item: string;
+  precio?: number;
+  descripcion?: string;
+}
+
+export interface TariffSection {
+  title: string;
+  items: DynamicItem[];
+}
+
+export interface SearchResultItem extends DynamicItem {
+  sectionTitle: string;
+}
 
 export interface DynamicCategory {
   nombre: string;

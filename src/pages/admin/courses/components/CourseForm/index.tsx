@@ -1,9 +1,9 @@
 import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { courseSchema, defaultCourseValues } from '../validation/courseValidation';
-import ImageSelector from '../../shared/components/ImageSelector';
-
+import { courseSchema, defaultCourseValues } from '../../validation/courseValidation';
+import ImageSelector from '../../../shared/components/ImageSelector';
+import { CourseFormProps } from './types';
 
 /**
  * Componente de formulario reutilizable para crear/editar cursos
@@ -13,7 +13,7 @@ import ImageSelector from '../../shared/components/ImageSelector';
  * @param {boolean} props.isEditing - Indica si es modo edición
  * @param {boolean} props.isSubmitting - Indica si el formulario está enviándose
  */
-const CourseForm = ({ initialData = {}, onSubmit, isEditing = false, isSubmitting = false }) => {
+const CourseForm: React.FC<CourseFormProps> = ({ initialData = {}, onSubmit, isEditing = false, isSubmitting = false }) => {
   const {
     control,
     handleSubmit,
@@ -27,11 +27,11 @@ const CourseForm = ({ initialData = {}, onSubmit, isEditing = false, isSubmittin
     mode: 'onChange' // Validación en tiempo real
   });
 
-  const handleImageSelect = (imageUrl) => {
+  const handleImageSelect = (imageUrl: string) => {
     setValue('imageUrl', imageUrl, { shouldValidate: true });
   };
 
-  const handleFormSubmit = async (data) => {
+  const handleFormSubmit = async (data: Record<string, any>) => {
     try {
       // Convertir precio a número y filtrar campos opcionales vacíos
       const formData = {
@@ -72,7 +72,7 @@ const CourseForm = ({ initialData = {}, onSubmit, isEditing = false, isSubmittin
           )}
         />
         {errors.imageUrl && (
-          <p className="mt-1 text-sm text-red-600">{errors.imageUrl.message}</p>
+          <p className="mt-1 text-sm text-red-600">{errors.imageUrl.message as string}</p>
         )}
       </div>
 
@@ -96,7 +96,7 @@ const CourseForm = ({ initialData = {}, onSubmit, isEditing = false, isSubmittin
           )}
         />
         {errors.title && (
-          <p className="mt-1 text-sm text-red-600">{errors.title.message}</p>
+          <p className="mt-1 text-sm text-red-600">{errors.title.message as string}</p>
         )}
       </div>
 
@@ -120,7 +120,7 @@ const CourseForm = ({ initialData = {}, onSubmit, isEditing = false, isSubmittin
           )}
         />
         {errors.category && (
-          <p className="mt-1 text-sm text-red-600">{errors.category.message}</p>
+          <p className="mt-1 text-sm text-red-600">{errors.category.message as string}</p>
         )}
       </div>
 
@@ -147,7 +147,7 @@ const CourseForm = ({ initialData = {}, onSubmit, isEditing = false, isSubmittin
         />
         <p className="mt-1 text-sm text-gray-400">0 (Cero) es un curso gratis</p>
         {errors.price && (
-          <p className="mt-1 text-sm text-red-600">{errors.price.message}</p>
+          <p className="mt-1 text-sm text-red-600">{errors.price.message as string}</p>
         )}
       </div>
 
@@ -270,7 +270,7 @@ const CourseForm = ({ initialData = {}, onSubmit, isEditing = false, isSubmittin
           )}
         />
         {errors.shortDescription && (
-          <p className="mt-1 text-sm text-red-600">{errors.shortDescription.message}</p>
+          <p className="mt-1 text-sm text-red-600">{errors.shortDescription.message as string}</p>
         )}
         <p className="mt-1 text-xs text-gray-500">
           {watch('shortDescription')?.length || 0}/250 caracteres
@@ -298,7 +298,7 @@ const CourseForm = ({ initialData = {}, onSubmit, isEditing = false, isSubmittin
           )}
         />
         {errors.longDescription && (
-          <p className="mt-1 text-sm text-red-600">{errors.longDescription.message}</p>
+          <p className="mt-1 text-sm text-red-600">{errors.longDescription.message as string}</p>
         )}
       </div>
 
@@ -322,7 +322,7 @@ const CourseForm = ({ initialData = {}, onSubmit, isEditing = false, isSubmittin
           )}
         />
         {errors.deeplink && (
-          <p className="mt-1 text-sm text-red-600">{errors.deeplink.message}</p>
+          <p className="mt-1 text-sm text-red-600">{errors.deeplink.message as string}</p>
         )}
       </div>
 
@@ -346,7 +346,7 @@ const CourseForm = ({ initialData = {}, onSubmit, isEditing = false, isSubmittin
           )}
         />
         {errors.videoUrl && (
-          <p className="mt-1 text-sm text-red-600">{errors.videoUrl.message}</p>
+          <p className="mt-1 text-sm text-red-600">{errors.videoUrl.message as string}</p>
         )}
       </div>
 
@@ -370,7 +370,7 @@ const CourseForm = ({ initialData = {}, onSubmit, isEditing = false, isSubmittin
           )}
         />
         {errors.coursePaid && (
-          <p className="mt-1 text-sm text-red-600">{errors.coursePaid.message}</p>
+          <p className="mt-1 text-sm text-red-600">{errors.coursePaid.message as string}</p>
         )}
         <p className="mt-1 text-sm text-gray-400">Este link se enviará por email cuando el cliente pague el curso</p>
       </div>

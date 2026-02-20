@@ -1,18 +1,16 @@
 import type { FC } from "react";
 import { useState } from "react";
-import type { TariffSection } from "../../../../api/types/shared-tariff-types.js";
+import type { TariffSectionUI, DynamicSectionProps } from "./types";
 
-interface DynamicSectionProps {
-  sections: TariffSection[];
-}
 
 const DynamicTariffSection: FC<DynamicSectionProps> = ({ sections }) => {
+  const [activeTab, setActiveTab] = useState(sections?.[0]?.title || "");
+
   if (!sections || sections.length === 0) {
     return null;
   }
-  const [activeTab, setActiveTab] = useState(sections[0].title);
 
-  const currentSection = sections.find((s) => s.title === activeTab);
+  const currentSection = sections.find((s: TariffSectionUI) => s.title === activeTab);
 
   if (!currentSection || currentSection.items.length === 0) {
     return null;

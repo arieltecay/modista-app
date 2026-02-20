@@ -1,42 +1,15 @@
-import type { FC } from 'react';
-import React, { useState, useEffect, FormEvent } from 'react';
+import { type FC, useState, useEffect, FormEvent } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getTurnosByCourse, createTurno, updateTurno, deleteTurno } from '../../../../services/turnos/turnoService';
 import { getCoursesAdmin } from '../../../../services/courses/coursesService';
 import toast from 'react-hot-toast';
 import { Spinner } from '@/components';
-
-interface Course {
-  _id: string;
-  uuid?: string;
-  id?: string;
-  title: string;
-  courseId?: string;
-}
-
-interface Turno {
-  _id: string;
-  diaSemana: string;
-  horaInicio: string;
-  horaFin: string;
-  cupoMaximo: number;
-  cuposInscriptos: number;
-  courseId: string;
-  isBlocked: boolean;
-}
-
-interface NewTurno {
-  diaSemana: string;
-  horaInicio: string;
-  horaFin: string;
-  cupoMaximo: number;
-  courseId: string;
-}
+import type { WorkshopCourse, Turno, NewTurno } from '../types';
 
 const WorkshopSchedulePage: FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [course, setCourse] = useState<Course | null>(null);
+  const [course, setCourse] = useState<WorkshopCourse | null>(null);
   const [turnos, setTurnos] = useState<Turno[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [isAdding, setIsAdding] = useState<boolean>(false);
@@ -54,8 +27,8 @@ const WorkshopSchedulePage: FC = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const coursesResponse: { data: Course[] } = await getCoursesAdmin(1, 100);
-        const foundCourse = coursesResponse.data.find(c => c._id === id || c.uuid === id);
+        const coursesResponse: any = await getCoursesAdmin(1, 100);
+        const foundCourse = coursesResponse.data.find((c: any) => c._id === id || c.uuid === id);
         setCourse(foundCourse || null);
 
         const response: Turno[] | { data: Turno[] } = await getTurnosByCourse(id || '', true);
@@ -65,7 +38,7 @@ const WorkshopSchedulePage: FC = () => {
         if (foundCourse) {
           setNewTurno(prev => ({ ...prev, courseId: foundCourse.courseId || foundCourse._id }));
         }
-      } catch (error: any) {
+      } catch {
         toast.error('Error al cargar la agenda');
       } finally {
         setLoading(false);
@@ -81,7 +54,7 @@ const WorkshopSchedulePage: FC = () => {
       setTurnos([...turnos, response.data]);
       setIsAdding(false);
       toast.success('Horario agregado con éxito');
-    } catch (error: any) {
+    } catch {
       toast.error('Error al agregar horario');
     }
   };
@@ -91,7 +64,7 @@ const WorkshopSchedulePage: FC = () => {
       const updated: { data: Turno } = await updateTurno(turno._id, { isBlocked: !turno.isBlocked });
       setTurnos(turnos.map(t => t._id === turno._id ? updated.data : t));
       toast.success(updated.data.isBlocked ? 'Horario bloqueado' : 'Horario habilitado');
-    } catch (error: any) {
+    } catch {
       toast.error('Error al actualizar estado');
     }
   };
@@ -102,7 +75,7 @@ const WorkshopSchedulePage: FC = () => {
       await deleteTurno(turnoId);
       setTurnos(turnos.filter(t => t._id !== turnoId));
       toast.success('Horario eliminado');
-    } catch (error: any) {
+    } catch {
       toast.error('Error al eliminar');
     }
   };

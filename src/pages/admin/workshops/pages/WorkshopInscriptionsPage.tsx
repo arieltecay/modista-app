@@ -1,5 +1,4 @@
-import type { FC } from 'react';
-import React, { useState, useEffect } from 'react';
+import { type FC, useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getWorkshopInscriptions, updateInscriptionPaymentStatus, updateInscriptionDeposit } from '../../../../services/inscriptions';
 import { sendPaymentSuccessEmail } from '../../../../services/email/emailService';
@@ -13,51 +12,13 @@ import DepositModal from '../components/DepositModal';
 import WorkshopInscriptionsTable from '../components/WorkshopInscriptionsTable';
 import WorkshopInscriptionsList from '../components/WorkshopInscriptionsList';
 import Pagination from '../../shared/components/Pagination';
-
-interface Course {
-  _id: string;
-  uuid?: string;
-  id?: string;
-  title: string;
-  isPresencial: boolean;
-  // Añadir otras propiedades necesarias
-}
-
-interface Turno {
-  _id: string;
-  diaSemana: string;
-  horaInicio: string;
-  horaFin: string;
-  cupoMaximo: number;
-  cuposInscriptos?: number; // Puede que no siempre venga
-}
-
-interface Inscription {
-  _id: string;
-  nombre: string;
-  apellido: string;
-  email: string;
-  celular: string;
-  paymentStatus: 'paid' | 'pending';
-  coursePrice: number;
-  depositAmount: number;
-  depositDate?: string;
-  isReserved: boolean;
-  fechaInscripcion: string;
-  turnoId: string | Turno;
-  courseTitle: string;
-}
-
-interface SortConfig {
-  key: string;
-  direction: 'asc' | 'desc';
-}
+import type { WorkshopCourse, WorkshopInscription, Turno, WorkshopSortConfig } from '../types';
 
 const WorkshopInscriptionsPage: FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [course, setCourse] = useState<Course | null>(null);
-  const [inscriptions, setInscriptions] = useState<Inscription[]>([]);
+  const [course, setCourse] = useState<WorkshopCourse | null>(null);
+  const [inscriptions, setInscriptions] = useState<WorkshopInscription[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [itemsPerPage, setItemsPerPage] = useState<number>(10);
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -66,11 +27,11 @@ const WorkshopInscriptionsPage: FC = () => {
   const [paymentFilter, setPaymentFilter] = useState<'all' | 'paid' | 'pending'>('all');
   const [turnoFilter, setTurnoFilter] = useState<string>('all');
   const [availableTurnos, setAvailableTurnos] = useState<Turno[]>([]);
-  const [sortConfig, setSortConfig] = useState<SortConfig>({ key: 'fechaInscripcion', direction: 'desc' });
+  const [sortConfig, setSortConfig] = useState<WorkshopSortConfig>({ key: 'fechaInscripcion', direction: 'desc' });
 
   // Estado para el modal de seña
   const [isDepositModalOpen, setIsDepositModalOpen] = useState<boolean>(false);
-  const [selectedInscription, setSelectedInscription] = useState<Inscription | null>(null);
+  const [selectedInscription, setSelectedInscription] = useState<WorkshopInscription | null>(null);
   const [isSubmittingDeposit, setIsSubmittingDeposit] = useState<boolean>(false);
 
   useEffect(() => {
@@ -78,9 +39,9 @@ const WorkshopInscriptionsPage: FC = () => {
       try {
         setLoading(true);
         // 1. Obtener info del curso
-        const coursesResponse: { data: Course[] } = await getCoursesAdmin(1, 100);
+        const coursesResponse: any = await getCoursesAdmin(1, 100);
         // Buscar por UUID (id viene en la URL ahora es el UUID)
-        const currentCourse = coursesResponse.data.find(c => c.uuid === id || c.id === id);
+        const currentCourse = coursesResponse.data.find((c: any) => c.uuid === id || c.id === id);
         setCourse(currentCourse || null);
 
         if (!currentCourse) {
@@ -94,7 +55,7 @@ const WorkshopInscriptionsPage: FC = () => {
         setAvailableTurnos(turnos || []);
 
         // 3. Filtrar inscripciones usando el servicio dedicado para talleres
-        const response: { data: Inscription[]; total: number } = await getWorkshopInscriptions(currentCourse.uuid || currentCourse.id || '', {
+        const response: any = await getWorkshopInscriptions(currentCourse.uuid || currentCourse.id || '', {
           page: currentPage,
           limit: itemsPerPage,
           sortBy: sortConfig.key,
@@ -105,11 +66,11 @@ const WorkshopInscriptionsPage: FC = () => {
         });
         if (response && response.data) {
           setInscriptions(response.data);
-          setTotalItems(response.total);
+          setTotalItems(response.totalItems || response.total || 0);
         } else {
           setInscriptions([]);
         }
-      } catch (error: any) {
+      } catch {
         toast.error('Error al cargar datos del taller');
       } finally {
         setLoading(false);
@@ -136,12 +97,12 @@ const WorkshopInscriptionsPage: FC = () => {
       } else {
         toast.success('Estado actualizado a pendiente');
       }
-    } catch (error: any) {
+    } catch {
       toast.error('Error al actualizar estado de pago');
     }
   };
 
-  const handleDepositClick = (inscription: Inscription) => {
+  const handleDepositClick = (inscription: WorkshopInscription) => {
     setSelectedInscription(inscription);
     setIsDepositModalOpen(true);
   };
@@ -149,7 +110,7 @@ const WorkshopInscriptionsPage: FC = () => {
   const handleDepositSubmit = async (inscriptionId: string, amount: number) => {
     try {
       setIsSubmittingDeposit(true);
-      const response = await updateInscriptionDeposit(inscriptionId, amount);
+      await updateInscriptionDeposit(inscriptionId, amount);
 
       // Actualizar lista local
       const updatedList = inscriptions.map(inv =>
@@ -235,7 +196,7 @@ const WorkshopInscriptionsPage: FC = () => {
             />
             <select
               value={paymentFilter}
-              onChange={(e) => setPaymentFilter(e.target.value)}
+              onChange={(e) => setPaymentFilter(e.target.value as 'all' | 'paid' | 'pending')}
               className="px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
             >
               <option value="all">Todos los pagos</option>
@@ -264,18 +225,18 @@ const WorkshopInscriptionsPage: FC = () => {
             {inscriptions.length > 0 ? (
               <>
                 <WorkshopInscriptionsTable
-                  inscriptions={inscriptions}
+                  inscriptions={inscriptions as any[]}
                   loading={loading}
                   handlePaymentStatusUpdate={handlePaymentStatusUpdate}
                   sortConfig={sortConfig}
                   handleSort={handleSort}
-                  onDepositClick={handleDepositClick}
+                  onDepositClick={handleDepositClick as any}
                 />
                 <WorkshopInscriptionsList
-                  inscriptions={inscriptions}
+                  inscriptions={inscriptions as any[]}
                   loading={loading}
                   handlePaymentStatusUpdate={handlePaymentStatusUpdate}
-                  onDepositClick={handleDepositClick}
+                  onDepositClick={handleDepositClick as any}
                 />
               </>
             ) : (

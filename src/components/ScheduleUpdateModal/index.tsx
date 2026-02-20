@@ -11,8 +11,6 @@ const ScheduleUpdateModal: React.FC<ScheduleUpdateModalProps> = ({
   courseId,
   workshopTitle
 }) => {
-  if (!inscription) return null;
-
   const [availableTurnos, setAvailableTurnos] = useState<Turno[]>([]);
   const [selectedTurnoId, setSelectedTurnoId] = useState<string>('');
   const [loadingTurnos, setLoadingTurnos] = useState<boolean>(false);
@@ -22,9 +20,9 @@ const ScheduleUpdateModal: React.FC<ScheduleUpdateModalProps> = ({
     if (isOpen && courseId && inscription?.turnoId) {
       fetchTurnos();
       // Set initial selection to the current turno if it's a valid object or string
-      if (typeof inscription.turnoId === 'string') {
+      if (typeof inscription?.turnoId === 'string') {
         setSelectedTurnoId(inscription.turnoId);
-      } else if (typeof inscription.turnoId === 'object' && inscription.turnoId !== null) {
+      } else if (typeof inscription?.turnoId === 'object' && inscription.turnoId !== null) {
         setSelectedTurnoId(inscription.turnoId._id);
       }
     }
@@ -34,8 +32,10 @@ const ScheduleUpdateModal: React.FC<ScheduleUpdateModalProps> = ({
     setLoadingTurnos(true);
     try {
       // Fetch only available turnos (server-side validation)
-      const turnos = await getAvailableTurnosForInscription(inscription._id);
-      setAvailableTurnos(turnos);
+      if (inscription) {
+        const turnos = await getAvailableTurnosForInscription(inscription._id);
+        setAvailableTurnos(turnos);
+      }
     } catch (error) {
       toast.error('Error al cargar los horarios disponibles.');
       console.error('Error fetching turnos:', error);
@@ -52,10 +52,12 @@ const ScheduleUpdateModal: React.FC<ScheduleUpdateModalProps> = ({
 
     // Prevent saving if it's the same turno
     let currentTurnoId = '';
-    if (typeof inscription.turnoId === 'string') {
-      currentTurnoId = inscription.turnoId;
-    } else if (typeof inscription.turnoId === 'object' && inscription.turnoId !== null) {
-      currentTurnoId = inscription.turnoId._id;
+    if (inscription) {
+      if (typeof inscription.turnoId === 'string') {
+        currentTurnoId = inscription.turnoId;
+      } else if (typeof inscription.turnoId === 'object' && inscription.turnoId !== null) {
+        currentTurnoId = inscription.turnoId._id;
+      }
     }
 
     if (selectedTurnoId === currentTurnoId) {
@@ -66,7 +68,9 @@ const ScheduleUpdateModal: React.FC<ScheduleUpdateModalProps> = ({
 
     setIsSaving(true);
     try {
-      await updateInscriptionSchedule(inscription._id, selectedTurnoId);
+      if (inscription) {
+        await updateInscriptionSchedule(inscription._id, selectedTurnoId);
+      }
       toast.success('Horario actualizado exitosamente.');
       onClose(); // Close modal on success
       // Optionally, refetch data in the parent component
@@ -95,6 +99,8 @@ const ScheduleUpdateModal: React.FC<ScheduleUpdateModalProps> = ({
 
     return `${dayLabel}, ${turno.horaInicio} - ${turno.horaFin} (Cupos: ${turno.cupoMaximo - turno.cuposInscriptos}/${turno.cupoMaximo})`;
   };
+
+  if (!inscription) return null;
 
   return (
     <div className={`fixed inset-0 z-50 ${isOpen ? 'flex' : 'hidden'} items-center justify-center bg-black bg-opacity-50`}>

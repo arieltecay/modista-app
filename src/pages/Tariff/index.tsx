@@ -32,7 +32,7 @@ const useAvailableTariffsMeta = () => {
 };
 
 const TariffPage: FC = () => {
-  const { meta, loadingMeta, errorMeta } = useAvailableTariffsMeta();
+  const { meta } = useAvailableTariffsMeta();
   const [selectedType, setSelectedType] = useState<string>('');
   const [selectedPeriodIdentifier, setSelectedPeriodIdentifier] = useState<string>('');
 

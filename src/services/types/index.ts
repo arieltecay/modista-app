@@ -31,8 +31,14 @@ export interface Course {
     image?: string;
     deeplink?: string;
     coursePaid?: string;
+    category?: string;
     shortDescription?: string;
+    imageUrl?: string;
+    isPresencial?: boolean;
+    isWorkshop?: boolean;
+    status?: string;
     createdAt?: Date;
+    uuid?: string;
     updatedAt?: Date;
 }
 
@@ -127,9 +133,7 @@ export interface InscriptionFilters extends PaginationParams {
 /**
  * Filtros para cursos
  */
-export interface CourseFilters extends PaginationParams {
-    // Agregar filtros específicos si es necesario
-}
+export type CourseFilters = PaginationParams;
 
 // ============================================
 // TIPOS DE DTOs (Data Transfer Objects)
@@ -151,7 +155,7 @@ export interface CreateCourseData {
 /**
  * Datos para actualizar un curso
  */
-export interface UpdateCourseData extends Partial<CreateCourseData> { }
+export type UpdateCourseData = Partial<CreateCourseData>;
 
 /**
  * Datos para registrar un usuario

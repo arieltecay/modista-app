@@ -1,12 +1,13 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
-import CourseLinks from './CourseLinks';
+import CourseLinks from '../CourseLinks';
+import { CourseListDesktopProps } from './types';
 
 /**
  * Componente de tabla desktop para mostrar cursos
  */
-const CoursesListDesktop = ({
+const CoursesListDesktop: React.FC<CourseListDesktopProps> = ({
   courses,
   loading,
   sortConfig,
@@ -15,14 +16,16 @@ const CoursesListDesktop = ({
   handleDelete
 }) => {
   const navigate = useNavigate();
-  const formatPrice = (price) => {
+  const formatPrice = (price: number | undefined) => {
+    if (price === undefined) return '';
     return new Intl.NumberFormat('es-AR', {
       style: 'currency',
       currency: 'ARS'
     }).format(price);
   };
 
-  const formatDate = (dateString) => {
+  const formatDate = (dateString: Date | string | undefined) => {
+    if (!dateString) return '';
     return new Date(dateString).toLocaleDateString('es-AR', {
       year: 'numeric',
       month: 'short',
@@ -30,7 +33,7 @@ const CoursesListDesktop = ({
     });
   };
 
-  const getSortIcon = (column) => {
+  const getSortIcon = (column: string) => {
     if (sortConfig.key !== column) return '↕️';
     return sortConfig.direction === 'asc' ? '↑' : '↓';
   };
@@ -131,7 +134,7 @@ const CoursesListDesktop = ({
                     <div className="flex-shrink-0 h-12 w-12">
                       <img
                         className="h-12 w-12 rounded-lg object-cover"
-                        src={course.imageUrl}
+                        src={course.imageUrl || course.image}
                         alt={course.title}
                       />
                     </div>
@@ -149,14 +152,14 @@ const CoursesListDesktop = ({
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                    {course.category}
+                    {course.category || course.categoria || '-'}
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
                   {formatPrice(course.price)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  {course.isPresencial ? (
+                  {course.isPresencial || course.isWorkshop ? (
                     <span className="inline-flex px-2 py-1 text-xs font-bold rounded-full bg-emerald-100 text-emerald-700">
                       PRESENCIAL
                     </span>
@@ -167,7 +170,7 @@ const CoursesListDesktop = ({
                   )}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  {course.status === 'active' ? (
+                  {course.status === 'active' || course.estado === 'activo' ? (
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                       <span className="w-2 h-2 mr-1.5 bg-green-500 rounded-full"></span>
                       Activo
@@ -184,9 +187,9 @@ const CoursesListDesktop = ({
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <div className="flex justify-end items-center space-x-3">
-                    {course.isPresencial && (
+                    {(course.isPresencial || course.isWorkshop) && (
                       <button
-                        onClick={() => navigate(`/admin/workshops/${course.uuid || course.id}/schedule`)}
+                        onClick={() => navigate(`/admin/workshops/${course.uuid || course.id || course._id}/schedule`)}
                         className="text-emerald-600 hover:text-emerald-900 p-1.5 rounded-lg hover:bg-emerald-50 border border-transparent hover:border-emerald-200 transition-all"
                         title="Gestionar Horarios / Agenda"
                       >
@@ -196,14 +199,14 @@ const CoursesListDesktop = ({
                       </button>
                     )}
                     <button
-                      onClick={() => handleEdit(course._id)}
+                      onClick={() => handleEdit((course._id || course.id) as string)}
                       className="text-indigo-600 hover:text-indigo-900 p-1.5 rounded-lg hover:bg-indigo-50 border border-transparent hover:border-indigo-200 transition-all"
                       title="Editar curso"
                     >
                       <PencilIcon className="h-5 w-5" />
                     </button>
                     <button
-                      onClick={() => handleDelete(course._id)}
+                      onClick={() => handleDelete((course._id || course.id) as string)}
                       className="text-red-600 hover:text-red-900 p-1.5 rounded-lg hover:bg-red-50 border border-transparent hover:border-red-200 transition-all"
                       title="Eliminar curso"
                     >

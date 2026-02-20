@@ -33,7 +33,7 @@ const ImageSelector: FC<ImageSelectorProps> = ({ selectedImage, onImageSelect })
     'molderia_presencial.jpeg',
   ];
 
-  const handleImageClick = (imageName) => {
+  const handleImageClick = (imageName: string) => {
     const imageUrl = `/images/${imageName}`;
     onImageSelect(imageUrl);
   };

@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthForm } from '@/components';
 import { loginUser } from '../../services/auth';
+import { useAuth } from '@/hooks/useAuth';
 import toast from 'react-hot-toast';
 
 const LoginPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleLogin = async (credentials) => {
     setLoading(true);
@@ -16,9 +18,8 @@ const LoginPage = () => {
     try {
       const response = await loginUser(credentials);
 
-      // Guardar token en localStorage
-      localStorage.setItem('token', response.token);
-      localStorage.setItem('user', JSON.stringify(response.user));
+      // Usar AuthContext para persistir el estado
+      login(response.token, response.user);
 
       toast.success('¡Inicio de sesión exitoso!');
 

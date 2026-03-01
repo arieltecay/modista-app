@@ -31,7 +31,7 @@ const WorkshopSchedulePage: FC = () => {
         const foundCourse = coursesResponse.data.find((c: any) => c._id === id || c.uuid === id);
         setCourse(foundCourse || null);
 
-        const response: Turno[] | { data: Turno[] } = await getTurnosByCourse(id || '', true);
+        const response: Turno[] | { data: Turno[] } = await getTurnosByCourse(id || '', { includeBlocked: true });
         const turnosData = Array.isArray(response) ? response : (response?.data || []);
         setTurnos(turnosData);
 

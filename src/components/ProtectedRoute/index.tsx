@@ -1,40 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import React from 'react';
+import { Navigate, Outlet } from 'react-router-dom';
 import { ProtectedRouteProps } from './types';
+import { useAuth } from '../../hooks/useAuth';
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requireAdmin = false }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles }) => {
+  const { isAuthenticated, user, loading } = useAuth();
 
-  useEffect(() => {
-    const checkAuth = () => {
-      const token = localStorage.getItem('token');
-      const userData = localStorage.getItem('user');
-
-      if (!token) {
-        setIsAuthenticated(false);
-        return;
-      }
-
-      try {
-        const parsedUser = userData ? JSON.parse(userData) : null;
-
-        if (requireAdmin && parsedUser?.role !== 'admin') {
-          setIsAuthenticated(false);
-          return;
-        }
-
-        setIsAuthenticated(true);
-      } catch (error) {
-        console.error('Error parsing user data:', error);
-        setIsAuthenticated(false);
-      }
-    };
-
-    checkAuth();
-  }, [requireAdmin]);
-
-  if (isAuthenticated === null) {
-    // Loading state
+  if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
@@ -49,7 +21,13 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requireAdmin 
     return <Navigate to="/login" replace />;
   }
 
-  return <>{children}</>;
+  // Si se especifican roles permitidos, validar contra el rol del usuario
+  if (allowedRoles && user && !allowedRoles.includes(user.role)) {
+    return <Navigate to="/" replace />;
+  }
+
+  // Renderiza children si se usa como wrapper, o Outlet si se usa como Layout de rutas anidadas
+  return children ? <>{children}</> : <Outlet />;
 };
 
 export default ProtectedRoute;

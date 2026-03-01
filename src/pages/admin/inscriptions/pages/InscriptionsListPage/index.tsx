@@ -38,6 +38,7 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, icon, colorClass, loa
 const TotalIcon: React.FC = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>;
 const PaidIcon: React.FC = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>;
 const PendingIcon: React.FC = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>;
+const ResultsIcon: React.FC = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>;
 const SearchIcon: React.FC = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 absolute top-1/2 left-4 -translate-y-1/2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>;
 
 
@@ -60,15 +61,15 @@ const InscriptionsAdminPage: React.FC = () => {
   const debouncedCourseFilter = useDebounce(courseFilter, 500);
 
   const [courseSuggestions, setCourseSuggestions] = useState<any[]>([]);
-  const [inscriptionStats, setInscriptionStats] = useState<InscriptionsCount | null>(null);
+  const [inscriptionStats, setInscriptionStats] = useState<(InscriptionsCount & { searchTotal?: number }) | null>(null);
 
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
   useEffect(() => {
-    const fetchInscriptions = async () => {
+    const fetchData = async () => {
       setLoading(true);
       try {
-        const data = await getInscriptions({
+        const inscriptionsPromise = getInscriptions({
           page: currentPage,
           limit: itemsPerPage,
           sortBy: sortConfig.key,
@@ -78,8 +79,21 @@ const InscriptionsAdminPage: React.FC = () => {
           courseFilter: debouncedCourseFilter,
           excludeWorkshops: true
         });
-        setInscriptions(data.data as unknown as Inscription[]);
-        setTotalItems(data.totalItems);
+
+        const statsPromise = getInscriptionsCount(true);
+
+        const [inscriptionsData, statsResponse] = await Promise.all([inscriptionsPromise, statsPromise]);
+        
+        const finalStats = 'data' in statsResponse ? (statsResponse as any).data : statsResponse;
+
+        if (debouncedCourseFilter) {
+          finalStats.searchTotal = inscriptionsData.total;
+        }
+
+        setInscriptions(inscriptionsData.data as unknown as Inscription[]);
+        setTotalItems(inscriptionsData.total);
+        setInscriptionStats(finalStats);
+
       } catch (err: any) {
         setError(err.message || 'Error al cargar las inscripciones.');
       } finally {
@@ -87,17 +101,7 @@ const InscriptionsAdminPage: React.FC = () => {
       }
     };
 
-    const fetchStats = async () => {
-      try {
-        const statsData = await getInscriptionsCount(true); // excludeWorkshops - Solo cursos online
-        setInscriptionStats('data' in statsData ? (statsData as any).data : statsData);
-      } catch (err: any) {
-        toast.error(err.message || 'Error al cargar las estadísticas.');
-      }
-    };
-
-    fetchInscriptions();
-    fetchStats();
+    fetchData();
   }, [currentPage, itemsPerPage, debouncedSearchTerm, sortConfig, paymentStatusFilter, debouncedCourseFilter]);
 
   // Reset page to 1 when searching or filtering
@@ -290,8 +294,8 @@ const InscriptionsAdminPage: React.FC = () => {
           {debouncedCourseFilter && (
             <StatCard
               title={`Resultados para "${debouncedCourseFilter}"`}
-              value={totalItems}
-              icon={<SearchIcon />}
+              value={inscriptionStats?.searchTotal ?? 0}
+              icon={<ResultsIcon />}
               colorClass="bg-purple-100"
               loading={loading}
             />

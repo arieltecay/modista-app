@@ -20,6 +20,7 @@ import type { InscriptionsCount } from '../../../../../services/types';
 import type { Inscription } from '../../components/types';
 import type { StatCardProps, SortConfig } from './types';
 import ConfirmDeleteModal from '../../../shared/components/ConfirmDeleteModal';
+import Spinner from '../../../../../components/Spinner';
 
 // --- Helper Components ---
 

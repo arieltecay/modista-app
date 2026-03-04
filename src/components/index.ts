@@ -9,4 +9,5 @@ export { Navbar } from './Navbar';
 export { default as ProtectedRoute } from './ProtectedRoute';
 export { default as Spinner } from './Spinner';
 export { default as TurnoSelector } from './TurnoSelector';
+export { default as WhatsAppFloatingButton } from './WhatsAppFloatingButton';
 // Add other components as they are refactored

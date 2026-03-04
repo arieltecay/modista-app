@@ -11,7 +11,7 @@ interface NavItem {
 
 const navigation: NavItem[] = [
   { name: 'Inicio', href: '/' },
-  // { name: 'Tarifas', href: '/tarifario' },
+  { name: 'Tarifas', href: '/tarifario' },
   { name: 'Cursos', href: '/cursos' },
   { name: 'Sobre Mí', href: '/sobre-mi' },
 ];

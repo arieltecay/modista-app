@@ -150,6 +150,30 @@ export const updateInscriptionDeposit = (
     });
 
 /**
+ * Envía un recordatorio individual de WhatsApp.
+ */
+export const sendIndividualWaReminder = (id: string): Promise<any> =>
+    apiClient.post(`/inscriptions/${id}/send-reminder`);
+
+/**
+ * Envía recordatorios masivos de WhatsApp.
+ */
+export const sendBulkWaReminders = (): Promise<any> =>
+    apiClient.post('/inscriptions/send-bulk-reminders');
+
+/**
+ * Obtiene el estado de conexión del bot de WhatsApp.
+ */
+export const getWhatsAppStatus = (): Promise<{ connected: boolean, qr: string | null }> =>
+    apiClient.get('/whatsapp/status');
+
+/**
+ * Reinicia el servicio de WhatsApp Bot.
+ */
+export const restartWhatsApp = (): Promise<any> =>
+    apiClient.post('/whatsapp/restart');
+
+/**
  * Exporta inscripciones a un archivo Excel.
  * Descarga automáticamente el archivo en el navegador.
  * 

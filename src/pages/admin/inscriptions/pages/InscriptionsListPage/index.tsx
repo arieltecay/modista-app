@@ -6,8 +6,6 @@ import {
   exportInscriptions,
   sendBulkWaReminders,
   sendIndividualWaReminder,
-  getWhatsAppStatus,
-  restartWhatsApp
 } from '../../../../../services/inscriptions';
 import { sendPaymentSuccessEmail, sendCoursePaidEmail } from '../../../../../services/email';
 import { getCoursesAdmin } from '../../../../../services/courses';
@@ -20,10 +18,10 @@ import type { InscriptionsCount } from '../../../../../services/types';
 import type { Inscription } from '../../components/types';
 import type { StatCardProps, SortConfig } from './types';
 import ConfirmDeleteModal from '../../../shared/components/ConfirmDeleteModal';
-import Spinner from '../../../../../components/Spinner';
+import { WhatsappQRModal } from '../../../../../components/WhatsappQRModal'; // Importar el nuevo modal
+import { useWhatsapp } from '../../../../../context/WhatsappContext'; // Importar el hook
 
 // --- Helper Components ---
-
 const StatCard: React.FC<StatCardProps> = ({ title, value, icon, colorClass, loading }) => {
   if (loading) {
     return <div className="bg-white p-6 rounded-2xl shadow-lg animate-pulse h-[124px]"></div>;
@@ -40,13 +38,11 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, icon, colorClass, loa
     </div>
   );
 };
-
 const TotalIcon: React.FC = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>;
 const PaidIcon: React.FC = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>;
 const PendingIcon: React.FC = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>;
 const ResultsIcon: React.FC = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>;
 const SearchIcon: React.FC = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 absolute top-1/2 left-4 -translate-y-1/2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>;
-
 
 
 const InscriptionsAdminPage: React.FC = () => {
@@ -68,7 +64,7 @@ const InscriptionsAdminPage: React.FC = () => {
 
   const [courseSuggestions, setCourseSuggestions] = useState<any[]>([]);
   const [inscriptionStats, setInscriptionStats] = useState<(InscriptionsCount & { searchTotal?: number }) | null>(null);
-  const [waStatus, setWaStatus] = useState<{ connected: boolean, qr: string | null }>({ connected: false, qr: null });
+  const { status: waStatus } = useWhatsapp(); // Usar el estado del contexto
   const [isQrModalOpen, setIsQrModalOpen] = useState<boolean>(false);
 
   // Estados para modal de eliminación (necesarios si se usa ConfirmDeleteModal)
@@ -76,21 +72,9 @@ const InscriptionsAdminPage: React.FC = () => {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const totalPages = Math.ceil(totalItems / itemsPerPage);
-
-  useEffect(() => {
-    const checkWaStatus = async () => {
-      try {
-        const status = await getWhatsAppStatus();
-        setWaStatus(status);
-      } catch (err) {
-        console.error('Error checking WA status:', err);
-      }
-    };
-
-    checkWaStatus();
-    const interval = setInterval(checkWaStatus, 10000); // Cada 10 segundos
-    return () => clearInterval(interval);
-  }, []);
+  
+  // Lógica para el envío de mensajes (a implementar post-conexión)
+  const [isSendingMessages, setIsSendingMessages] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -235,56 +219,42 @@ const InscriptionsAdminPage: React.FC = () => {
     );
     setIsExporting(false);
   };
-
-  const handleBulkReminders = async () => {
-    try {
-      await toast.promise(
-        sendBulkWaReminders(),
-        {
-          loading: 'Iniciando envío de recordatorios...',
-          success: (res: any) => <b>{res.message}</b>,
-          error: (err: any) => <b>{err.message || 'Error al iniciar envío masivo'}</b>,
-        }
-      );
-    } catch (error) {
-      console.error(error);
+  
+  // Placeholder para futuras implementaciones
+  const handleIndividualReminder = (id: string) => {
+    if (waStatus !== 'ready') {
+      toast.error("WhatsApp no está conectado. Por favor, conecte primero.");
+      setIsQrModalOpen(true);
+      return;
     }
+    
+    toast.promise(
+      sendIndividualWaReminder(id),
+      {
+        loading: 'Enviando recordatorio...',
+        success: 'Recordatorio enviado con éxito.',
+        error: (err: any) => err.response?.data?.message || 'Error al enviar recordatorio.',
+      }
+    );
   };
-
-  const handleIndividualReminder = async (id: string) => {
-    try {
-      await toast.promise(
-        sendIndividualWaReminder(id),
-        {
-          loading: 'Enviando WhatsApp...',
-          success: (res: any) => {
-            setInscriptions(prev => prev.map(ins => 
-              ins._id === id ? { ...ins, waMessagesSent: res.data.waMessagesSent } : ins
-            ));
-            return <b>Recordatorio enviado.</b>;
-          },
-          error: (err: any) => <b>{err.message || 'Error al enviar'}</b>,
-        }
-      );
-    } catch (error) {
-      console.error(error);
+  
+  const handleBulkReminders = () => {
+    if (waStatus !== 'ready') {
+      toast.error("WhatsApp no está conectado. Por favor, conecte primero.");
+      setIsQrModalOpen(true);
+      return;
     }
-  };
 
-  const handleRestartWa = async () => {
-    try {
-      await toast.promise(
-        restartWhatsApp(),
-        {
-          loading: 'Reiniciando bot...',
-          success: (res: any) => <b>{res.message}</b>,
-          error: (err: any) => <b>{err.message || 'Error al reiniciar'}</b>,
-        }
-      );
-    } catch (error) {
-      console.error(error);
-    }
-  };
+    toast.promise(
+      sendBulkWaReminders(),
+      {
+        loading: 'Iniciando proceso de recuperación de ventas...',
+        success: (res: any) => res.message || 'El proceso de envío ha comenzado en segundo plano.',
+        error: (err: any) => err.response?.data?.message || 'Error al iniciar el proceso.',
+      }
+    );
+  }
+
 
   const handleDeleteCourse = async () => {
     // Función requerida por ConfirmDeleteModal pero no usada directamente aquí para inscripciones
@@ -363,30 +333,24 @@ const InscriptionsAdminPage: React.FC = () => {
 
         {/* --- Stats Cards --- */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-          <div className={`p-6 rounded-2xl shadow-lg border-2 ${waStatus.connected ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'} flex items-center`}>
-            <div className={`p-3 rounded-full ${waStatus.connected ? 'bg-green-500' : 'bg-red-500'} text-white mr-4`}>
+          <div className={`p-6 rounded-2xl shadow-lg border-2 ${waStatus === 'ready' ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'} flex items-center`}>
+            <div className={`p-3 rounded-full ${waStatus === 'ready' ? 'bg-green-500' : 'bg-red-500'} text-white mr-4`}>
               <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 448 512" className="h-6 w-6" xmlns="http://www.w3.org/2000/svg"><path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-93.3-25.7l-6.7-4.1-69.5 18.3L72.7 359l-4.5-7.1c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-5.6-2.8-23.5-8.6-44.8-27.3-16.6-14.8-27.8-33.1-31-38.7-3.3-5.6-.3-8.6 2.5-11.4 2.5-2.5 5.5-6.5 8.3-9.7 2.8-3.3 3.7-5.6 5.6-9.3 1.9-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"></path></svg>
             </div>
             <div>
               <p className="text-gray-500 text-xs font-bold uppercase tracking-wider">WhatsApp Bot</p>
-              <p className={`text-lg font-extrabold ${waStatus.connected ? 'text-green-700' : 'text-red-700'}`}>
-                {waStatus.connected ? 'CONECTADO' : 'DESCONECTADO'}
+              <p className={`text-lg font-extrabold ${waStatus === 'ready' ? 'text-green-700' : 'text-red-700'}`}>
+                {waStatus === 'ready' ? 'CONECTADO' : 'DESCONECTADO'}
               </p>
               <div className="flex gap-2 mt-1">
-                {!waStatus.connected && (
+                {waStatus !== 'ready' && (
                   <button 
                     onClick={() => setIsQrModalOpen(true)}
                     className="text-[9px] bg-red-100 text-red-600 px-2 py-0.5 rounded font-bold animate-pulse hover:bg-red-200 transition-colors uppercase"
                   >
-                    Escanear QR
+                    Conectar
                   </button>
                 )}
-                <button 
-                  onClick={handleRestartWa}
-                  className="text-[9px] bg-gray-100 text-gray-600 px-2 py-0.5 rounded font-bold hover:bg-gray-200 transition-colors uppercase"
-                >
-                  Reiniciar
-                </button>
               </div>
             </div>
           </div>
@@ -523,49 +487,17 @@ const InscriptionsAdminPage: React.FC = () => {
         isDeleting={isDeleting}
       />
 
-      {/* --- WhatsApp QR Modal --- */}
-      {isQrModalOpen && (
-        <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl text-center border-4 border-indigo-100 animate-in zoom-in-95 duration-300">
-            <h2 className="text-2xl font-black text-gray-800 mb-2">Vincular WhatsApp</h2>
-            <p className="text-sm text-gray-500 mb-6 font-medium px-4">Escanea este código desde tu celular (Dispositivos vinculados) para activar el asistente.</p>
-            
-            <div className="bg-gray-50 p-4 rounded-2xl mb-6 border-2 border-dashed border-gray-200 flex flex-col justify-center items-center min-h-[280px]">
-              {waStatus.qr ? (
-                <img 
-                  src={waStatus.qr} 
-                  alt="WhatsApp QR Code"
-                  className="w-64 h-64 object-contain shadow-inner rounded-lg"
-                />
-              ) : (
-                <div className="flex flex-col items-center gap-4">
-                  <Spinner />
-                  <p className="text-sm text-gray-400 font-bold animate-pulse text-center">
-                    Esperando respuesta del servidor...<br/>
-                    (Puede tardar unos segundos)
-                  </p>
-                </div>
-              )}
-              <button 
-                onClick={handleRestartWa}
-                className="mt-4 text-xs text-indigo-600 font-bold hover:underline"
-              >
-                🔄 Generar nuevo QR
-              </button>
-            </div>
-
-            <div className="space-y-3">
-              <button
-                onClick={() => setIsQrModalOpen(false)}
-                className="w-full py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition-all active:scale-95 shadow-lg shadow-indigo-200"
-              >
-                Cerrar Ventana
-              </button>
-              <p className="text-[10px] text-gray-400 italic">El estado se actualizará automáticamente al conectar.</p>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* --- Nuevo Modal de WhatsApp --- */}
+      <WhatsappQRModal 
+        isOpen={isQrModalOpen}
+        onClose={() => setIsQrModalOpen(false)}
+        onReady={() => {
+          toast.success("¡WhatsApp listo para enviar mensajes!");
+          setIsQrModalOpen(false);
+          // Aquí puedes habilitar la UI para enviar mensajes
+          setIsSendingMessages(true);
+        }}
+      />
     </div>
   );
 };

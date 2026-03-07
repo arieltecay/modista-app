@@ -159,7 +159,7 @@ export const sendIndividualWaReminder = (id: string): Promise<any> =>
  * Envía recordatorios masivos de WhatsApp.
  */
 export const sendBulkWaReminders = (): Promise<any> =>
-    apiClient.post('/inscriptions/send-bulk-reminders');
+    apiClient.post('/inscriptions/send-bulk-reminders', {});
 
 /**
  * Obtiene el estado de conexión del bot de WhatsApp.
@@ -168,10 +168,10 @@ export const getWhatsAppStatus = (): Promise<{ connected: boolean, qr: string | 
     apiClient.get('/whatsapp/status');
 
 /**
- * Reinicia el servicio de WhatsApp Bot.
+ * Inicia el proceso de conexión de WhatsApp y generación de QR.
  */
-export const restartWhatsApp = (): Promise<any> =>
-    apiClient.post('/whatsapp/restart');
+export const initWhatsApp = (): Promise<any> =>
+    apiClient.post('/whatsapp/init');
 
 /**
  * Exporta inscripciones a un archivo Excel.

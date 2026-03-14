@@ -287,7 +287,8 @@ const CoursesAdminPage: React.FC = () => {
         isOpen={deleteModal.isOpen}
         onClose={() => setDeleteModal({ isOpen: false, courseId: null, courseTitle: '' })}
         onConfirm={handleDeleteCourse}
-        courseTitle={deleteModal.courseTitle}
+        itemName={deleteModal.courseTitle}
+        itemType="el curso"
         isDeleting={isDeleting}
       />
     </div>

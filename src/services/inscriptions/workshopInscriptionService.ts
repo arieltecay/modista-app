@@ -62,5 +62,14 @@ export const getAvailableTurnosForInscription = async (inscriptionId: string): P
   const response = await apiClient.get<any[]>(`/workshop-inscriptions/inscription/${inscriptionId}/available-turnos`);
   return response as any;
 };
+
+/**
+ * Deletes a workshop inscription.
+ * @param inscriptionId The ID of the inscription to delete.
+ */
+export const deleteWorkshopInscription = async (inscriptionId: string): Promise<void> => {
+  const { data } = await apiClient.delete(`/workshop-inscriptions/workshop/${inscriptionId}`);
+  return data;
+};
 // You might also want to export the InscriptionData and WorkshopDetailsResponse types
 // export type { InscriptionData, WorkshopDetailsResponse };

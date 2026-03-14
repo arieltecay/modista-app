@@ -4,6 +4,7 @@ import { getTurnosByCourse, createTurno, updateTurno, deleteTurno } from '../../
 import { getCoursesAdmin } from '../../../../services/courses/coursesService';
 import toast from 'react-hot-toast';
 import { Spinner } from '@/components';
+import ConfirmDeleteModal from '@/pages/admin/shared/components/ConfirmDeleteModal';
 import type { WorkshopCourse, Turno, NewTurno } from '../types';
 
 const WorkshopSchedulePage: FC = () => {
@@ -20,6 +21,14 @@ const WorkshopSchedulePage: FC = () => {
     cupoMaximo: 4,
     courseId: id || ''
   });
+
+  // Estado para el modal de eliminación
+  const [deleteModal, setDeleteModal] = useState({ 
+    isOpen: false, 
+    turnoId: '', 
+    turnoLabel: '' 
+  });
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const dias = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
 
@@ -69,14 +78,25 @@ const WorkshopSchedulePage: FC = () => {
     }
   };
 
-  const handleDelete = async (turnoId: string) => {
-    if (!window.confirm('¿Estás seguro de eliminar este horario?')) return;
+  const handleDelete = (turno: Turno) => {
+    setDeleteModal({
+      isOpen: true,
+      turnoId: turno._id,
+      turnoLabel: `${turno.diaSemana} ${turno.horaInicio} - ${turno.horaFin}`
+    });
+  };
+
+  const confirmDelete = async () => {
     try {
-      await deleteTurno(turnoId);
-      setTurnos(turnos.filter(t => t._id !== turnoId));
+      setIsDeleting(true);
+      await deleteTurno(deleteModal.turnoId);
+      setTurnos(turnos.filter(t => t._id !== deleteModal.turnoId));
       toast.success('Horario eliminado');
     } catch {
       toast.error('Error al eliminar');
+    } finally {
+      setIsDeleting(false);
+      setDeleteModal({ isOpen: false, turnoId: '', turnoLabel: '' });
     }
   };
 
@@ -212,7 +232,7 @@ const WorkshopSchedulePage: FC = () => {
                     )}
                   </button>
                   <button
-                    onClick={() => handleDelete(turno._id)}
+                    onClick={() => handleDelete(turno)}
                     className="p-2 bg-red-50 text-red-500 rounded-lg hover:bg-red-100 transition-colors"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -225,6 +245,15 @@ const WorkshopSchedulePage: FC = () => {
           ))}
         </div>
       </div>
+
+      <ConfirmDeleteModal
+        isOpen={deleteModal.isOpen}
+        onClose={() => setDeleteModal({ ...deleteModal, isOpen: false })}
+        onConfirm={confirmDelete}
+        itemName={deleteModal.turnoLabel}
+        itemType="el horario"
+        isDeleting={isDeleting}
+      />
     </div>
   );
 };

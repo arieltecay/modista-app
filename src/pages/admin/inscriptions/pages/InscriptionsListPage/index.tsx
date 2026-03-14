@@ -404,7 +404,8 @@ const InscriptionsAdminPage: React.FC = () => {
         isOpen={deleteModal.isOpen}
         onClose={() => setDeleteModal({ isOpen: false, courseId: null, courseTitle: '' })}
         onConfirm={handleDeleteCourse}
-        courseTitle={deleteModal.courseTitle}
+        itemName={deleteModal.courseTitle}
+        itemType="la inscripción"
         isDeleting={isDeleting}
       />
     </div>

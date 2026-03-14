@@ -6,14 +6,22 @@ interface ConfirmDeleteModalProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => Promise<void>;
-  courseTitle: string;
+  itemName: string;
+  itemType?: string; // Ej: "el curso", "el alumno", "la inscripción"
   isDeleting?: boolean;
 }
 
 /**
- * Modal de confirmación para eliminar cursos
+ * Modal de confirmación genérico para eliminaciones
  */
-const ConfirmDeleteModal: FC<ConfirmDeleteModalProps> = ({ isOpen, onClose, onConfirm, courseTitle, isDeleting = false }) => {
+const ConfirmDeleteModal: FC<ConfirmDeleteModalProps> = ({ 
+  isOpen, 
+  onClose, 
+  onConfirm, 
+  itemName, 
+  itemType = 'el curso',
+  isDeleting = false 
+}) => {
   if (!isOpen) return null;
 
   const handleConfirm = async () => {
@@ -21,8 +29,7 @@ const ConfirmDeleteModal: FC<ConfirmDeleteModalProps> = ({ isOpen, onClose, onCo
       await onConfirm();
       onClose();
     } catch (error) {
-      // El error ya se maneja en el componente padre
-      console.error('Error deleting course:', error);
+      console.error(`Error deleting ${itemType}:`, error);
     }
   };
 
@@ -73,8 +80,8 @@ const ConfirmDeleteModal: FC<ConfirmDeleteModalProps> = ({ isOpen, onClose, onCo
               <div className="ml-4 flex-1">
                 <div className="mt-2">
                   <p className="text-sm text-gray-700">
-                    ¿Estás seguro de que quieres eliminar el curso{' '}
-                    <span className="font-medium text-gray-900">"{courseTitle}"</span>?
+                    ¿Estás seguro de que quieres eliminar {itemType}{' '}
+                    <span className="font-medium text-gray-900">"{itemName}"</span>?
                   </p>
                   <p className="text-sm text-gray-500 mt-1">
                     Esta acción no se puede deshacer.

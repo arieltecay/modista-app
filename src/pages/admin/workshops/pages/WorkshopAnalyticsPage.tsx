@@ -1,10 +1,11 @@
 import { useEffect, useState, type FC } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
-import { getWorkshopDetails } from '../../../../services/inscriptions/workshopInscriptionService';
+import { getWorkshopDetails, deleteWorkshopInscription } from '../../../../services/inscriptions/workshopInscriptionService';
 import { WorkshopDetailsResponse, WorkshopInscriptionItem } from '../../../../services/inscriptions/types';
 import { Spinner } from '@/components';
 import ScheduleUpdateModal from '@/components/ScheduleUpdateModal';
+import ConfirmDeleteModal from '@/pages/admin/shared/components/ConfirmDeleteModal';
 
 // Type for the inscription object passed to the modal
 interface ModalInscription {
@@ -26,27 +27,33 @@ const WorkshopAnalyticsPage: FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedInscriptionForModal, setSelectedInscriptionForModal] = useState<ModalInscription | null>(null);
 
-  useEffect(() => {
+  // Estados para el modal de eliminación
+  const [deleteModal, setDeleteModal] = useState({ 
+    isOpen: false, 
+    inscriptionId: '', 
+    studentName: '' 
+  });
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const fetchData = async () => {
     if (!workshopId) {
       toast.error('No se ha especificado un ID de workshop.');
       navigate('/admin/workshops');
       return;
     }
+    try {
+      setLoading(true);
+      const response = await getWorkshopDetails(workshopId);
+      setData(response);
+    } catch {
+      setError('Error al cargar los detalles. Por favor, intenta de nuevo.');
+      toast.error('Error al cargar los detalles del workshop.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        // Fetch workshop details
-        const response = await getWorkshopDetails(workshopId);
-        setData(response);
-      } catch {
-        setError('Error al cargar los detalles. Por favor, intenta de nuevo.');
-        toast.error('Error al cargar los detalles del workshop.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
+  useEffect(() => {
     fetchData();
   }, [workshopId, navigate]);
 
@@ -58,8 +65,29 @@ const WorkshopAnalyticsPage: FC = () => {
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedInscriptionForModal(null);
-    // Optionally refetch data after modal close if an update occurred
-    // fetchData(); // Re-fetch data to reflect changes
+    fetchData(); 
+  };
+
+  const handleDelete = (inscriptionId: string, studentName: string) => {
+    setDeleteModal({
+      isOpen: true,
+      inscriptionId,
+      studentName
+    });
+  };
+
+  const confirmDelete = async () => {
+    try {
+      setIsDeleting(true);
+      await deleteWorkshopInscription(deleteModal.inscriptionId);
+      toast.success('Alumno eliminado correctamente.');
+      await fetchData();
+    } catch (err) {
+      toast.error('No se pudo eliminar al alumno. Por favor, intenta de nuevo.');
+    } finally {
+      setIsDeleting(false);
+      setDeleteModal({ isOpen: false, inscriptionId: '', studentName: '' });
+    }
   };
 
   if (loading) {
@@ -154,6 +182,15 @@ const WorkshopAnalyticsPage: FC = () => {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m0-3l-8-8-7 7 7 7" />
                               </svg>
                             </button>
+                            <button
+                              onClick={() => handleDelete(insc._id, `${insc.nombre} ${insc.apellido}`)}
+                              className="text-red-600 hover:text-red-800 transition-colors"
+                              title="Eliminar inscripción"
+                            >
+                              <svg className="w-5 h-5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                              </svg>
+                            </button>
                           </td>
                         </tr>
                       );
@@ -176,6 +213,15 @@ const WorkshopAnalyticsPage: FC = () => {
         inscription={selectedInscriptionForModal!} // Non-null assertion as it's only opened when selected
         courseId={workshopId!}
         workshopTitle={data.workshopTitle}
+      />
+
+      <ConfirmDeleteModal
+        isOpen={deleteModal.isOpen}
+        onClose={() => setDeleteModal({ ...deleteModal, isOpen: false })}
+        onConfirm={confirmDelete}
+        itemName={deleteModal.studentName}
+        itemType="al alumno"
+        isDeleting={isDeleting}
       />
     </div>
   );

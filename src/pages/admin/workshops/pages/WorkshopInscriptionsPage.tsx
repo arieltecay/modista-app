@@ -2,7 +2,7 @@ import { type FC, useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getWorkshopInscriptions, updateInscriptionPaymentStatus, updateInscriptionDeposit } from '../../../../services/inscriptions';
 import { sendPaymentSuccessEmail } from '../../../../services/email/emailService';
-import { getCoursesAdmin } from '../../../../services/courses/coursesService';
+import { getCourseById } from '../../../../services/courses/coursesService';
 import { getTurnosByCourse } from '../../../../services/turnos/turnoService';
 import toast from 'react-hot-toast';
 import { Spinner } from '@/components';
@@ -38,10 +38,10 @@ const WorkshopInscriptionsPage: FC = () => {
     const fetchWorkshopData = async () => {
       try {
         setLoading(true);
-        // 1. Obtener info del curso
-        const coursesResponse: any = await getCoursesAdmin(1, 100);
-        // Buscar por UUID (id viene en la URL ahora es el UUID)
-        const currentCourse = coursesResponse.data.find((c: any) => c.uuid === id || c.id === id);
+        // 1. Obtener info del curso directamente por ID/UUID
+        if (!id) return;
+        
+        const currentCourse: any = await getCourseById(id);
         setCourse(currentCourse || null);
 
         if (!currentCourse) {
@@ -50,12 +50,17 @@ const WorkshopInscriptionsPage: FC = () => {
           return;
         }
 
+        // Obtener ID a usar para las consultas
+        // Priorizamos el uuid/id de la URL para las inscripciones, 
+        // y el backend resolverá a ObjectId cuando sea necesario (como en Turnos)
+        const targetId = currentCourse.uuid || currentCourse.id || id || currentCourse.courseId || currentCourse._id || '';
+
         // 2. Obtener turnos del taller (pasando true para admin)
-        const { data: turnos } = await getTurnosByCourse(currentCourse.uuid || currentCourse.id || '', { includeBlocked: true });
+        const { data: turnos } = await getTurnosByCourse(targetId, { includeBlocked: true });
         setAvailableTurnos(turnos || []);
 
         // 3. Filtrar inscripciones usando el servicio dedicado para talleres
-        const response: any = await getWorkshopInscriptions(currentCourse.uuid || currentCourse.id || '', {
+        const response: any = await getWorkshopInscriptions(targetId, {
           page: currentPage,
           limit: itemsPerPage,
           sortBy: sortConfig.key,
@@ -70,8 +75,8 @@ const WorkshopInscriptionsPage: FC = () => {
         } else {
           setInscriptions([]);
         }
-      } catch {
-        toast.error('Error al cargar datos del taller');
+      } catch (err: any) {
+        toast.error('Error al cargar datos del taller', err);
       } finally {
         setLoading(false);
       }

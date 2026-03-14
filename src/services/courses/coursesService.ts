@@ -78,6 +78,15 @@ export const deleteCourse = (courseId: string): Promise<{ message: string }> =>
     apiClient.delete(`/courses/${courseId}`);
 
 /**
+ * Obtiene un curso por su ID o UUID.
+ * 
+ * @param id - ID o UUID del curso
+ * @returns El objeto del curso
+ */
+export const getCourseById = (id: string): Promise<Course> =>
+    apiClient.get(`/courses/${id}`);
+
+/**
  * Obtiene una lista paginada de cursos para el panel admin.
  * Incluye funcionalidades de ordenamiento, búsqueda y paginación.
  * 

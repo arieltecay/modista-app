@@ -1,7 +1,7 @@
 import { type FC, useState, useEffect, FormEvent } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getTurnosByCourse, createTurno, updateTurno, deleteTurno } from '../../../../services/turnos/turnoService';
-import { getCoursesAdmin } from '../../../../services/courses/coursesService';
+import { getCourseById } from '../../../../services/courses/coursesService';
 import toast from 'react-hot-toast';
 import { Spinner } from '@/components';
 import ConfirmDeleteModal from '@/pages/admin/shared/components/ConfirmDeleteModal';
@@ -36,19 +36,21 @@ const WorkshopSchedulePage: FC = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const coursesResponse: any = await getCoursesAdmin(1, 100);
-        const foundCourse = coursesResponse.data.find((c: any) => c._id === id || c.uuid === id);
-        setCourse(foundCourse || null);
+        if (!id) return;
 
-        const response: Turno[] | { data: Turno[] } = await getTurnosByCourse(id || '', { includeBlocked: true });
+        // Obtener curso directamente (más eficiente que buscar en lista de 100)
+        const foundCourse = await getCourseById(id);
+        setCourse(foundCourse as unknown as WorkshopCourse);
+
+        const response = await getTurnosByCourse(id, { includeBlocked: true });
         const turnosData = Array.isArray(response) ? response : (response?.data || []);
         setTurnos(turnosData);
 
         if (foundCourse) {
-          setNewTurno(prev => ({ ...prev, courseId: foundCourse.courseId || foundCourse._id }));
+          setNewTurno(prev => ({ ...prev, courseId: foundCourse._id || foundCourse.uuid || id }));
         }
-      } catch {
-        toast.error('Error al cargar la agenda');
+      } catch (err: any) {
+        toast.error('Error al cargar la agenda', err);
       } finally {
         setLoading(false);
       }

@@ -4,8 +4,6 @@ import {
   updateInscriptionPaymentStatus,
   getInscriptionsCount,
   exportInscriptions,
-  sendBulkWaReminders,
-  sendIndividualWaReminder,
 } from '../../../../../services/inscriptions';
 import { sendPaymentSuccessEmail, sendCoursePaidEmail } from '../../../../../services/email';
 import { getCoursesAdmin } from '../../../../../services/courses';
@@ -18,8 +16,6 @@ import type { InscriptionsCount } from '../../../../../services/types';
 import type { Inscription } from '../../components/types';
 import type { StatCardProps, SortConfig } from './types';
 import ConfirmDeleteModal from '../../../shared/components/ConfirmDeleteModal';
-import { WhatsappQRModal } from '../../../../../components/WhatsappQRModal'; // Importar el nuevo modal
-import { useWhatsapp } from '../../../../../context/WhatsappContext'; // Importar el hook
 
 // --- Helper Components ---
 const StatCard: React.FC<StatCardProps> = ({ title, value, icon, colorClass, loading }) => {
@@ -64,8 +60,6 @@ const InscriptionsAdminPage: React.FC = () => {
 
   const [courseSuggestions, setCourseSuggestions] = useState<any[]>([]);
   const [inscriptionStats, setInscriptionStats] = useState<(InscriptionsCount & { searchTotal?: number }) | null>(null);
-  const { status: waStatus } = useWhatsapp(); // Usar el estado del contexto
-  const [isQrModalOpen, setIsQrModalOpen] = useState<boolean>(false);
 
   // Estados para modal de eliminación (necesarios si se usa ConfirmDeleteModal)
   const [deleteModal, setDeleteModal] = useState({ isOpen: false, courseId: null as string | null, courseTitle: '' });
@@ -73,9 +67,6 @@ const InscriptionsAdminPage: React.FC = () => {
 
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   
-  // Lógica para el envío de mensajes (a implementar post-conexión)
-  const [isSendingMessages, setIsSendingMessages] = useState(false);
-
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -220,42 +211,6 @@ const InscriptionsAdminPage: React.FC = () => {
     setIsExporting(false);
   };
   
-  // Placeholder para futuras implementaciones
-  const handleIndividualReminder = (id: string) => {
-    if (waStatus !== 'ready') {
-      toast.error("WhatsApp no está conectado. Por favor, conecte primero.");
-      setIsQrModalOpen(true);
-      return;
-    }
-    
-    toast.promise(
-      sendIndividualWaReminder(id),
-      {
-        loading: 'Enviando recordatorio...',
-        success: 'Recordatorio enviado con éxito.',
-        error: (err: any) => err.response?.data?.message || 'Error al enviar recordatorio.',
-      }
-    );
-  };
-  
-  const handleBulkReminders = () => {
-    if (waStatus !== 'ready') {
-      toast.error("WhatsApp no está conectado. Por favor, conecte primero.");
-      setIsQrModalOpen(true);
-      return;
-    }
-
-    toast.promise(
-      sendBulkWaReminders(),
-      {
-        loading: 'Iniciando proceso de recuperación de ventas...',
-        success: (res: any) => res.message || 'El proceso de envío ha comenzado en segundo plano.',
-        error: (err: any) => err.response?.data?.message || 'Error al iniciar el proceso.',
-      }
-    );
-  }
-
-
   const handleDeleteCourse = async () => {
     // Función requerida por ConfirmDeleteModal pero no usada directamente aquí para inscripciones
     // Se deja como placeholder
@@ -316,44 +271,12 @@ const InscriptionsAdminPage: React.FC = () => {
                   <span className="font-semibold">Gestionar Talleres Presenciales</span>
                 </div>
               </button>
-
-              <button
-                onClick={handleBulkReminders}
-                className="group relative px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 overflow-hidden border-2 border-green-400/30"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-green-500 to-green-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <div className="relative flex items-center justify-center space-x-2">
-                  <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 448 512" className="h-5 w-5" xmlns="http://www.w3.org/2000/svg"><path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-93.3-25.7l-6.7-4.1-69.5 18.3L72.7 359l-4.5-7.1c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-5.6-2.8-23.5-8.6-44.8-27.3-16.6-14.8-27.8-33.1-31-38.7-3.3-5.6-.3-8.6 2.5-11.4 2.5-2.5 5.5-6.5 8.3-9.7 2.8-3.3 3.7-5.6 5.6-9.3 1.9-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"></path></svg>
-                  <span className="font-bold uppercase tracking-tight">Recuperar Ventas</span>
-                </div>
-              </button>
             </div>
           </div>
         </div>
 
         {/* --- Stats Cards --- */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-          <div className={`p-6 rounded-2xl shadow-lg border-2 ${waStatus === 'ready' ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'} flex items-center`}>
-            <div className={`p-3 rounded-full ${waStatus === 'ready' ? 'bg-green-500' : 'bg-red-500'} text-white mr-4`}>
-              <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 448 512" className="h-6 w-6" xmlns="http://www.w3.org/2000/svg"><path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-93.3-25.7l-6.7-4.1-69.5 18.3L72.7 359l-4.5-7.1c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-5.6-2.8-23.5-8.6-44.8-27.3-16.6-14.8-27.8-33.1-31-38.7-3.3-5.6-.3-8.6 2.5-11.4 2.5-2.5 5.5-6.5 8.3-9.7 2.8-3.3 3.7-5.6 5.6-9.3 1.9-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"></path></svg>
-            </div>
-            <div>
-              <p className="text-gray-500 text-xs font-bold uppercase tracking-wider">WhatsApp Bot</p>
-              <p className={`text-lg font-extrabold ${waStatus === 'ready' ? 'text-green-700' : 'text-red-700'}`}>
-                {waStatus === 'ready' ? 'CONECTADO' : 'DESCONECTADO'}
-              </p>
-              <div className="flex gap-2 mt-1">
-                {waStatus !== 'ready' && (
-                  <button 
-                    onClick={() => setIsQrModalOpen(true)}
-                    className="text-[9px] bg-red-100 text-red-600 px-2 py-0.5 rounded font-bold animate-pulse hover:bg-red-200 transition-colors uppercase"
-                  >
-                    Conectar
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
           <StatCard
             title="Total Inscripciones"
             value={inscriptionStats?.total ?? '...'}
@@ -452,7 +375,6 @@ const InscriptionsAdminPage: React.FC = () => {
             handlePaymentStatusUpdate={handlePaymentStatusUpdate}
             handleSendCourseEmail={handleSendCourseEmail}
             onDepositClick={() => {}}
-            onWaReminderClick={handleIndividualReminder}
           />
           <InscriptionsTableDesktop
             inscriptions={inscriptions}
@@ -462,7 +384,6 @@ const InscriptionsAdminPage: React.FC = () => {
             handleSort={handleSort}
             handleSendCourseEmail={handleSendCourseEmail}
             onDepositClick={() => {}}
-            onWaReminderClick={handleIndividualReminder}
           />
 
           {/* --- Pagination --- */}
@@ -485,18 +406,6 @@ const InscriptionsAdminPage: React.FC = () => {
         onConfirm={handleDeleteCourse}
         courseTitle={deleteModal.courseTitle}
         isDeleting={isDeleting}
-      />
-
-      {/* --- Nuevo Modal de WhatsApp --- */}
-      <WhatsappQRModal 
-        isOpen={isQrModalOpen}
-        onClose={() => setIsQrModalOpen(false)}
-        onReady={() => {
-          toast.success("¡WhatsApp listo para enviar mensajes!");
-          setIsQrModalOpen(false);
-          // Aquí puedes habilitar la UI para enviar mensajes
-          setIsSendingMessages(true);
-        }}
       />
     </div>
   );

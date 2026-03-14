@@ -43,7 +43,6 @@ export interface InscriptionsTableDesktopProps {
   handleSendCourseEmail: (inscription: Inscription) => void;
   showDepositFeature?: boolean;
   onDepositClick: (inscription: Inscription) => void;
-  onWaReminderClick: (id: string) => void;
   hideCourseTitle?: boolean;
 }
 
@@ -54,6 +53,5 @@ export interface InscriptionsListMobileProps {
   handleSendCourseEmail: (inscription: Inscription) => void;
   showDepositFeature?: boolean;
   onDepositClick: (inscription: Inscription) => void;
-  onWaReminderClick: (id: string) => void;
   hideCourseTitle?: boolean;
 }

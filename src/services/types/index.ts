@@ -23,8 +23,9 @@ export interface User {
  * Curso
  */
 export interface Course {
-    _id?: string;
-    id?: string;
+    id: string; // UUID (Principal) - Mandatory now
+    _id?: string; // ObjectId (Internal) - Optional
+    uuid?: string; // Deprecated alias for id - Optional
     title: string;
     description: string;
     price: number;
@@ -38,7 +39,6 @@ export interface Course {
     isWorkshop?: boolean;
     status?: string;
     createdAt?: Date;
-    uuid?: string;
     updatedAt?: Date;
 }
 
@@ -46,8 +46,9 @@ export interface Course {
  * Inscripción a un curso
  */
 export interface Inscription {
-    _id?: string;
     id?: string;
+    _id?: string;
+    courseId?: string; // UUID del curso
     nombre: string;
     apellido: string;
     email: string;

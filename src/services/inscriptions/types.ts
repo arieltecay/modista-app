@@ -12,7 +12,7 @@ export interface WorkshopInscriptionItem {
     _id: string;
     nombre: string;
     apellido: string;
-    depositAmount: number;
+    totalPaid: number;
     isFullPayment: boolean;
 }
 
@@ -28,7 +28,7 @@ export interface TurnoGroup {
 /** Resumen estadístico del workshop */
 export interface WorkshopSummary {
     totalPaidCount: number;
-    depositPaidCount: number;
+    partialPaidCount: number;
     totalInscriptions: number;
 }
 
@@ -69,7 +69,7 @@ export interface WorkshopInscriptionData {
     coursePrice: number;
     paymentStatus: string;
     turnoId: TurnoInfo;
-    depositAmount: number;
+    totalPaid: number;
     isReserved: boolean;
     fechaInscripcion: string;
     depositDate?: string;
@@ -103,4 +103,27 @@ export interface WorkshopInscription {
         status: string;
         amount: number;
     };
+}
+
+// ============================================================================
+// TIPOS PARA HISTORIAL DE PAGOS
+// ============================================================================
+
+export interface Payment {
+  _id?: string;
+  date: string;
+  amount: number;
+  paymentMethod?: string;
+  notes?: string;
+}
+
+export interface PaymentHistoryData {
+  history: Payment[];
+  totalPaid: number;
+  coursePrice: number;
+}
+
+export interface PaymentHistoryResponse {
+  data: PaymentHistoryData;
+  success: boolean;
 }

@@ -17,7 +17,8 @@ import type {
     Inscription,
     CreateInscriptionData,
     PaginatedResponse,
-    InscriptionsCount
+    InscriptionsCount,
+    PaymentHistoryResponse
 } from '../types';
 
 export type {
@@ -137,6 +138,7 @@ export const updateInscriptionPaymentStatus = (
 /**
  * Actualiza el monto de la seña de una inscripción.
  * 
+ * @deprecated Utilizar `addPayment` en su lugar para soportar el historial de pagos.
  * @param inscriptionId - El ID de la inscripción
  * @param depositAmount - El monto de la seña
  * @returns Una promesa que resuelve al objeto de la inscripción actualizada
@@ -148,6 +150,27 @@ export const updateInscriptionDeposit = (
     apiClient.patch(`/inscriptions/${inscriptionId}/deposit`, {
         depositAmount
     });
+
+/**
+ * Añade un nuevo pago al historial de una inscripción.
+ * @param inscriptionId - El ID de la inscripción.
+ * @param paymentData - Objeto con los datos del pago.
+ * @returns La inscripción actualizada.
+ */
+export const addPayment = (
+    inscriptionId: string,
+    paymentData: { amount: number; paymentMethod?: string; notes?: string }
+): Promise<Inscription> => 
+    apiClient.post(`/inscriptions/${inscriptionId}/payments`, paymentData);
+
+/**
+ * Obtiene el historial de pagos de una inscripción.
+ * @param inscriptionId - El ID de la inscripción.
+ * @returns Un objeto con el historial, el total pagado y el precio del curso.
+ */
+export const getPaymentHistory = (inscriptionId: string): Promise<PaymentHistoryResponse> =>
+    apiClient.get(`/inscriptions/${inscriptionId}/payments`);
+
 
 /**
  * Exporta inscripciones a un archivo Excel.

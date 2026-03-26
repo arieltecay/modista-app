@@ -18,14 +18,19 @@ import type {
     CreateInscriptionData,
     PaginatedResponse,
     InscriptionsCount,
-    PaymentHistoryResponse
 } from '../types';
+import type { 
+    PaymentHistoryResponse,
+    PaymentHistoryData 
+} from './types';
 
 export type {
     Inscription,
     CreateInscriptionData,
     PaginatedResponse,
-    InscriptionsCount
+    InscriptionsCount,
+    PaymentHistoryResponse,
+    PaymentHistoryData
 };
 
 /**
@@ -171,6 +176,14 @@ export const addPayment = (
 export const getPaymentHistory = (inscriptionId: string): Promise<PaymentHistoryResponse> =>
     apiClient.get(`/inscriptions/${inscriptionId}/payments`);
 
+/**
+ * Elimina un pago específico del historial de una inscripción.
+ * @param inscriptionId - El ID de la inscripción.
+ * @param paymentId - El ID del pago a eliminar.
+ * @returns El historial de pagos actualizado.
+ */
+export const deletePayment = (inscriptionId: string, paymentId: string): Promise<PaymentHistoryResponse> =>
+    apiClient.delete(`/inscriptions/${inscriptionId}/payments/${paymentId}`);
 
 /**
  * Exporta inscripciones a un archivo Excel.

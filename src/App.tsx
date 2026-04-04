@@ -16,6 +16,7 @@ import WorkshopSelectorPage from '@/pages/admin/workshops/pages/WorkshopSelector
 import WorkshopInscriptionsPage from '@/pages/admin/workshops/pages/WorkshopInscriptionsPage';
 import WorkshopSchedulePage from '@/pages/admin/workshops/pages/WorkshopSchedulePage';
 import WorkshopAnalyticsPage from '@/pages/admin/workshops/pages/WorkshopAnalyticsPage';
+import WorkshopMonthlyClosurePage from '@/pages/admin/workshops/pages/WorkshopMonthlyClosurePage';
 
 import LoginPage from './pages/Auth/LoginPage';
 import { ProtectedRoute } from '@/components';
@@ -64,6 +65,7 @@ function App() {
               <Route path="workshops/:id" element={<WorkshopInscriptionsPage />} />
               <Route path="workshops/:id/schedule" element={<WorkshopSchedulePage />} />
               <Route path="workshops/more-info/:id" element={<WorkshopAnalyticsPage />} />
+              <Route path="workshops/closures/:id" element={<WorkshopMonthlyClosurePage />} />
             </Route>
 
             {/* Página 404 */}

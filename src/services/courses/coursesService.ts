@@ -12,12 +12,40 @@
  */
 
 import { apiClient } from '../config/apiClient';
+import type { PaginatedResponse } from '../types';
 import type {
     Course,
     CreateCourseData,
     UpdateCourseData,
-    PaginatedResponse
-} from '../types';
+    MonthlyClosureReport
+} from './types';
+
+/**
+ * Procesa el cierre mensual de un curso.
+ * 
+ * @param courseId - UUID del curso
+ * @param closureDate - Fecha de cierre (ISO string)
+ * @returns El reporte de cierre generado
+ */
+export const processMonthlyClosure = (courseId: string, closureDate: string): Promise<MonthlyClosureReport> =>
+    apiClient.post(`/courses/${courseId}/process-closure`, { closureDate });
+
+/**
+ * Obtiene el historial de reportes de cierre mensual para un curso.
+ * 
+ * @param courseId - UUID del curso
+ * @param page - Página
+ * @param limit - Límite
+ * @returns Respuesta paginada con los reportes
+ */
+export const getMonthlyReports = (
+    courseId: string,
+    page: number = 1,
+    limit: number = 10
+): Promise<PaginatedResponse<MonthlyClosureReport>> =>
+    apiClient.get(`/courses/${courseId}/reports`, {
+        params: { page, limit }
+    });
 
 /**
  * Obtiene la lista de todos los cursos (endpoint público).

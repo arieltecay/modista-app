@@ -3,6 +3,9 @@
  * @module services/types
  */
 
+// Importamos y re-exportamos los tipos de cursos para mantener el desacoplamiento
+export * from '../courses/types';
+
 // ============================================
 // TIPOS DE DATOS DE DOMINIO
 // ============================================
@@ -15,29 +18,6 @@ export interface User {
     email: string;
     name: string;
     role: 'admin' | 'user';
-    createdAt?: Date;
-    updatedAt?: Date;
-}
-
-/**
- * Curso
- */
-export interface Course {
-    id: string; // UUID (Principal) - Mandatory now
-    _id?: string; // ObjectId (Internal) - Optional
-    uuid?: string; // Deprecated alias for id - Optional
-    title: string;
-    description: string;
-    price: number;
-    image?: string;
-    deeplink?: string;
-    coursePaid?: string;
-    category?: string;
-    shortDescription?: string;
-    imageUrl?: string;
-    isPresencial?: boolean;
-    isWorkshop?: boolean;
-    status?: string;
     createdAt?: Date;
     updatedAt?: Date;
 }
@@ -131,32 +111,9 @@ export interface InscriptionFilters extends PaginationParams {
     courseFilter?: string;
 }
 
-/**
- * Filtros para cursos
- */
-export type CourseFilters = PaginationParams;
-
 // ============================================
 // TIPOS DE DTOs (Data Transfer Objects)
 // ============================================
-
-/**
- * Datos para crear un curso
- */
-export interface CreateCourseData {
-    title: string;
-    description: string;
-    price: number;
-    image?: string;
-    deeplink?: string;
-    coursePaid?: string;
-    shortDescription?: string;
-}
-
-/**
- * Datos para actualizar un curso
- */
-export type UpdateCourseData = Partial<CreateCourseData>;
 
 /**
  * Datos para registrar un usuario
@@ -225,17 +182,6 @@ export interface EmailPayload {
     subject: string;
     templateName: string;
     data: Record<string, any>;
-}
-
-/**
- * Respuesta del curso pagado
- */
-export interface CoursePaidResponse {
-    success: boolean;
-    data: {
-        courseTitle: string;
-        coursePaid: string;
-    };
 }
 
 // ============================================

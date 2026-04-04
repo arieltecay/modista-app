@@ -1,31 +1,6 @@
 import * as yup from 'yup';
 
 /**
- * Lista de imágenes disponibles para validación
- */
-export const AVAILABLE_IMAGES = [
-  '/images/caricatura.jpeg',
-  '/images/chica.jpeg',
-  '/images/costuraMujer.jpeg',
-  '/images/hilos.jpeg',
-  '/images/maniqui.jpeg',
-  '/images/moda.jpg',
-  '/images/molde.jpeg',
-  '/images/pantalon.jpeg',
-  '/images/perfil.jpg',
-  '/images/persona.jpeg',
-  '/images/ventana.jpeg',
-  '/images/ChalecoFacil.jpeg',
-  '/images/WhatsApp Image 2025-10-26 at 12.40.50.jpeg',
-  '/images/WhatsApp Image 2025-10-26 at 12.41.35.jpeg',
-  '/images/WhatsApp Image 2025-10-26 at 12.41.36.jpeg',
-  '/images/WhatsApp Image 2025-10-26 at 12.41.361.jpeg',
-  '/images/WhatsApp Image 2025-10-26 at 13.00.02.jpeg',
-  '/images/PantalonSastrero.jpeg',
-  '/images/molderia_presencial.jpeg',
-];
-
-/**
  * Función para sanitizar texto eliminando caracteres peligrosos
  * @param {string} text - Texto a sanitizar
  * @returns {string} Texto sanitizado
@@ -63,8 +38,12 @@ export const courseSchema = yup.object({
 
   imageUrl: yup
     .string()
-    .required('Debe seleccionar una imagen')
-    .oneOf(AVAILABLE_IMAGES, 'Debe seleccionar una imagen de la lista'),
+    .url('Debe ser una URL válida')
+    .required('Debe seleccionar una imagen'),
+
+  imagePublicId: yup
+    .string()
+    .optional(),
 
   category: yup
     .string()
@@ -116,6 +95,7 @@ export const defaultCourseValues = {
   shortDescription: '',
   longDescription: '',
   imageUrl: '',
+  imagePublicId: '',
   category: '',
   price: '',
   deeplink: '',

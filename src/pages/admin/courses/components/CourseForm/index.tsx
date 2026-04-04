@@ -2,7 +2,7 @@ import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { courseSchema, defaultCourseValues } from '../../validation/courseValidation';
-import ImageSelector from '../../../shared/components/ImageSelector';
+import CloudinaryImageUploader from '../../../shared/components/CloudinaryImageUploader';
 import { CourseFormProps } from './types';
 
 /**
@@ -27,8 +27,9 @@ const CourseForm: React.FC<CourseFormProps> = ({ initialData = {}, onSubmit, isE
     mode: 'onChange' // Validación en tiempo real
   });
 
-  const handleImageSelect = (imageUrl: string) => {
+  const handleImageSelect = (imageUrl: string, publicId: string) => {
     setValue('imageUrl', imageUrl, { shouldValidate: true });
+    setValue('imagePublicId', publicId, { shouldValidate: true });
   };
 
   const handleFormSubmit = async (data: Record<string, any>) => {
@@ -58,14 +59,11 @@ const CourseForm: React.FC<CourseFormProps> = ({ initialData = {}, onSubmit, isE
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
       {/* Campo de selección de imagen */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Imagen del Curso *
-        </label>
         <Controller
           name="imageUrl"
           control={control}
           render={({ field }) => (
-            <ImageSelector
+            <CloudinaryImageUploader
               selectedImage={field.value}
               onImageSelect={handleImageSelect}
             />

@@ -9,7 +9,7 @@ export const HomeSection: React.FC = React.memo(() => {
         <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-pink-50 to-purple-50">
             {/* Background image */}
             <img
-                src="/images/HomeMica.jpeg"
+                src="https://res.cloudinary.com/ddfee9hht/image/upload/v1775245847/modista_app/HomeMica.jpg"
                 alt="Fondo decorativo"
                 className="absolute inset-0 h-full w-full object-cover opacity-20"
             />
@@ -22,7 +22,7 @@ export const HomeSection: React.FC = React.memo(() => {
                         <div className="flex justify-center lg:justify-end order-1 lg:order-1">
                             <div className="relative">
                                 <img
-                                    src="/images/perfil.jpg"
+                                    src="https://res.cloudinary.com/ddfee9hht/image/upload/v1775245864/modista_app/perfil.jpg"
                                     alt="Mica Guevara - Modista de alta costura"
                                     className="w-48 h-48 sm:w-64 sm:h-64 lg:w-80 lg:h-80 rounded-full object-cover shadow-2xl border-4 border-white"
                                 />

@@ -32,7 +32,7 @@ export const Navbar: React.FC = () => {
         <div className="flex lg:flex-1">
           <NavLink to="/" className="-m-1.5 p-1.5 flex items-center space-x-2">
             <GiSewingMachine className="h-8 w-auto text-[var(--color-green-600)]" />
-            <img src="/images/Micaela%20MARCA%20DE%20AGUA.png" alt="Micaela Modista" className="h-10 w-auto object-contain -ml-2" />
+            <img src="https://res.cloudinary.com/ddfee9hht/image/upload/v1775248530/modista_app/Micaela%20MARCA%20DE%20AGUA.png" alt="Micaela Modista" className="h-10 w-auto object-contain -ml-2" />
           </NavLink>
         </div>
         <div className="flex lg:hidden">
@@ -75,7 +75,7 @@ export const Navbar: React.FC = () => {
           <div className="flex items-center justify-between">
             <NavLink to="/" tabIndex={mobileMenuOpen ? 0 : -1} className="-m-1.5 p-1.5 flex items-center space-x-2">
               <GiSewingMachine className="h-8 w-auto text-[var(--color-green-600)]" />
-              <img src="/images/Micaela%20MARCA%20DE%20AGUA.png" alt="Micaela Modista" className="h-10 w-auto object-contain -ml-2" />
+              <img src="https://res.cloudinary.com/ddfee9hht/image/upload/v1775248530/modista_app/Micaela%20MARCA%20DE%20AGUA.png" alt="Micaela Modista" className="h-10 w-auto object-contain -ml-2" />
             </NavLink>
             <button
               type="button"

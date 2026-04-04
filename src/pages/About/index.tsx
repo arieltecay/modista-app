@@ -6,7 +6,7 @@ const About = () => {
       <div className="container mx-auto px-6">
         <div className="flex flex-col md:flex-row items-center">
           <div className="md:w-1/2 mb-8 md:mb-0">
-            <img src="/images/HomeMica.jpeg" alt="Sobre Mí" className="rounded-lg shadow-lg mx-auto w-80 h-auto w-70 h-auto" />
+            <img src="https://res.cloudinary.com/ddfee9hht/image/upload/v1775245847/modista_app/HomeMica.jpg" alt="Sobre Mí" className="rounded-lg shadow-lg mx-auto w-80 h-auto w-70 h-auto" />
           </div>
           <div className="md:w-1/2 md:pl-12 text-justify">
             <h2 className="text-4xl font-bold text-gray-800 mb-4">Sobre Mí 🧵</h2>

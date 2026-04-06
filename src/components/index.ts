@@ -10,4 +10,7 @@ export { default as ProtectedRoute } from './ProtectedRoute';
 export { default as Spinner } from './Spinner';
 export { default as TurnoSelector } from './TurnoSelector';
 export { default as WhatsAppFloatingButton } from './WhatsAppFloatingButton';
+export { default as AdminSidebar } from './AdminSidebar/AdminSidebar';
+export { default as AdminLayout } from './AdminLayout/AdminLayout';
+export { default as HomeCarousel } from './HomeCarousel/HomeCarousel';
 // Add other components as they are refactored

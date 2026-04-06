@@ -12,6 +12,7 @@ import InscriptionsListPage from '@/pages/admin/inscriptions/pages/InscriptionsL
 import CourseListPage from '@/pages/admin/courses/pages/CourseListPage';
 import CourseAddPage from '@/pages/admin/courses/pages/CourseAddPage';
 import CourseEditPage from '@/pages/admin/courses/pages/CourseEditPage';
+import CarouselManagerPage from '@/pages/admin/carousel/CarouselManagerPage';
 import WorkshopSelectorPage from '@/pages/admin/workshops/pages/WorkshopSelectorPage';
 import WorkshopInscriptionsPage from '@/pages/admin/workshops/pages/WorkshopInscriptionsPage';
 import WorkshopSchedulePage from '@/pages/admin/workshops/pages/WorkshopSchedulePage';
@@ -20,6 +21,7 @@ import WorkshopMonthlyClosurePage from '@/pages/admin/workshops/pages/WorkshopMo
 
 import LoginPage from './pages/Auth/LoginPage';
 import { ProtectedRoute } from '@/components';
+import { AdminLayout } from './components/AdminLayout/AdminLayout';
 import { AuthProvider } from './context/AuthContext';
 import { Toaster } from 'react-hot-toast';
 import { Analytics } from "@vercel/analytics/react";
@@ -52,20 +54,25 @@ function App() {
               path="/admin" 
               element={<ProtectedRoute allowedRoles={['admin']} />}
             >
-              {/* Todas las subrutas de /admin heredan la validación automáticamente */}
-              <Route path="dashboard" element={<InscriptionsListPage />} />
-              
-              {/* Gestión de Cursos */}
-              <Route path="courses" element={<CourseListPage />} />
-              <Route path="courses/add" element={<CourseAddPage />} />
-              <Route path="courses/edit/:id" element={<CourseEditPage />} />
+              <Route element={<AdminLayout />}>
+                {/* Todas las subrutas de /admin heredan la validación automáticamente */}
+                <Route path="dashboard" element={<InscriptionsListPage />} />
+                
+                {/* Gestión de Cursos */}
+                <Route path="courses" element={<CourseListPage />} />
+                <Route path="courses/add" element={<CourseAddPage />} />
+                <Route path="courses/edit/:id" element={<CourseEditPage />} />
 
-              {/* Gestión de Talleres Presenciales */}
-              <Route path="workshops" element={<WorkshopSelectorPage />} />
-              <Route path="workshops/:id" element={<WorkshopInscriptionsPage />} />
-              <Route path="workshops/:id/schedule" element={<WorkshopSchedulePage />} />
-              <Route path="workshops/more-info/:id" element={<WorkshopAnalyticsPage />} />
-              <Route path="workshops/closures/:id" element={<WorkshopMonthlyClosurePage />} />
+                {/* Gestión de Carrusel */}
+                <Route path="carousel" element={<CarouselManagerPage />} />
+
+                {/* Gestión de Talleres Presenciales */}
+                <Route path="workshops" element={<WorkshopSelectorPage />} />
+                <Route path="workshops/:id" element={<WorkshopInscriptionsPage />} />
+                <Route path="workshops/:id/schedule" element={<WorkshopSchedulePage />} />
+                <Route path="workshops/more-info/:id" element={<WorkshopAnalyticsPage />} />
+                <Route path="workshops/closures/:id" element={<WorkshopMonthlyClosurePage />} />
+              </Route>
             </Route>
 
             {/* Página 404 */}

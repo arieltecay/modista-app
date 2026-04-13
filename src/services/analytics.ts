@@ -11,32 +11,55 @@ import type {
     AnalyticsEventName,
     EventParameters,
     CourseViewParams,
-    ButtonClickParams,
-    ConversionParams
+    InteractionParams,
+    ConversionParams,
+    FormEventParams,
+    VideoEventParams
 } from './types';
+
+/**
+ * Obtiene el rol del usuario desde el almacenamiento local
+ */
+const getUserRole = (): 'admin' | 'user' | 'guest' => {
+    try {
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+            const user = JSON.parse(storedUser);
+            return user.role || 'user';
+        }
+    } catch (e) {
+        console.error('Error al obtener el rol del usuario para analytics', e);
+    }
+    return 'guest';
+};
 
 /**
  * Envía eventos a Google Tag Manager
  * 
  * @param eventName - Nombre del evento
  * @param parameters - Parámetros adicionales del evento
- * 
- * @example
- * sendAnalyticsEvent('page_view', { page_title: 'Inicio' });
  */
 export const sendAnalyticsEvent = (
     eventName: AnalyticsEventName | string,
     parameters: EventParameters = {}
 ): void => {
     if (typeof window !== 'undefined' && window.dataLayer) {
+        const fullParameters = {
+            ...parameters,
+            user_role: getUserRole(),
+            page_location: window.location.href,
+            timestamp: new Date().toISOString()
+        };
+
         window.dataLayer.push({
             event: eventName,
-            ...parameters,
-            timestamp: new Date().toISOString()
+            ...fullParameters
         });
-        console.log(`📊 Evento enviado a GTM: ${eventName}`, parameters);
-    } else {
-        console.warn('⚠️ GTM no está disponible. Evento no enviado:', eventName, parameters);
+
+        // Solo loguear en desarrollo
+        if (import.meta.env.DEV) {
+            console.log(`📊 GTM Event: ${eventName}`, fullParameters);
+        }
     }
 };
 
@@ -44,93 +67,112 @@ export const sendAnalyticsEvent = (
  * Eventos predefinidos para la aplicación Modista
  */
 export const AnalyticsEvents = {
-    // Eventos de navegación
     PAGE_VIEW: 'page_view' as const,
     COURSE_VIEW: 'course_view' as const,
-
-    // Eventos de interacción
     BUTTON_CLICK: 'button_click' as const,
+    FORM_START: 'form_start' as const,
     FORM_SUBMIT: 'form_submit' as const,
-
-    // Eventos de conversión
-    COURSE_PURCHASE: 'course_purchase' as const,
+    FORM_ERROR: 'form_error' as const,
     INSCRIPTION_SUCCESS: 'inscription_success' as const,
-
-    // Eventos personalizados
-    CUSTOM_EVENT: 'custom_event' as const
+    VIDEO_INTERACTION: 'video_interaction' as const,
+    CONTACT_CLICK: 'contact_click' as const,
+    EXTERNAL_LINK: 'external_link_click' as const
 } as const;
 
 /**
- * Tipo de eventos de analytics basado en el objeto AnalyticsEvents
+ * Tracking de vista de curso
  */
-export type AnalyticsEventType = typeof AnalyticsEvents[keyof typeof AnalyticsEvents];
-
-/**
- * Función helper para eventos de cursos
- * 
- * @param courseId - ID del curso
- * @param courseTitle - Título del curso
- * 
- * @example
- * trackCourseView('123', 'Curso de React');
- */
-export const trackCourseView = (courseId: string, courseTitle: string): void => {
+export const trackCourseView = (courseId: string, courseTitle: string, price?: number): void => {
     const params: CourseViewParams = {
         course_id: courseId,
         course_title: courseTitle,
-        page_location: window.location.href
+        course_price: price
     };
     sendAnalyticsEvent(AnalyticsEvents.COURSE_VIEW, params);
 };
 
 /**
- * Función helper para clics en botones
- * 
- * @param buttonName - Nombre del botón
- * @param buttonLocation - Ubicación del botón en la página
- * 
- * @example
- * trackButtonClick('Inscribirse', 'Hero Section');
+ * Tracking de inicio de formulario (Intención)
+ */
+export const trackFormStart = (formId: string, formName: string, courseId?: string, courseTitle?: string): void => {
+    const params: FormEventParams = {
+        form_id: formId,
+        form_name: formName,
+        course_id: courseId,
+        course_title: courseTitle
+    };
+    sendAnalyticsEvent(AnalyticsEvents.FORM_START, params);
+};
+
+/**
+ * Tracking de error en formulario (Fricción)
+ */
+export const trackFormError = (formId: string, formName: string, fieldName: string, errorMessage: string): void => {
+    const params: FormEventParams = {
+        form_id: formId,
+        form_name: formName,
+        field_name: fieldName,
+        error_message: errorMessage
+    };
+    sendAnalyticsEvent(AnalyticsEvents.FORM_ERROR, params);
+};
+
+/**
+ * Tracking de éxito en formulario (Conversión)
+ */
+export const trackInscriptionSuccess = (courseId: string, courseTitle: string, value: number): void => {
+    const params: ConversionParams = {
+        course_id: courseId,
+        course_title: courseTitle,
+        value: value,
+        currency: 'ARS'
+    };
+    sendAnalyticsEvent(AnalyticsEvents.INSCRIPTION_SUCCESS, params);
+};
+
+/**
+ * Tracking de interacción con video
+ */
+export const trackVideoInteraction = (videoTitle: string, action: 'play' | 'pause' | 'complete'): void => {
+    const params: VideoEventParams = {
+        video_title: videoTitle,
+        video_provider: 'youtube',
+        video_action: action
+    };
+    sendAnalyticsEvent(AnalyticsEvents.VIDEO_INTERACTION, params);
+};
+
+/**
+ * Tracking de clics de contacto (WhatsApp, etc)
+ */
+export const trackContactClick = (method: 'whatsapp' | 'email', location: string): void => {
+    const params: InteractionParams = {
+        button_name: `Contact via ${method}`,
+        button_location: location,
+        contact_method: method
+    };
+    sendAnalyticsEvent(AnalyticsEvents.CONTACT_CLICK, params);
+};
+
+/**
+ * Tracking de clics en botones generales
  */
 export const trackButtonClick = (buttonName: string, buttonLocation: string): void => {
-    const params: ButtonClickParams = {
+    const params: InteractionParams = {
         button_name: buttonName,
-        button_location: buttonLocation,
-        page_location: window.location.href
+        button_location: buttonLocation
     };
     sendAnalyticsEvent(AnalyticsEvents.BUTTON_CLICK, params);
 };
 
-/**
- * Función helper para conversiones
- * 
- * @param conversionType - Tipo de conversión
- * @param value - Valor de la conversión
- * @param currency - Moneda (por defecto ARS)
- * 
- * @example
- * trackConversion('course_purchase', 5000, 'ARS');
- */
-export const trackConversion = (
-    conversionType: string,
-    value: number | null = null,
-    currency: string = 'ARS'
-): void => {
-    const params: ConversionParams = {
-        value,
-        currency,
-        page_location: window.location.href
-    };
-    sendAnalyticsEvent(conversionType, params);
-};
-
-/**
- * Export por defecto con todas las funciones
- */
 export default {
     sendAnalyticsEvent,
     AnalyticsEvents,
     trackCourseView,
-    trackButtonClick,
-    trackConversion
+    trackFormStart,
+    trackFormError,
+    trackInscriptionSuccess,
+    trackVideoInteraction,
+    trackContactClick,
+    trackButtonClick
 };

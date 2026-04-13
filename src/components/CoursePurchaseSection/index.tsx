@@ -1,9 +1,14 @@
 import React from 'react';
 import { FaWhatsapp } from 'react-icons/fa';
+import { trackContactClick } from '../../services/analytics';
 import { CoursePurchaseSectionProps } from './types';
 
 const CoursePurchaseSection: React.FC<CoursePurchaseSectionProps> = ({ course }) => {
   const isFree = parseFloat(course.price) === 0;
+
+  const handleContactClick = () => {
+    trackContactClick('whatsapp', `Course Detail: ${course.title}`);
+  };
 
   if (isFree) {
     return null; // No renderiza nada si el curso es gratuito
@@ -18,6 +23,7 @@ const CoursePurchaseSection: React.FC<CoursePurchaseSectionProps> = ({ course })
               href="https://wa.me/3813508796"
               target="_blank"
               rel="noopener noreferrer"
+              onClick={handleContactClick}
               className="flex items-center justify-center bg-green-500 text-white px-8 py-3 rounded-lg text-xl font-semibold hover:bg-green-600 transition duration-300 shadow-lg"
             >
               <FaWhatsapp className="mr-2" /> Contactar por WhatsApp

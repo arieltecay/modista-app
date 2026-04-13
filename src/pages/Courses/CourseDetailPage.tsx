@@ -22,7 +22,7 @@ function CourseDetailPage() {
 
         // Enviar evento de visualización del curso a GTM
         if (foundCourse) {
-          trackCourseView(foundCourse.id, foundCourse.title);
+          trackCourseView(foundCourse.id, foundCourse.title, parseFloat(foundCourse.price?.toString() || '0'));
         }
       } catch (e) {
         setError(e.message);

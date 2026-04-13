@@ -189,15 +189,19 @@ export interface EmailPayload {
 // ============================================
 
 /**
- * Nombres de eventos de analytics
+ * Nombres de eventos de analytics extendidos
  */
 export type AnalyticsEventName =
     | 'page_view'
     | 'course_view'
     | 'button_click'
+    | 'form_start'
     | 'form_submit'
-    | 'course_purchase'
+    | 'form_error'
     | 'inscription_success'
+    | 'video_interaction'
+    | 'contact_click'
+    | 'external_link_click'
     | 'custom_event';
 
 /**
@@ -205,6 +209,21 @@ export type AnalyticsEventName =
  */
 export interface EventParameters {
     [key: string]: string | number | boolean | null | undefined;
+    user_role?: 'admin' | 'user' | 'guest';
+    page_location?: string;
+    timestamp?: string;
+}
+
+/**
+ * Parámetros para eventos de formulario
+ */
+export interface FormEventParams extends EventParameters {
+    form_id: string;
+    form_name: string;
+    field_name?: string;
+    error_message?: string;
+    course_id?: string;
+    course_title?: string;
 }
 
 /**
@@ -213,16 +232,27 @@ export interface EventParameters {
 export interface CourseViewParams extends EventParameters {
     course_id: string;
     course_title: string;
-    page_location: string;
+    course_price?: number;
+    course_category?: string;
 }
 
 /**
- * Parámetros para evento de clic en botón
+ * Parámetros para evento de clic en botón / contacto
  */
-export interface ButtonClickParams extends EventParameters {
+export interface InteractionParams extends EventParameters {
     button_name: string;
     button_location: string;
-    page_location: string;
+    target_url?: string;
+    contact_method?: 'whatsapp' | 'email' | 'phone';
+}
+
+/**
+ * Parámetros para evento de video
+ */
+export interface VideoEventParams extends EventParameters {
+    video_title: string;
+    video_provider: 'youtube' | 'vimeo' | 'other';
+    video_action: 'play' | 'pause' | 'complete';
 }
 
 /**
@@ -231,7 +261,9 @@ export interface ButtonClickParams extends EventParameters {
 export interface ConversionParams extends EventParameters {
     value: number | null;
     currency: string;
-    page_location: string;
+    transaction_id?: string;
+    course_id: string;
+    course_title: string;
 }
 
 // ============================================

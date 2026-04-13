@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FaWhatsapp } from 'react-icons/fa';
-import { trackButtonClick } from '../../services/analytics';
+import { trackContactClick } from '../../services/analytics';
 import { whatsappNumber } from '../../utils/constants';
 
 /**
@@ -13,13 +13,15 @@ const WhatsAppFloatingButton: React.FC = () => {
 
   const handleMainClick = () => {
     setIsOpen(!isOpen);
-    trackButtonClick('WhatsApp Floating Icon', 'Global Layout');
+    if (!isOpen) {
+      trackContactClick('whatsapp', 'Global Floating Button');
+    }
   };
 
   const handleOptionClick = (option: string) => {
     const message = encodeURIComponent(`Hola Mica! Tengo una consulta sobre: ${option}`);
     window.open(`${whatsappNumber}?text=${message}`, '_blank');
-    trackButtonClick(`WhatsApp Option: ${option}`, 'Global Layout');
+    trackContactClick('whatsapp', `Option: ${option}`);
     setIsOpen(false);
   };
 

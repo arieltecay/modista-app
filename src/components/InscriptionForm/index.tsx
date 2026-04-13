@@ -1,6 +1,7 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { createInscription } from '../../services/inscriptions';
 import { sendConfirmationEmail } from '../../services/email';
+import { trackFormStart, trackFormError, trackInscriptionSuccess } from '../../services/analytics';
 import Spinner from '../Spinner';
 import TurnoSelector from '../TurnoSelector'; // Ruta corregida
 import { validateNombre, validateApellido, validateEmail, validateCelular } from '../../utils/formValidations';
@@ -17,23 +18,38 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
   const [errors, setErrors] = useState<InscriptionFormErrors>({});
   const [loading, setLoading] = useState<boolean>(false);
   const [formMessage, setFormMessage] = useState<FormMessage | null>(null);
+  const [hasStartedFilling, setHasStartedFilling] = useState<boolean>(false);
 
   const validateForm = (): boolean => {
     const newErrors: InscriptionFormErrors = {};
     const nombreError = validateNombre(formData.nombre);
-    if (nombreError) newErrors.nombre = nombreError;
+    if (nombreError) {
+      newErrors.nombre = nombreError;
+      trackFormError('inscription_form', 'Formulario de Inscripción', 'nombre', nombreError);
+    }
 
     const apellidoError = validateApellido(formData.apellido);
-    if (apellidoError) newErrors.apellido = apellidoError;
+    if (apellidoError) {
+      newErrors.apellido = apellidoError;
+      trackFormError('inscription_form', 'Formulario de Inscripción', 'apellido', apellidoError);
+    }
 
     const emailError = validateEmail(formData.email);
-    if (emailError) newErrors.email = emailError;
+    if (emailError) {
+      newErrors.email = emailError;
+      trackFormError('inscription_form', 'Formulario de Inscripción', 'email', emailError);
+    }
 
     const celularError = validateCelular(formData.celular);
-    if (celularError) newErrors.celular = celularError;
+    if (celularError) {
+      newErrors.celular = celularError;
+      trackFormError('inscription_form', 'Formulario de Inscripción', 'celular', celularError);
+    }
 
     if (course?.isPresencial && !selectedTurnoId) {
-      newErrors.turno = 'Por favor, selecciona un horario disponible';
+      const turnoError = 'Por favor, selecciona un horario disponible';
+      newErrors.turno = turnoError;
+      trackFormError('inscription_form', 'Formulario de Inscripción', 'turno', turnoError);
     }
 
     setErrors(newErrors);
@@ -42,6 +58,13 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
+
+    // Track first interaction with the form
+    if (!hasStartedFilling) {
+      trackFormStart('inscription_form', 'Formulario de Inscripción', course?.id, course?.title);
+      setHasStartedFilling(true);
+    }
+
     setFormData({ ...formData, [name]: value });
 
     if (name === 'celular') {
@@ -74,6 +97,13 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
       };
 
       await createInscription(inscriptionData);
+
+      // Track successful inscription
+      trackInscriptionSuccess(
+        course?.id || course?._id || '1',
+        course?.title || 'Curso',
+        parseFloat(course?.price?.toString() || '0')
+      );
 
       try {
         await sendConfirmationEmail(inscriptionData);

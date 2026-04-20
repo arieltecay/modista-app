@@ -2,9 +2,10 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import CourseImage from '../CourseImage';
 import { CourseCardProps } from './types';
+import { isCourseFree } from '../../utils/courseUtils';
 
 function CourseCard({ course }: CourseCardProps) {
-  const isFree = parseFloat(course.price) === 0;
+  const isFree = isCourseFree(course.price);
 
   return (
     <div className="bg-white shadow-lg rounded-lg overflow-hidden transform hover:-translate-y-1 transition-transform duration-300 flex flex-col h-full">

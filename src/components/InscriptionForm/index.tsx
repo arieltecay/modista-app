@@ -5,6 +5,7 @@ import { trackFormStart, trackFormError, trackInscriptionSuccess } from '../../s
 import Spinner from '../Spinner';
 import TurnoSelector from '../TurnoSelector'; // Ruta corregida
 import { validateNombre, validateApellido, validateEmail, validateCelular } from '../../utils/formValidations';
+import { isCourseFree } from '../../utils/courseUtils';
 import { InscriptionFormProps, InscriptionFormData, InscriptionFormErrors, FormMessage } from './types';
 
 const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
@@ -122,7 +123,7 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
     }
   };
 
-  const isFree = parseFloat(course?.price?.toString() || '0') === 0;
+  const isFree = isCourseFree(course?.price);
 
   return (
     <section className="bg-gray-100 py-12">

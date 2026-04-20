@@ -5,6 +5,7 @@ import { getCourses } from '../../services/courses';
 import { trackCourseView } from '../../services/analytics';
 import { CourseImage, InscriptionForm, Spinner } from '@/components';
 import { formatTextToHtml } from '../../utils/textFormatting';
+import { shouldShowInscription } from '../../utils/courseUtils';
 
 function CourseDetailPage() {
   const { id } = useParams();
@@ -98,7 +99,7 @@ function CourseDetailPage() {
           />
         </div>
       </div>
-      <InscriptionForm course={course} />
+      {shouldShowInscription(course.price) && <InscriptionForm course={course} />}
     </div>
   );
 }

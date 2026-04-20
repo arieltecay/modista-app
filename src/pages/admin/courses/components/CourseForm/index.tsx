@@ -4,6 +4,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { courseSchema, defaultCourseValues } from '../../validation/courseValidation';
 import CloudinaryImageUploader from '../../../shared/components/CloudinaryImageUploader';
 import { CourseFormProps } from './types';
+import FormattingGuide from './FormattingGuide';
 
 /**
  * Componente de formulario reutilizable para crear/editar cursos
@@ -277,12 +278,14 @@ const CourseForm: React.FC<CourseFormProps> = ({ initialData = {}, onSubmit, isE
 
       {/* Campo de descripción larga */}
       <div>
-        <label htmlFor="longDescription" className="block text-sm font-medium text-gray-700 mb-2">
-          Descripción Detallada *
-        </label>
-        <Controller
-          name="longDescription"
-          control={control}
+       <div className="flex justify-between items-center mb-2">
+         <label htmlFor="longDescription" className="block text-sm font-medium text-gray-700">
+           Descripción Detallada *
+         </label>
+         <FormattingGuide />
+       </div>
+       <Controller
+         name="longDescription"          control={control}
           render={({ field }) => (
             <textarea
               {...field}

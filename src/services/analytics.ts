@@ -44,6 +44,11 @@ export const sendAnalyticsEvent = (
     parameters: EventParameters = {}
 ): void => {
     if (typeof window !== 'undefined' && window.dataLayer) {
+        // Bloquear eventos en el panel de administración
+        if (window.location.pathname.startsWith('/admin')) {
+            return;
+        }
+
         const fullParameters = {
             ...parameters,
             user_role: getUserRole(),

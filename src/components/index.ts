@@ -1,4 +1,3 @@
-export { default as Announcement } from './Announcement';
 export { default as AuthForm } from './AuthForm';
 export { default as CourseCard } from './CourseCard';
 export { default as CourseImage } from './CourseImage';

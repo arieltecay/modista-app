@@ -1,6 +1,5 @@
 import React from 'react';
 import { HomeCarousel } from '../../components/HomeCarousel/HomeCarousel';
-import { Announcement } from '@/components';
 import TestimonialsSection from '../../components/TestimonialsSection';
 
 /**
@@ -11,7 +10,6 @@ const Home: React.FC = () => {
     return (
         <div className="relative bg-white">
             <HomeCarousel />
-            <Announcement />
             <TestimonialsSection />
         </div>
     );

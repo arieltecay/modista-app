@@ -40,7 +40,18 @@ export const HomeCarousel: React.FC = () => {
     fetchSlides();
   }, []);
 
-  if (loading || slides.length === 0) return null;
+  if (loading) {
+    return (
+      <div className="relative bg-slate-50 animate-pulse h-[400px] lg:h-[600px] flex items-center justify-center border-b border-gray-100">
+        <div className="text-center">
+          <div className="w-10 h-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">Preparando novedades...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (slides.length === 0) return null;
 
   return (
     <div className="relative group overflow-hidden bg-slate-100 h-[400px] lg:h-[600px]">

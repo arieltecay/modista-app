@@ -1,13 +1,32 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { CourseCard, Spinner, ErrorCard } from '@/components';
+import { CourseCard, ErrorCard } from '@/components';
 import { getCourses } from '../../services/courses';
+
+// Componente Esqueleto para carga visual elegante
+const CourseCardSkeleton = () => (
+  <div className="bg-white shadow-lg rounded-lg overflow-hidden animate-pulse flex flex-col h-full border border-gray-100">
+    <div className="w-full h-48 bg-gray-200"></div>
+    <div className="p-6 flex-grow space-y-4">
+      <div className="h-6 bg-gray-200 rounded w-3/4"></div>
+      <div className="space-y-2">
+        <div className="h-4 bg-gray-200 rounded w-full"></div>
+        <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+      </div>
+    </div>
+    <div className="p-6 pt-0 mt-auto flex flex-col items-center space-y-3">
+      <div className="h-8 bg-gray-100 rounded w-1/4"></div>
+      <div className="h-10 bg-gray-200 rounded w-full"></div>
+      <div className="h-4 bg-gray-100 rounded w-1/4"></div>
+    </div>
+  </div>
+);
 
 function CoursesPage({ limit }) {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [startTime] = useState(performance.now());
 
   const fetchCourses = React.useCallback(async () => {
     try {
@@ -26,11 +45,44 @@ function CoursesPage({ limit }) {
     fetchCourses();
   }, [fetchCourses]);
 
+  // Tracking de rendimiento UX para GA4
+  useEffect(() => {
+    if (!loading && courses.length > 0) {
+      const endTime = performance.now();
+      const duration = Math.round(endTime - startTime);
+      
+      if (window.dataLayer) {
+        window.dataLayer.push({
+          event: 'ux_performance',
+          event_category: 'UX Performance',
+          event_action: 'courses_rendered',
+          event_label: limit ? `home_limit_${limit}` : 'full_list',
+          event_value: duration,
+          non_interaction: true
+        });
+      }
+    }
+  }, [loading, courses, limit, startTime]);
+
   const coursesToShow = limit ? courses.slice(0, limit) : courses;
   const showMoreButton = limit && courses.length > limit;
 
   if (loading) {
-    return <Spinner text="Cargando curso..." />;
+    return (
+      <div className="bg-gray-50 py-12" id="courses">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <div className="h-10 bg-gray-200 rounded w-64 mx-auto mb-4 animate-pulse"></div>
+            <div className="h-6 bg-gray-100 rounded w-96 mx-auto animate-pulse"></div>
+          </div>
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            {[...Array(limit || 6)].map((_, i) => (
+              <CourseCardSkeleton key={i} />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
   }
 
   if (error) {

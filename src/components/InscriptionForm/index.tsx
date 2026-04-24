@@ -20,8 +20,13 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [formMessage, setFormMessage] = useState<FormMessage | null>(null);
   const [hasStartedFilling, setHasStartedFilling] = useState<boolean>(false);
+  const [hasAvailableSpots, setHasAvailableSpots] = useState<boolean>(true);
 
   const validateForm = (): boolean => {
+    if (course?.isPresencial && !hasAvailableSpots) {
+      setFormMessage({ type: 'error', text: 'Lo sentimos, este taller ya no tiene cupos disponibles.' });
+      return false;
+    }
     const newErrors: InscriptionFormErrors = {};
     const nombreError = validateNombre(formData.nombre);
     if (nombreError) {
@@ -124,6 +129,7 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
   };
 
   const isFree = isCourseFree(course?.price);
+  const isBlocked = course?.isPresencial && !hasAvailableSpots;
 
   return (
     <section className="bg-gray-100 py-12">
@@ -134,9 +140,11 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
           </h2>
           <div className="bg-gray-50 p-6 rounded-lg mb-8">
             <h3 className="text-xl font-bold text-gray-900 mb-4 text-center">
-              Completa tus datos para pre-inscribirte y luego recibirás un mail para completar el pago
+              {isBlocked 
+                ? 'El cupo para este taller está completo' 
+                : 'Completa tus datos para pre-inscribirte y luego recibirás un mail para completar el pago'}
             </h3>
-            <form className="space-y-4" onSubmit={handleSubmit} noValidate>
+            <form className={`space-y-4 ${isBlocked ? 'opacity-50 pointer-events-none' : ''}`} onSubmit={handleSubmit} noValidate>
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="nombre" className="block text-sm font-medium text-gray-700 mb-1">
@@ -223,6 +231,7 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
                       setErrors(prev => ({ ...prev, turno: null }));
                     }}
                     selectedTurnoId={selectedTurnoId}
+                    onAvailabilityChange={setHasAvailableSpots}
                   />
                   {errors.turno && <p className="text-red-500 text-sm mt-1">{errors.turno}</p>}
                 </div>
@@ -231,10 +240,10 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
               <div className="flex flex-col items-center space-y-4 pt-4">
                 <button
                   type="submit"
-                  disabled={loading}
+                  disabled={loading || isBlocked}
                   className="w-full bg-indigo-600 text-white py-3 px-6 rounded-lg text-lg font-semibold hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:bg-indigo-400 transition-colors"
                 >
-                  {loading ? <Spinner /> : 'Enviar Inscripción'}
+                  {loading ? <Spinner /> : isBlocked ? 'Cupos Agotados' : 'Enviar Inscripción'}
                 </button>
               </div>
               {formMessage && (

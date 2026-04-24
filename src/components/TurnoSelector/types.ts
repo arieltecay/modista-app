@@ -12,4 +12,5 @@ export interface TurnoSelectorProps {
   courseId: string;
   onSelect: (turnoId: string) => void;
   selectedTurnoId: string | null;
+  onAvailabilityChange?: (hasAvailableTurnos: boolean) => void;
 }

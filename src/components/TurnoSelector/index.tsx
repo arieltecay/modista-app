@@ -3,7 +3,7 @@ import { getTurnosByCourse } from '../../services/turnos/turnoService';
 import Spinner from '../Spinner';
 import { Turno, TurnoSelectorProps } from './types';
 
-const TurnoSelector: React.FC<TurnoSelectorProps> = ({ courseId, onSelect, selectedTurnoId }) => {
+const TurnoSelector: React.FC<TurnoSelectorProps> = ({ courseId, onSelect, selectedTurnoId, onAvailabilityChange }) => {
   const [turnos, setTurnos] = useState<Turno[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -13,10 +13,18 @@ const TurnoSelector: React.FC<TurnoSelectorProps> = ({ courseId, onSelect, selec
       try {
         setLoading(true);
         const response = await getTurnosByCourse(courseId);
-        setTurnos(response.data);
+        const turnosData = response.data || [];
+        setTurnos(turnosData);
+        
+        // Notificar si hay al menos un turno disponible (no lleno)
+        if (onAvailabilityChange) {
+          const hasAvailable = turnosData.some((t: Turno) => t.cuposInscriptos < t.cupoMaximo);
+          onAvailabilityChange(hasAvailable);
+        }
       } catch (err) {
         setError('No se pudieron cargar los horarios disponibles.');
         console.error(err);
+        if (onAvailabilityChange) onAvailabilityChange(false);
       } finally {
         setLoading(false);
       }
@@ -25,7 +33,7 @@ const TurnoSelector: React.FC<TurnoSelectorProps> = ({ courseId, onSelect, selec
     if (courseId) {
       fetchTurnos();
     }
-  }, [courseId]);
+  }, [courseId, onAvailabilityChange]);
 
   if (loading) return <div className="py-4 flex justify-center"><Spinner /></div>;
   if (error) return <div className="py-2 text-red-500 text-sm">{error}</div>;

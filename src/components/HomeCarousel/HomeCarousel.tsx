@@ -5,6 +5,7 @@ import { carouselService } from '../../services/carouselService';
 import { CarouselSlide } from '../../pages/admin/carousel/types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
+import { getOptimizedUrl } from '../../utils/image-utils';
 
 export const HomeCarousel: React.FC = () => {
   const [slides, setSlides] = useState<CarouselSlide[]>([]);
@@ -62,8 +63,10 @@ export const HomeCarousel: React.FC = () => {
               {/* Background Image */}
               <div className="absolute inset-0">
                 <img 
-                  src={slide.imageUrl} 
+                  src={getOptimizedUrl(slide.imageUrl, 1200, 800)} 
                   alt={slide.title} 
+                  loading={index === 0 ? "eager" : "lazy"}
+                  {...(index === 0 ? { fetchpriority: "high" } : {})}
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent" />

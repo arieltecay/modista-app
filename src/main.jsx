@@ -4,7 +4,11 @@ import { createRoot } from 'react-dom/client';
 import './index.css';
 import App from './App.jsx';
 import { BrowserRouter } from 'react-router-dom';
+import { registerSW } from 'virtual:pwa-register';
 import { onCLS, onINP, onLCP, onFCP, onTTFB } from 'web-vitals';
+
+// Register Service Worker for PWA
+registerSW({ immediate: true });
 
 // Función para reportar métricas de rendimiento a GA4
 function reportWebVitals(metric) {

@@ -1,7 +1,14 @@
 import React from 'react';
 import { CourseImageProps } from './types';
+import { getOptimizedUrl } from '../../utils/image-utils';
 
-const CourseImage: React.FC<CourseImageProps> = ({ course, className }) => {
+const CourseImage: React.FC<CourseImageProps> = ({ 
+  course, 
+  className, 
+  width = 600, 
+  height = 400, 
+  priority = false 
+}) => {
   const isFree = parseFloat(course.price) === 0;
 
   return (
@@ -11,7 +18,13 @@ const CourseImage: React.FC<CourseImageProps> = ({ course, className }) => {
           Gratis
         </div>
       )}
-      <img src={course.imageUrl} alt={`Imagen de ${course.title}`} className={className} />
+      <img 
+        src={getOptimizedUrl(course.imageUrl, width, height)} 
+        alt={`Imagen de ${course.title}`} 
+        className={className} 
+        loading={priority ? "eager" : "lazy"}
+        {...(priority ? { fetchpriority: "high" } : {})}
+      />
     </div>
   );
 };

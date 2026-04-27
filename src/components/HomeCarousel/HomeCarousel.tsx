@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
 import { carouselService } from '../../services/carouselService';
-import { CarouselSlide } from '../../pages/admin/carousel/types';
+import { CarouselSlide } from '../../services/types/carousel';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import { getOptimizedUrl } from '../../utils/image-utils';

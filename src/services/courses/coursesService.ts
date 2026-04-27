@@ -48,15 +48,19 @@ export const getMonthlyReports = (
     });
 
 /**
- * Obtiene la lista de todos los cursos (endpoint público).
+ * Obtiene la lista de cursos (endpoint público).
+ * Soporta limitación opcional para optimizar el rendimiento.
  * 
+ * @param limit - Cantidad opcional de cursos a obtener
  * @returns Array de cursos disponibles
  * 
  * @example
- * const courses = await getCourses();
+ * const courses = await getCourses(6);
  */
-export const getCourses = (): Promise<Course[]> =>
-    apiClient.get('/courses');
+export const getCourses = (limit?: number): Promise<Course[]> =>
+    apiClient.get('/courses', {
+        params: { limit }
+    });
 
 /**
  * Crea un nuevo curso (requiere autenticación admin).

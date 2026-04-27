@@ -31,7 +31,7 @@ function CoursesPage({ limit }) {
   const fetchCourses = React.useCallback(async () => {
     try {
       setLoading(true);
-      const data = await getCourses();
+      const data = await getCourses(limit);
       setCourses(data);
       setError(null);
     } catch (e) {
@@ -39,7 +39,7 @@ function CoursesPage({ limit }) {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [limit]);
 
   useEffect(() => {
     fetchCourses();
@@ -64,8 +64,8 @@ function CoursesPage({ limit }) {
     }
   }, [loading, courses, limit, startTime]);
 
-  const coursesToShow = limit ? courses.slice(0, limit) : courses;
-  const showMoreButton = limit && courses.length > limit;
+  const coursesToShow = courses;
+  const showMoreButton = limit && courses.length >= limit;
 
   if (loading) {
     return (

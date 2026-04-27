@@ -64,6 +64,12 @@ export const HomeCarousel: React.FC = () => {
               <div className="absolute inset-0">
                 <img 
                   src={getOptimizedUrl(slide.imageUrl, 1200, 800)} 
+                  srcSet={`
+                    ${getOptimizedUrl(slide.imageUrl, 600, 400)} 600w,
+                    ${getOptimizedUrl(slide.imageUrl, 1200, 800)} 1200w,
+                    ${getOptimizedUrl(slide.imageUrl, 1800, 1200)} 1800w
+                  `}
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 1200px, 1800px"
                   alt={slide.title} 
                   loading={index === 0 ? "eager" : "lazy"}
                   {...(index === 0 ? { fetchpriority: "high" } : {})}

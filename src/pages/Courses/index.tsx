@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { CourseCard, ErrorCard } from '@/components';
 import { getCourses } from '../../services/courses';
-import FaqSection from '@/components/FaqSection/FaqSection';
 
 // Componente Esqueleto para carga visual elegante
 const CourseCardSkeleton = () => (
@@ -125,7 +124,6 @@ function CoursesPage({ limit }) {
           </div>
         )}
       </div>
-      <FaqSection />
     </div>
   );
 }

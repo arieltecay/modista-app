@@ -84,3 +84,17 @@
 .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="72px"]::before {
   content: '72px';
 }
+@keyframes scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-infinite-scroll {
+  display: flex;
+  width: max-content;
+  animation: scroll 40s linear infinite;
+}
+
+.animate-infinite-scroll:hover {
+  animation-play-state: paused;
+}

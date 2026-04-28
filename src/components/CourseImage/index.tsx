@@ -23,7 +23,7 @@ const CourseImage: React.FC<CourseImageProps> = ({
         alt={`Imagen de ${course.title}`} 
         className={className} 
         loading={priority ? "eager" : "lazy"}
-        {...(priority ? { fetchpriority: "high" } : {})}
+        {...(priority ? { fetchPriority: "high" } : {})}
       />
     </div>
   );

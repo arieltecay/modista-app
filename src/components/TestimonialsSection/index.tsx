@@ -1,65 +1,61 @@
 import React from 'react';
 import { useTestimonials } from '../../hooks/useTestimonials';
-import { TESTIMONIALS_CONFIG, TESTIMONIALS_MESSAGES } from '../../constants/testimonials.constants';
 import TestimonialCard from './TestimonialCard';
 
 /**
- * Sección completa de testimonios con lógica de paginación
- * Usa el hook useTestimonials para manejar estado
+ * Sección de testimonios con carrusel minimalista e infinito
+ * Optimizado para mensajes cortos y escalabilidad
  */
 export const TestimonialsSection: React.FC = React.memo(() => {
     const {
         testimonials,
-        visibleTestimonials,
         loading,
         error,
-        showAll,
-        toggleShowAll,
     } = useTestimonials();
 
-    if (loading) {
-        return (
-            <p className="text-center text-gray-600 py-10">
-                {TESTIMONIALS_MESSAGES.LOADING}
-            </p>
-        );
-    }
-
-    if (error) {
-        return (
-            <p className="text-center text-red-600 py-10">
-                {TESTIMONIALS_MESSAGES.ERROR_PREFIX} {error.message}
-            </p>
-        );
-    }
-
-    if (testimonials.length === 0) {
+    if (loading || error || testimonials.length === 0) {
         return null;
     }
 
+    // Duplicamos los testimonios para el efecto de scroll infinito sin saltos
+    const duplicatedTestimonials = [...testimonials, ...testimonials, ...testimonials];
+
     return (
-        <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl text-center mb-12">
-                {TESTIMONIALS_MESSAGES.SECTION_TITLE}
-            </h2>
-
-            <div className={`grid ${TESTIMONIALS_CONFIG.GRID_COLS} gap-8`}>
-                {visibleTestimonials.map((testimonial) => (
-                    <TestimonialCard key={testimonial.id} testimonial={testimonial} />
-                ))}
-            </div>
-
-            {testimonials.length > TESTIMONIALS_CONFIG.INITIAL_COUNT && (
-                <div className="text-center mt-10">
-                    <button
-                        onClick={toggleShowAll}
-                        className="rounded-md bg-[var(--color-green-600)] px-3.5 py-2.5 text-sm font-semibold text-gray-500 shadow-sm hover:brightness-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-green-600)]"
-                    >
-                        {showAll ? TESTIMONIALS_MESSAGES.SHOW_LESS : TESTIMONIALS_MESSAGES.SHOW_MORE}
-                    </button>
+        <section className="bg-white py-16 sm:py-24 overflow-hidden border-t border-gray-50">
+            <div className="mx-auto max-w-7xl px-6 lg:px-8">
+                <div className="text-center mb-12">
+                    <h2 className="text-sm font-bold text-indigo-600 uppercase tracking-[0.2em] mb-3">
+                        Testimonios
+                    </h2>
+                    <p className="text-3xl font-bold text-gray-900 sm:text-4xl tracking-tight">
+                        Lo que dicen nuestras alumnas
+                    </p>
                 </div>
-            )}
-        </div>
+
+                <div className="relative mt-10">
+                    {/* Gradientes laterales para suavizar el flujo */}
+                    <div className="absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-white to-transparent z-10"></div>
+                    <div className="absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-white to-transparent z-10"></div>
+
+                    <div className="flex overflow-hidden group">
+                        <div className="animate-infinite-scroll">
+                            {duplicatedTestimonials.map((testimonial, index) => (
+                                <TestimonialCard 
+                                    key={`${testimonial.id}-${index}`} 
+                                    testimonial={testimonial} 
+                                />
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                <div className="mt-12 text-center">
+                    <p className="text-xs text-gray-400 font-medium tracking-wide">
+                        PASÁ EL CURSOR PARA PAUSAR • MÁS DE 500 EXPERIENCIAS REALES
+                    </p>
+                </div>
+            </div>
+        </section>
     );
 });
 

@@ -72,7 +72,7 @@ export const HomeCarousel: React.FC = () => {
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 1200px, 1800px"
                   alt={slide.title} 
                   loading={index === 0 ? "eager" : "lazy"}
-                  {...(index === 0 ? { fetchpriority: "high" } : {})}
+                  {...(index === 0 ? { fetchPriority: "high" } : {})}
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent" />

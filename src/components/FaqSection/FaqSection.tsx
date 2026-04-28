@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { faqService, FAQ } from '../../services/faq/faqService';
+import { trackFaqInteraction } from '../../services/analytics';
 import { 
   ChevronDownIcon, 
   QuestionMarkCircleIcon, 
@@ -38,8 +39,12 @@ const FaqSection: React.FC = () => {
     loadFaqs();
   }, []);
 
-  const toggleAccordion = (id: string) => {
-    setOpenId(openId === id ? null : id);
+  const toggleAccordion = (id: string, question: string) => {
+    const isOpening = openId !== id;
+    setOpenId(isOpening ? id : null);
+    
+    // Tracking GA4
+    trackFaqInteraction(question, isOpening ? 'expand' : 'collapse');
   };
 
   if (loading) return null;
@@ -72,7 +77,7 @@ const FaqSection: React.FC = () => {
                 }`}
               >
                 <button
-                  onClick={() => toggleAccordion(faq._id)}
+                  onClick={() => toggleAccordion(faq._id, faq.question)}
                   className="w-full px-6 py-5 flex items-center justify-between text-left focus:outline-none"
                 >
                   <div className="flex items-center gap-4">

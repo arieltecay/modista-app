@@ -1,6 +1,7 @@
 import React from 'react';
 import { FaWhatsapp, FaEnvelope, FaInstagram, FaTiktok } from 'react-icons/fa';
 import { whatsappNumber } from '../../utils/constants';
+import { Link } from 'react-router-dom';
 
 const Footer: React.FC = () => {
   return (
@@ -16,7 +17,12 @@ const Footer: React.FC = () => {
           <a href="https://www.instagram.com/soymicaguevara" className="text-4xl hover:text-[var(--color-green-600)] transition duration-300"><FaInstagram /></a>
           <a href="https://www.tiktok.com/@soymicaguevara" className="text-4xl hover:text-[var(--color-green-600)] transition duration-300"><FaTiktok /></a>
         </div>
-        <p className="text-gray-500">&copy; 2025 Micaela Guevara Modista de alta costura. Todos los derechos reservados.</p>
+        <p className="text-gray-500 mb-4">&copy; 2025 Micaela Guevara Modista de alta costura. Todos los derechos reservados.</p>
+        <div className="flex justify-center space-x-4 text-sm text-gray-600">
+          <Link to="/privacidad" className="hover:underline">Política de Privacidad</Link>
+          <span>|</span>
+          <Link to="/terminos" className="hover:underline">Términos y Condiciones</Link>
+        </div>
       </div>
     </footer>
   );

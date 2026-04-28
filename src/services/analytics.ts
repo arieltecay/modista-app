@@ -80,9 +80,23 @@ export const AnalyticsEvents = {
     FORM_ERROR: 'form_error' as const,
     INSCRIPTION_SUCCESS: 'inscription_success' as const,
     VIDEO_INTERACTION: 'video_interaction' as const,
+    FAQ_INTERACTION: 'faq_interaction' as const,
     CONTACT_CLICK: 'contact_click' as const,
     EXTERNAL_LINK: 'external_link_click' as const
 } as const;
+
+/**
+ * Tracking de interacción con FAQ
+ */
+export const trackFaqInteraction = (questionTitle: string, action: 'expand' | 'collapse'): void => {
+    const params: InteractionParams = {
+        button_name: `FAQ: ${questionTitle}`,
+        button_location: 'FaqSection',
+        faq_question: questionTitle,
+        faq_action: action
+    };
+    sendAnalyticsEvent(AnalyticsEvents.FAQ_INTERACTION, params);
+};
 
 /**
  * Tracking de vista de curso
@@ -178,6 +192,7 @@ export default {
     trackFormError,
     trackInscriptionSuccess,
     trackVideoInteraction,
+    trackFaqInteraction,
     trackContactClick,
     trackButtonClick
 };

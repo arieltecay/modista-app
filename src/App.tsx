@@ -13,6 +13,8 @@ const About = lazy(() => import('./pages/About'));
 const Courses = lazy(() => import('./pages/Courses'));
 const CourseDetailPage = lazy(() => import('./pages/Courses/CourseDetailPage'));
 const TariffPage = lazy(() => import('./pages/Tariff'));
+const PrivacyPolicyPage = lazy(() => import('./pages/privacy-policy'));
+const TermsOfServicePage = lazy(() => import('./pages/terms-of-service'));
 const NotFoundPage = lazy(() => import('./pages/NotFound'));
 
 function App() {
@@ -36,6 +38,8 @@ function App() {
               <Route path="cursos" element={<Courses />} />
               <Route path="cursos/:id" element={<CourseDetailPage />} />
               <Route path="tarifario" element={<TariffPage />} />
+              <Route path="privacidad" element={<PrivacyPolicyPage />} />
+              <Route path="terminos" element={<TermsOfServicePage />} />
             </Route>
 
             {/* Página 404 */}

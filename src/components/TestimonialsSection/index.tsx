@@ -51,7 +51,7 @@ export const TestimonialsSection: React.FC = React.memo(() => {
 
                 <div className="mt-12 text-center">
                     <p className="text-xs text-gray-400 font-medium tracking-wide">
-                        PASÁ EL CURSOR PARA PAUSAR • MÁS DE 500 EXPERIENCIAS REALES
+                        PODÉS HACER CLICK EN UNA CARD PARA PAUSAR • MÁS DE 500 EXPERIENCIAS REALES
                     </p>
                 </div>
             </div>

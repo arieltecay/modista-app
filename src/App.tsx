@@ -4,8 +4,6 @@ import { Routes, Route } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { Spinner } from '@/components';
 import { Toaster } from 'react-hot-toast';
-import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/react"
 
 // Páginas Públicas
 const HomePage = lazy(() => import('./pages/HomePage'));
@@ -22,8 +20,6 @@ function App() {
     <div className="bg-white">
       <GoogleTagManager />
       <Toaster />
-      <Analytics />
-      <SpeedInsights sampleRate={1.0} />
       <main>
         <Suspense fallback={
           <div className="min-h-screen flex items-center justify-center">

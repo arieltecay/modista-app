@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 
-import { getCourses } from '../../services/courses';
+import { getCourseById } from '../../services/courses';
 import { trackCourseView } from '../../services/analytics';
 import { CourseImage, InscriptionForm, Spinner } from '@/components';
 import { formatTextToHtml } from '../../utils/textFormatting';
@@ -15,10 +15,10 @@ function CourseDetailPage() {
 
   useEffect(() => {
     const fetchCourse = async () => {
+      if (!id) return;
       try {
         setLoading(true);
-        const coursesData = await getCourses();
-        const foundCourse = coursesData.find(c => c.id === id);
+        const foundCourse = await getCourseById(id);
         setCourse(foundCourse);
 
         // Enviar evento de visualización del curso a GTM

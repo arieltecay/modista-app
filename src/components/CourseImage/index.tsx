@@ -22,6 +22,8 @@ const CourseImage: React.FC<CourseImageProps> = ({
         src={getOptimizedUrl(course.imageUrl, width, height)} 
         alt={`Imagen de ${course.title}`} 
         className={className} 
+        width={width}
+        height={height}
         loading={priority ? "eager" : "lazy"}
         {...(priority ? { fetchPriority: "high" } : {})}
       />

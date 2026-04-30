@@ -5,8 +5,15 @@ const About = () => {
     <section id="about" className="py-20 bg-white">
       <div className="container mx-auto px-6">
         <div className="flex flex-col md:flex-row items-center">
-          <div className="md:w-1/2 mb-8 md:mb-0">
-            <img src="https://res.cloudinary.com/ddfee9hht/image/upload/v1775245847/modista_app/HomeMica.jpg" alt="Sobre Mí" className="rounded-lg shadow-lg mx-auto w-80 h-auto w-70 h-auto" />
+          <div className="md:w-1/2 mb-8 md:mb-0 text-center">
+            <img 
+              src="https://res.cloudinary.com/ddfee9hht/image/upload/f_auto,q_auto,w_600/v1775245847/modista_app/HomeMica.jpg" 
+              alt="Sobre Mí" 
+              className="rounded-lg shadow-lg mx-auto w-full max-w-sm h-auto object-cover" 
+              width="600"
+              height="800"
+              loading="lazy"
+            />
           </div>
           <div className="md:w-1/2 md:pl-12 text-justify">
             <h2 className="text-4xl font-bold text-gray-800 mb-4">Sobre Mí 🧵</h2>

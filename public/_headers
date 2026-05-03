@@ -1,0 +1,10 @@
+# Reglas de Cache para Modista App en Cloudflare
+/
+  Cache-Control: public, max-age=0, must-revalidate
+/index.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+# Los assets (JS/CSS) ya tienen hashes en el nombre por Vite, 
+# estos sí pueden cachearse agresivamente por 1 año.
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable

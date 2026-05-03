@@ -14,7 +14,7 @@ const WhatsAppFloatingButton: React.FC = () => {
   const handleMainClick = () => {
     setIsOpen(!isOpen);
     if (!isOpen) {
-      trackContactClick('whatsapp', 'Global Floating Button');
+      trackContactClick('whatsapp', 'Floating Actions Group');
     }
   };
 
@@ -26,7 +26,7 @@ const WhatsAppFloatingButton: React.FC = () => {
   };
 
   return (
-    <div className="fixed bottom-6 left-6 z-[100] flex flex-col items-start gap-3">
+    <div className="flex flex-col items-start gap-3">
       {/* Menú de opciones rápidas */}
       {isOpen && (
         <div className="flex flex-col gap-2 mb-2 animate-in slide-in-from-bottom-4 duration-300">

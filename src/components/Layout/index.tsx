@@ -1,4 +1,4 @@
-import { Navbar, WhatsAppFloatingButton } from '@/components';
+import { Navbar, FloatingActionsContainer } from '@/components';
 import Footer from '../../pages/Footer';
 import { Outlet, useLocation } from 'react-router-dom';
 import FaqSection from '../FaqSection/FaqSection';
@@ -16,7 +16,7 @@ export const Layout = () => {
         <Outlet />
       </main>
       {showFaq && <FaqSection />}
-      <WhatsAppFloatingButton />
+      <FloatingActionsContainer />
       <Footer />
     </>
   );

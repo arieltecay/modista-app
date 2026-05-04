@@ -35,7 +35,8 @@ window.addEventListener('error', (e) => {
 
 // Función para reportar métricas de rendimiento a GA4
 function reportWebVitals(metric) {
-  if (window.dataLayer) {
+  // Solo enviar a GTM en producción
+  if (import.meta.env.PROD && window.dataLayer) {
     window.dataLayer.push({
       event: 'web_vitals',
       event_category: 'Web Vitals',
@@ -47,7 +48,7 @@ function reportWebVitals(metric) {
   }
   
   if (import.meta.env.DEV) {
-    console.log(`📊 Web Vital [${metric.name}]:`, metric.value);
+    console.log(`📊 [DEV] Web Vital [${metric.name}]:`, metric.value);
   }
 }
 

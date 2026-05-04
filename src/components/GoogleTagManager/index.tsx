@@ -9,6 +9,11 @@ const CLARITY_ID = import.meta.env.VITE_CLARITY_ID;
 const GoogleTagManager = () => {
   const location = useLocation();
 
+  // SILENT MODE: No inicializar ni enviar métricas si estamos en desarrollo
+  if (import.meta.env.DEV) {
+    return null;
+  }
+
   // Efecto para inicializar los scripts de GTM y Clarity.
   // Se ejecuta solo una vez.
   useEffect(() => {

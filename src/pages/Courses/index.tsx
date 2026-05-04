@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { CourseCard, ErrorCard } from '@/components';
 import { getCourses } from '../../services/courses';
 import FaqSection from '../../components/FaqSection/FaqSection';
+import { sendAnalyticsEvent } from '../../services/analytics';
 
 // Componente Esqueleto para carga visual elegante
 const CourseCardSkeleton = () => (
@@ -52,16 +53,13 @@ function CoursesPage({ limit }) {
       const endTime = performance.now();
       const duration = Math.round(endTime - startTime);
       
-      if (window.dataLayer) {
-        window.dataLayer.push({
-          event: 'ux_performance',
-          event_category: 'UX Performance',
-          event_action: 'courses_rendered',
-          event_label: limit ? `home_limit_${limit}` : 'full_list',
-          event_value: duration,
-          non_interaction: true
-        });
-      }
+      sendAnalyticsEvent('ux_performance', {
+        event_category: 'UX Performance',
+        event_action: 'courses_rendered',
+        event_label: limit ? `home_limit_${limit}` : 'full_list',
+        event_value: duration,
+        non_interaction: true
+      });
     }
   }, [loading, courses, limit, startTime]);
 

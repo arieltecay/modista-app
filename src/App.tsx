@@ -4,6 +4,7 @@ import { Routes, Route } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { Spinner } from '@/components';
 import { Toaster } from 'react-hot-toast';
+import { CourseProvider } from './context/CourseContext';
 
 // Páginas Públicas
 const HomePage = lazy(() => import('./pages/HomePage'));
@@ -17,33 +18,35 @@ const NotFoundPage = lazy(() => import('./pages/NotFound'));
 
 function App() {
   return (
-    <div className="bg-white">
-      <GoogleTagManager />
-      <Toaster />
-      <main>
-        <Suspense fallback={
-          <div className="min-h-screen flex items-center justify-center">
-            <Spinner text="Cargando experiencia..." />
-          </div>
-        }>
-          <Routes>
-            {/* Rutas Públicas - Dentro del Layout principal */}
-            <Route path="/" element={<Layout />}>
-              <Route index element={<HomePage />} />
-              <Route path="sobre-mi" element={<About />} />
-              <Route path="cursos" element={<Courses />} />
-              <Route path="cursos/:id" element={<CourseDetailPage />} />
-              <Route path="tarifario" element={<TariffPage />} />
-              <Route path="privacidad" element={<PrivacyPolicyPage />} />
-              <Route path="terminos" element={<TermsOfServicePage />} />
-            </Route>
+    <CourseProvider>
+      <div className="bg-white">
+        <GoogleTagManager />
+        <Toaster />
+        <main>
+          <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center">
+              <Spinner text="Cargando experiencia..." />
+            </div>
+          }>
+            <Routes>
+              {/* Rutas Públicas - Dentro del Layout principal */}
+              <Route path="/" element={<Layout />}>
+                <Route index element={<HomePage />} />
+                <Route path="sobre-mi" element={<About />} />
+                <Route path="cursos" element={<Courses />} />
+                <Route path="cursos/:id" element={<CourseDetailPage />} />
+                <Route path="tarifario" element={<TariffPage />} />
+                <Route path="privacidad" element={<PrivacyPolicyPage />} />
+                <Route path="terminos" element={<TermsOfServicePage />} />
+              </Route>
 
-            {/* Página 404 */}
-            <Route path="*" element={<NotFoundPage />} />
-          </Routes>
-        </Suspense>
-      </main>
-    </div>
+              {/* Página 404 */}
+              <Route path="*" element={<NotFoundPage />} />
+            </Routes>
+          </Suspense>
+        </main>
+      </div>
+    </CourseProvider>
   );
 }
 

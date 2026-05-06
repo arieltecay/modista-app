@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { FaWhatsapp } from 'react-icons/fa';
 import { trackContactClick } from '../../services/analytics';
 import { whatsappNumber } from '../../utils/constants';
+import { useCourseContext } from '../../context/CourseContext';
 
 /**
  * WhatsAppFloatingButton
@@ -10,6 +11,7 @@ import { whatsappNumber } from '../../utils/constants';
  */
 const WhatsAppFloatingButton: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { activeCourseTitle } = useCourseContext();
 
   const handleMainClick = () => {
     setIsOpen(!isOpen);
@@ -18,8 +20,10 @@ const WhatsAppFloatingButton: React.FC = () => {
     }
   };
 
-  const handleOptionClick = (option: string) => {
-    const message = encodeURIComponent(`Hola Mica! Tengo una consulta sobre: ${option}`);
+  const handleOptionClick = (option: string, isCourse = false) => {
+    const message = isCourse 
+      ? encodeURIComponent(`Hola Mica! Me gustaría hacer una consulta sobre: ${option}`)
+      : encodeURIComponent(`Hola Mica! Tengo una consulta sobre: ${option}`);
     window.open(`${whatsappNumber}?text=${message}`, '_blank');
     trackContactClick('whatsapp', `Option: ${option}`);
     setIsOpen(false);
@@ -30,24 +34,14 @@ const WhatsAppFloatingButton: React.FC = () => {
       {/* Menú de opciones rápidas */}
       {isOpen && (
         <div className="flex flex-col gap-2 mb-2 animate-in slide-in-from-bottom-4 duration-300">
-          <button
-            onClick={() => handleOptionClick('Cursos Online')}
-            className="bg-white px-4 py-2 rounded-lg shadow-lg border border-indigo-100 text-sm font-semibold text-gray-700 hover:bg-indigo-50 transition-all text-left"
-          >
-            📚 Duda sobre Cursos
-          </button>
-          <button
-            onClick={() => handleOptionClick('Talleres Presenciales')}
-            className="bg-white px-4 py-2 rounded-lg shadow-lg border border-indigo-100 text-sm font-semibold text-gray-700 hover:bg-indigo-50 transition-all text-left"
-          >
-            📍 Talleres en Tucumán
-          </button>
-          <button
-            onClick={() => handleOptionClick('Consulta General')}
-            className="bg-white px-4 py-2 rounded-lg shadow-lg border border-indigo-100 text-sm font-semibold text-gray-700 hover:bg-indigo-50 transition-all text-left"
-          >
-            🧵 Consulta de Costura
-          </button>
+          {activeCourseTitle && (
+            <button
+              onClick={() => handleOptionClick(activeCourseTitle, true)}
+              className="bg-white px-4 py-2 rounded-lg shadow-lg border border-indigo-200 text-sm font-bold text-indigo-700 hover:bg-indigo-50 transition-all text-left"
+            >
+              🎓 Consultar sobre {activeCourseTitle}
+            </button>
+          )}
         </div>
       )}
 

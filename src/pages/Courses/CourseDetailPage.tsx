@@ -6,12 +6,14 @@ import { trackCourseView } from '../../services/analytics';
 import { CourseImage, InscriptionForm, Spinner } from '@/components';
 import { formatTextToHtml } from '../../utils/textFormatting';
 import { shouldShowInscription } from '../../utils/courseUtils';
+import { useCourseContext } from '../../context/CourseContext';
 
 function CourseDetailPage() {
   const { id } = useParams();
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { setActiveCourseTitle } = useCourseContext();
 
   useEffect(() => {
     const fetchCourse = async () => {
@@ -24,6 +26,7 @@ function CourseDetailPage() {
         // Enviar evento de visualización del curso a GTM
         if (foundCourse) {
           trackCourseView(foundCourse.id, foundCourse.title, parseFloat(foundCourse.price?.toString() || '0'));
+          setActiveCourseTitle(foundCourse.title);
         }
       } catch (e) {
         setError(e.message);
@@ -33,10 +36,12 @@ function CourseDetailPage() {
     };
 
     fetchCourse();
-  }, [id]);
+
+    return () => setActiveCourseTitle(null);
+  }, [id, setActiveCourseTitle]);
 
   if (loading) {
-    return <Spinner text="Cargando curso..." />;
+// ...
   }
 
   if (error) {

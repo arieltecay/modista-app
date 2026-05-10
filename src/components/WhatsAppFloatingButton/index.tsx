@@ -22,24 +22,31 @@ const WhatsAppFloatingButton: React.FC = () => {
 
   const handleOptionClick = (option: string, isCourse = false) => {
     const message = isCourse 
-      ? encodeURIComponent(`Hola Mica! Me gustaría hacer una consulta sobre: ${option}`)
-      : encodeURIComponent(`Hola Mica! Tengo una consulta sobre: ${option}`);
+      ? encodeURIComponent(`Hola Mila! Me gustaría hacer una consulta sobre el curso: ${option}`)
+      : encodeURIComponent(`Hola Mila! Tengo una consulta general sobre la academia`);
     window.open(`${whatsappNumber}?text=${message}`, '_blank');
     trackContactClick('whatsapp', `Option: ${option}`);
     setIsOpen(false);
   };
 
   return (
-    <div className="flex flex-col items-start gap-3">
+    <div className="fixed bottom-6 left-6 z-[110] flex flex-col items-start gap-3">
       {/* Menú de opciones rápidas */}
       {isOpen && (
         <div className="flex flex-col gap-2 mb-2 animate-in slide-in-from-bottom-4 duration-300">
-          {activeCourseTitle && (
+          {activeCourseTitle ? (
             <button
               onClick={() => handleOptionClick(activeCourseTitle, true)}
-              className="bg-white px-4 py-2 rounded-lg shadow-lg border border-indigo-200 text-sm font-bold text-indigo-700 hover:bg-indigo-50 transition-all text-left"
+              className="bg-white px-4 py-2 rounded-lg shadow-xl border border-indigo-200 text-sm font-bold text-indigo-700 hover:bg-indigo-50 transition-all text-left whitespace-nowrap"
             >
               🎓 Consultar sobre {activeCourseTitle}
+            </button>
+          ) : (
+            <button
+              onClick={() => handleOptionClick('General')}
+              className="bg-white px-4 py-2 rounded-lg shadow-xl border border-indigo-200 text-sm font-bold text-indigo-700 hover:bg-indigo-50 transition-all text-left whitespace-nowrap"
+            >
+              ✨ Consultar a Mila AI
             </button>
           )}
         </div>
@@ -49,7 +56,7 @@ const WhatsAppFloatingButton: React.FC = () => {
       <button
         onClick={handleMainClick}
         className={`
-          flex items-center justify-center w-14 h-14 rounded-full shadow-2xl transition-all duration-300
+          flex items-center justify-center w-14 h-14 rounded-full shadow-2xl transition-all duration-300 relative
           ${isOpen ? 'bg-indigo-600 rotate-90' : 'bg-green-500 hover:bg-green-600 hover:scale-110'}
           text-white focus:outline-none focus:ring-4 focus:ring-green-300
         `}

@@ -4,6 +4,12 @@
 /index.html
   Cache-Control: public, max-age=0, must-revalidate
 
+# Asegurar que el Service Worker y el Manifiesto NUNCA se cacheen
+/sw.js
+  Cache-Control: no-cache, no-store, must-revalidate
+/manifest.webmanifest
+  Cache-Control: no-cache, no-store, must-revalidate
+
 # Los assets (JS/CSS) ya tienen hashes en el nombre por Vite, 
 # estos sí pueden cachearse agresivamente por 1 año.
 /assets/*

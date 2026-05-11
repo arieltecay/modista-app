@@ -7,8 +7,27 @@ import { BrowserRouter } from 'react-router-dom';
 import { registerSW } from 'virtual:pwa-register';
 import { onCLS, onINP, onLCP, onFCP, onTTFB } from 'web-vitals';
 
-// Registro de Service Worker para PWA
-registerSW({ immediate: true });
+// Registro de Service Worker para PWA con lógica de auto-update mejorada
+const updateSW = registerSW({
+  immediate: true,
+  onNeedRefresh() {
+    console.log('✨ Nueva versión disponible. Recargando...');
+    updateSW(true); // Fuerza la actualización y recarga
+  },
+  onOfflineReady() {
+    console.log('📱 App lista para trabajar offline');
+  },
+});
+
+/**
+ * Verificación periódica de actualizaciones del Service Worker.
+ * Útil para usuarios que dejan la pestaña abierta por mucho tiempo.
+ */
+const CHECK_INTERVAL = 60 * 60 * 1000; // 1 hora
+setInterval(() => {
+  console.log('🔍 Buscando actualizaciones del sistema...');
+  updateSW(true);
+}, CHECK_INTERVAL);
 
 // --- SEGURO DE VIDA (Auto-Reload en caso de desactualización) ---
 /**
@@ -18,16 +37,18 @@ registerSW({ immediate: true });
  */
 window.addEventListener('error', (e) => {
   const isChunkError = /Loading chunk [^ ]+ failed/.test(e.message) || 
-                       /Loading CSS chunk [^ ]+ failed/.test(e.message);
-  
+                       /Loading CSS chunk [^ ]+ failed/.test(e.message) ||
+                       e.message?.includes('Importing a module script failed');
+
   if (isChunkError) {
-    console.warn('⚠️ Detectada versión desactualizada. Forzando recarga...');
+    console.warn('⚠️ Detectada versión desactualizada por error de carga. Forzando recarga limpia...');
     // Evitamos bucles infinitos guardando el timestamp del último refresco
     const lastReload = sessionStorage.getItem('last-reload');
     const now = Date.now();
-    
+
     if (!lastReload || now - parseInt(lastReload) > 10000) {
       sessionStorage.setItem('last-reload', now.toString());
+      // Forzamos recarga desde el servidor ignorando cache local
       window.location.reload();
     }
   }
@@ -46,7 +67,7 @@ function reportWebVitals(metric) {
       non_interaction: true,
     });
   }
-  
+
   if (import.meta.env.DEV) {
     console.log(`📊 [DEV] Web Vital [${metric.name}]:`, metric.value);
   }

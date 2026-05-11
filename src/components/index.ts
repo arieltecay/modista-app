@@ -8,4 +8,4 @@ export { default as Spinner } from './Spinner';
 export { default as TurnoSelector } from './TurnoSelector';
 export { default as WhatsAppFloatingButton } from './WhatsAppFloatingButton';
 export { default as FloatingActionsContainer } from './FloatingActionsContainer';
-export { default as HomeCarousel } from './HomeCarousel/HomeCarousel';
+export { default as StaticBanner } from './StaticBanner/StaticBanner';

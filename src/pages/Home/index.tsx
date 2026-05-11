@@ -1,5 +1,5 @@
 import React from 'react';
-import { HomeCarousel } from '../../components/HomeCarousel/HomeCarousel';
+import { StaticBanner } from '../../components';
 import TestimonialsSection from '../../components/TestimonialsSection';
 
 /**
@@ -9,7 +9,7 @@ import TestimonialsSection from '../../components/TestimonialsSection';
 const Home: React.FC = () => {
     return (
         <div className="relative bg-white">
-            <HomeCarousel />
+            <StaticBanner />
             <TestimonialsSection />
         </div>
     );

@@ -1,6 +1,10 @@
 # Reglas de Cache para Modista App en Cloudflare
 /
   Cache-Control: public, max-age=0, must-revalidate
+  # Acelerar la conexión a servicios externos críticos
+  Link: <https://res.cloudinary.com>; rel=preconnect
+  Link: <https://api.modista-app.com>; rel=preconnect
+
 /index.html
   Cache-Control: public, max-age=0, must-revalidate
 

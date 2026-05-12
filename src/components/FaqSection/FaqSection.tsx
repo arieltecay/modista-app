@@ -47,7 +47,22 @@ const FaqSection: React.FC = () => {
     trackFaqInteraction(question, isOpening ? 'expand' : 'collapse');
   };
 
-  if (loading) return null;
+  // Esqueleto para evitar CLS (Cumulative Layout Shift)
+  if (loading) {
+    return (
+      <section className="py-20 bg-gray-50/50">
+        <div className="container mx-auto px-4 max-w-4xl">
+          <div className="h-10 bg-gray-200 rounded-xl w-64 mx-auto mb-16 animate-pulse"></div>
+          <div className="space-y-4">
+            {[1, 2, 3].map(i => (
+              <div key={i} className="h-20 bg-white rounded-2xl border border-gray-100 animate-pulse"></div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   if (faqs.length === 0) return null;
 
   return (

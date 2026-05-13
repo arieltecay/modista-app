@@ -56,16 +56,24 @@ export const sendAnalyticsEvent = (
   };
 
   // Solo enviar a GTM si no estamos en desarrollo
-  if (import.meta.env.PROD && typeof window !== 'undefined' && window.dataLayer) {
-    window.dataLayer.push({
-      event: eventName,
-      ...fullParameters
-    });
+  if (import.meta.env.PROD && typeof window !== 'undefined') {
+    if (window.dataLayer) {
+      window.dataLayer.push({
+        event: eventName,
+        ...fullParameters
+      });
+    }
+
+    // Integración con Meta Pixel (fbq)
+    if (window.fbq) {
+      // Mapeo básico de eventos de GTM a Meta Pixel si es necesario
+      // Pero preferimos usar trackCourseView e trackInscriptionSuccess específicos abajo
+    }
   }
 
   // Siempre loguear en desarrollo para debugging, pero no enviar a GTM
   if (import.meta.env.DEV) {
-    console.log(`📊 [DEV] GTM Event: ${eventName}`, fullParameters);
+    console.log(`📊 [DEV] Analytics Event: ${eventName}`, fullParameters);
   }
 };
 
@@ -109,6 +117,17 @@ export const trackCourseView = (courseId: string, courseTitle: string, price?: n
     course_price: price
   };
   sendAnalyticsEvent(AnalyticsEvents.COURSE_VIEW, params);
+
+  // Meta Pixel: ViewContent
+  if (import.meta.env.PROD && typeof window !== 'undefined' && window.fbq) {
+    window.fbq('track', 'ViewContent', {
+      content_name: courseTitle,
+      content_ids: [courseId],
+      content_type: 'product',
+      value: price || 0,
+      currency: 'ARS'
+    });
+  }
 };
 
 /**
@@ -122,6 +141,15 @@ export const trackFormStart = (formId: string, formName: string, courseId?: stri
     course_title: courseTitle
   };
   sendAnalyticsEvent(AnalyticsEvents.FORM_START, params);
+
+  // Meta Pixel: InitiateCheckout (opcional, pero buena práctica)
+  if (import.meta.env.PROD && typeof window !== 'undefined' && window.fbq) {
+    window.fbq('track', 'InitiateCheckout', {
+      content_name: courseTitle,
+      content_category: 'Courses',
+      content_ids: [courseId]
+    });
+  }
 };
 
 /**
@@ -148,6 +176,15 @@ export const trackInscriptionSuccess = (courseId: string, courseTitle: string, v
     currency: 'ARS'
   };
   sendAnalyticsEvent(AnalyticsEvents.INSCRIPTION_SUCCESS, params);
+
+  // Meta Pixel: Lead
+  if (import.meta.env.PROD && typeof window !== 'undefined' && window.fbq) {
+    window.fbq('track', 'Lead', {
+      content_name: courseTitle,
+      value: value,
+      currency: 'ARS'
+    });
+  }
 };
 
 /**

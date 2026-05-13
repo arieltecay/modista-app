@@ -5,6 +5,7 @@ import { useLocation } from 'react-router-dom';
 
 const GTM_ID = import.meta.env.VITE_GTM_ID;
 const CLARITY_ID = import.meta.env.VITE_CLARITY_ID;
+const FB_PIXEL_ID = import.meta.env.VITE_FACEBOOK_PIXEL_ID;
 
 const GoogleTagManager = () => {
   const location = useLocation();
@@ -14,7 +15,7 @@ const GoogleTagManager = () => {
     return null;
   }
 
-  // Efecto para inicializar los scripts de GTM y Clarity.
+  // Efecto para inicializar los scripts de GTM, Clarity y Meta Pixel.
   // Se ejecuta solo una vez.
   useEffect(() => {
     // 1. Google Tag Manager
@@ -34,10 +35,23 @@ const GoogleTagManager = () => {
             y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
         })(window, document, "clarity", "script", CLARITY_ID);
     }
+
+    // 3. Meta Pixel (Facebook Pixel)
+    if (FB_PIXEL_ID && !window.fbq) {
+      (function(f,b,e,v,n,t,s)
+      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+      n.queue=[];t=b.createElement(e);t.async=!0;
+      t.src=v;s=b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t,s)}(window, document,'script',
+      'https://connect.facebook.net/en_US/fbevents.js'));
+      fbq('init', FB_PIXEL_ID);
+      fbq('track', 'PageView');
+    }
   }, []);
 
-  // Efecto para enviar un evento a dataLayer cada vez que la URL cambia.
-  // GTM usará este evento para registrar una "pageview".
+  // Efecto para enviar un evento a dataLayer y Meta cada vez que la URL cambia.
   useEffect(() => {
     // SILENT MODE: No enviar métricas si estamos en el panel de administración
     if (location.pathname.startsWith('/admin')) {
@@ -52,6 +66,10 @@ const GoogleTagManager = () => {
             title: document.title
         }
       });
+    }
+
+    if (window.fbq) {
+      window.fbq('track', 'PageView');
     }
   }, [location]);
 

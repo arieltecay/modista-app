@@ -5,6 +5,7 @@ export { default as ErrorCard } from './ErrorCard';
 export { default as InscriptionForm } from './InscriptionForm';
 export { Navbar } from './Navbar';
 export { default as Spinner } from './Spinner';
+export { default as ScrollToTop } from './ScrollToTop';
 export { default as TurnoSelector } from './TurnoSelector';
 export { default as WhatsAppFloatingButton } from './WhatsAppFloatingButton';
 export { default as FloatingActionsContainer } from './FloatingActionsContainer';

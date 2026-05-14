@@ -2,7 +2,7 @@ import { lazy, Suspense } from 'react';
 import GoogleTagManager from './components/GoogleTagManager';
 import { Routes, Route } from 'react-router-dom';
 import { Layout } from './components/Layout';
-import { Spinner } from '@/components';
+import { Spinner, ScrollToTop } from '@/components';
 import { Toaster } from 'react-hot-toast';
 import { CourseProvider } from './context/CourseContext';
 
@@ -19,6 +19,7 @@ const NotFoundPage = lazy(() => import('./pages/NotFound'));
 function App() {
   return (
     <CourseProvider>
+      <ScrollToTop />
       <div className="bg-white">
         <GoogleTagManager />
         <Toaster />

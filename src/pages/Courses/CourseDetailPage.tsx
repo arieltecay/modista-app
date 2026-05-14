@@ -41,7 +41,11 @@ function CourseDetailPage() {
   }, [id, setActiveCourseTitle]);
 
   if (loading) {
-// ...
+    return (
+      <div className="min-h-[50vh] flex items-center justify-center">
+        <Spinner text="Cargando detalles del curso..." />
+      </div>
+    );
   }
 
   if (error) {

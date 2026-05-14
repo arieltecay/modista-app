@@ -1,0 +1,4 @@
+Contact: mailto:arieltecay@gmail.com
+Expires: 2027-05-14T11:41:00.000Z
+Preferred-Languages: es, en
+Canonical: https://modista-app.com/.well-known/security.txt

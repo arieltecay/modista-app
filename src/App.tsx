@@ -1,10 +1,11 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import GoogleTagManager from './components/GoogleTagManager';
 import { Routes, Route } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { Spinner, ScrollToTop } from '@/components';
 import { Toaster } from 'react-hot-toast';
 import { CourseProvider } from './context/CourseContext';
+import { captureUTMParameters } from './utils/utm-tracking';
 
 // Páginas Públicas
 const HomePage = lazy(() => import('./pages/HomePage'));
@@ -17,6 +18,10 @@ const TermsOfServicePage = lazy(() => import('./pages/terms-of-service'));
 const NotFoundPage = lazy(() => import('./pages/NotFound'));
 
 function App() {
+  useEffect(() => {
+    captureUTMParameters();
+  }, []);
+
   return (
     <CourseProvider>
       <ScrollToTop />

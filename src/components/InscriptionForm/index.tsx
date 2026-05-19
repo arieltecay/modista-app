@@ -6,6 +6,7 @@ import Spinner from '../Spinner';
 import TurnoSelector from '../TurnoSelector'; // Ruta corregida
 import { validateNombre, validateApellido, validateEmail, validateCelular } from '../../utils/formValidations';
 import { isCourseFree } from '../../utils/courseUtils';
+import { getStoredUTMData } from '../../utils/utm-tracking';
 import { InscriptionFormProps, InscriptionFormData, InscriptionFormErrors, FormMessage } from './types';
 
 const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
@@ -91,6 +92,7 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
 
     setLoading(true);
     try {
+      const utmData = getStoredUTMData();
       const inscriptionData = {
         ...formData,
         courseId: course?.id || course?._id || '1',
@@ -100,6 +102,8 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
         courseDeeplink: course?.deeplink || 'https://modista.app',
         dateYear: new Date().getFullYear(),
         turnoId: selectedTurnoId,
+        marketingSource: utmData?.source || 'organic',
+        utmParams: utmData || {}
       };
 
       await createInscription(inscriptionData);

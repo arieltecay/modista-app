@@ -136,14 +136,14 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
   const isBlocked = course?.isPresencial && !hasAvailableSpots;
 
   return (
-    <section className="bg-gray-100 py-12">
+    <section className="bg-background py-12">
       <div className="container mx-auto px-4">
-        <div className="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-md">
-          <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
+        <div className="max-w-3xl mx-auto bg-card p-8 rounded-lg shadow-md border border-border">
+          <h2 className="text-3xl font-bold text-foreground mb-6 text-center">
             {isFree ? '¡Curso Gratuito!' : '¡Inscríbete ahora!'}
           </h2>
-          <div className="bg-gray-50 p-6 rounded-lg mb-8">
-            <h3 className="text-xl font-bold text-gray-900 mb-4 text-center">
+          <div className="bg-muted/50 p-6 rounded-lg mb-8">
+            <h3 className="text-xl font-bold text-foreground mb-4 text-center">
               {isBlocked 
                 ? 'El cupo para este taller está completo' 
                 : 'Completa tus datos para pre-inscribirte y luego recibirás un mail para completar el pago'}
@@ -151,7 +151,7 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
             <form className={`space-y-4 ${isBlocked ? 'opacity-50 pointer-events-none' : ''}`} onSubmit={handleSubmit} noValidate>
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="nombre" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="nombre" className="block text-sm font-medium text-muted-foreground mb-1">
                     Nombre
                   </label>
                   <input
@@ -161,7 +161,7 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
                     required
                     value={formData.nombre}
                     onChange={handleChange}
-                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 ${errors.nombre ? 'border-red-500' : 'border-gray-300'
+                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground ${errors.nombre ? 'border-red-500' : 'border-border'
                       }`}
                     placeholder="Tu nombre"
                   />
@@ -169,7 +169,7 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
                 </div>
 
                 <div>
-                  <label htmlFor="apellido" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="apellido" className="block text-sm font-medium text-muted-foreground mb-1">
                     Apellido
                   </label>
                   <input
@@ -179,7 +179,7 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
                     required
                     value={formData.apellido}
                     onChange={handleChange}
-                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 ${errors.apellido ? 'border-red-500' : 'border-gray-300'
+                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground ${errors.apellido ? 'border-red-500' : 'border-border'
                       }`}
                     placeholder="Tu apellido"
                   />
@@ -188,7 +188,7 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
               </div>
 
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="email" className="block text-sm font-medium text-muted-foreground mb-1">
                   Correo electrónico
                 </label>
                 <input
@@ -198,7 +198,7 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
                   required
                   value={formData.email}
                   onChange={handleChange}
-                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 ${errors.email ? 'border-red-500' : 'border-gray-300'
+                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground ${errors.email ? 'border-red-500' : 'border-border'
                     }`}
                   placeholder="tu@email.com"
                 />
@@ -206,10 +206,10 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
               </div>
 
               <div>
-                <label htmlFor="celular" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="celular" className="block text-sm font-medium text-muted-foreground mb-1">
                   Número de celular
                 </label>
-                <p className="text-xs text-gray-500 mb-2">
+                <p className="text-xs text-muted-foreground mb-2">
                   Ingresa tu número con código de país (ej. +54 para Argentina). Ej: +543811234567 o 543811234567
                 </p>
                 <input
@@ -219,7 +219,7 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
                   required
                   value={formData.celular}
                   onChange={handleChange}
-                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 ${errors.celular ? 'border-red-500' : 'border-gray-300'
+                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground ${errors.celular ? 'border-red-500' : 'border-border'
                     }`}
                   placeholder="Ej: +543811234567"
                 />
@@ -245,7 +245,7 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
                 <button
                   type="submit"
                   disabled={loading || isBlocked}
-                  className="w-full bg-indigo-600 text-white py-3 px-6 rounded-lg text-lg font-semibold hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:bg-indigo-400 transition-colors"
+                  className="w-full bg-primary text-primary-foreground py-3 px-6 rounded-lg text-lg font-semibold hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-primary disabled:bg-primary/50 transition-colors"
                 >
                   {loading ? <Spinner /> : isBlocked ? 'Cupos Agotados' : 'Enviar Inscripción'}
                 </button>

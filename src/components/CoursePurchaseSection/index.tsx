@@ -15,9 +15,9 @@ const CoursePurchaseSection: React.FC<CoursePurchaseSectionProps> = ({ course })
   }
 
   return (
-    <section className="bg-gray-100 py-12">
+    <section className="bg-background py-12">
       <div className="container mx-auto px-4">
-        <div className="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-md">
+        <div className="max-w-3xl mx-auto bg-card p-8 rounded-lg shadow-md border border-border">
           <div className="flex flex-col items-center space-y-4">
             <a
               href="https://wa.me/3813508796"

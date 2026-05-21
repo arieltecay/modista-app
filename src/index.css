@@ -1,12 +1,114 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
 @import "tailwindcss";
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 :root {
+  /* Colores del Sistema / Semánticos (Tema Claro por defecto) */
+  --background: #fafafa;
+  --foreground: #111827; /* gray-900 */
+  
+  --card: #ffffff;
+  --card-foreground: #111827;
+  
+  --popover: #ffffff;
+  --popover-foreground: #111827;
+  
+  /* Colores de Marca y Acentos */
+  --primary: #c0d8d2; /* Verde pastel emblemático */
+  --primary-hover: #a7c1ba;
+  --primary-foreground: #1f2937; /* gray-800 */
+  
+  --accent: #4f46e5; /* Indigo-600 */
+  --accent-hover: #4338ca; /* Indigo-700 */
+  --accent-foreground: #ffffff;
+  
+  /* Colores Neutros y de Interfaz */
+  --muted: #f3f4f6; /* gray-100 */
+  --muted-foreground: #4b5563; /* gray-600 */
+  --border: #e5e7eb; /* gray-200 */
+  --input: #e5e7eb;
+  --ring: #c0d8d2;
+
+  /* Retrocompatibilidad */
   --color-green-600: #c0d8d2;
+
+  /* Tipografía y bordes */
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --radius: 0.75rem;
+}
+
+/* Redefinición para Modo Oscuro Uniforme */
+.dark {
+  --background: #0b0f19;
+  --foreground: #f9fafb; /* gray-50 */
+  
+  --card: #111827; /* gray-900 */
+  --card-foreground: #f9fafb;
+  
+  --popover: #111827;
+  --popover-foreground: #f9fafb;
+  
+  --primary: #c0d8d2; /* Se mantiene para conservar identidad visual de marca */
+  --primary-hover: #d2e4df;
+  --primary-foreground: #111827;
+  
+  --accent: #6366f1; /* Indigo-500 en modo oscuro para mejor contraste */
+  --accent-hover: #4f46e5;
+  --accent-foreground: #ffffff;
+  
+  --muted: #1f2937; /* gray-800 */
+  --muted-foreground: #9ca3af; /* gray-400 */
+  --border: #374151; /* gray-700 */
+  --input: #374151;
+  --ring: #c0d8d2;
+}
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-foreground: var(--primary-foreground);
+  
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-foreground: var(--accent-foreground);
+  
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  
+  --font-sans: var(--font-sans);
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+
+  --animate-scroll: scroll 40s linear infinite;
+}
+
+/* Transiciones de estilo fluidas y seguras */
+*, *::before, *::after {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 250ms;
+}
+
+/* Evitar transiciones molestas en elementos interactivos que tengan animaciones de movimiento */
+.no-transition, 
+.no-transition *,
+[class*="motion-"], 
+[class*="animate-"],
+[style*="transform"] {
+  transition: none !important;
 }
 
 /* Estilos personalizados para tamaños de fuente en Quill */
@@ -84,6 +186,7 @@
 .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="72px"]::before {
   content: '72px';
 }
+
 @keyframes scroll {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
@@ -92,9 +195,10 @@
 .animate-infinite-scroll {
   display: flex;
   width: max-content;
-  animation: scroll 40s linear infinite;
+  animation: var(--animate-scroll);
 }
 
 .animate-infinite-scroll:hover {
   animation-play-state: paused;
 }
+

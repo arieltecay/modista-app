@@ -11,7 +11,7 @@ import { useCourseContext } from '../../context/CourseContext';
  */
 const WhatsAppFloatingButton: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { activeCourseTitle } = useCourseContext();
+  const { activeCourse } = useCourseContext();
 
   const handleMainClick = () => {
     setIsOpen(!isOpen);
@@ -21,9 +21,16 @@ const WhatsAppFloatingButton: React.FC = () => {
   };
 
   const handleOptionClick = (option: string, isCourse = false) => {
-    const message = isCourse 
-      ? encodeURIComponent(`Hola Mila! Me gustaría hacer una consulta sobre el curso: ${option}`)
-      : encodeURIComponent(`Hola Mila! Tengo una consulta general sobre la academia`);
+    let message = '';
+    
+    if (isCourse && activeCourse) {
+      message = encodeURIComponent(
+        `Hola Mila! Me gustaría comprar el curso: ${activeCourse.title}. ` +
+        `El precio es $${activeCourse.price}. ¿Cómo puedo hacer el pago?`
+      );
+    } else {
+      message = encodeURIComponent(`Hola Mila! Tengo una consulta general sobre la academia`);
+    }
     window.open(`${whatsappNumber}?text=${message}`, '_blank');
     trackContactClick('whatsapp', `Option: ${option}`);
     setIsOpen(false);
@@ -34,17 +41,17 @@ const WhatsAppFloatingButton: React.FC = () => {
       {/* Menú de opciones rápidas */}
       {isOpen && (
         <div className="flex flex-col gap-2 mb-2 animate-in slide-in-from-bottom-4 duration-300">
-          {activeCourseTitle ? (
+          {activeCourse ? (
             <button
-              onClick={() => handleOptionClick(activeCourseTitle, true)}
-              className="bg-white px-4 py-2 rounded-lg shadow-xl border border-indigo-200 text-sm font-bold text-indigo-700 hover:bg-indigo-50 transition-all text-left whitespace-nowrap"
+              onClick={() => handleOptionClick(activeCourse.title, true)}
+              className="bg-card px-4 py-2 rounded-lg shadow-xl border border-primary/30 text-sm font-bold text-primary hover:bg-primary/10 transition-all text-left whitespace-nowrap"
             >
-              🎓 Consultar sobre {activeCourseTitle}
+              🎓 Comprar {activeCourse.title}
             </button>
           ) : (
             <button
               onClick={() => handleOptionClick('General')}
-              className="bg-white px-4 py-2 rounded-lg shadow-xl border border-indigo-200 text-sm font-bold text-indigo-700 hover:bg-indigo-50 transition-all text-left whitespace-nowrap"
+              className="bg-card px-4 py-2 rounded-lg shadow-xl border border-primary/30 text-sm font-bold text-primary hover:bg-primary/10 transition-all text-left whitespace-nowrap"
             >
               ✨ Consultar a Mila AI
             </button>

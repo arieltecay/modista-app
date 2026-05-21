@@ -25,7 +25,7 @@ function App() {
   return (
     <CourseProvider>
       <ScrollToTop />
-      <div className="bg-white">
+      <div className="min-h-screen bg-background text-foreground transition-colors duration-250">
         <GoogleTagManager />
         <Toaster />
         <main>

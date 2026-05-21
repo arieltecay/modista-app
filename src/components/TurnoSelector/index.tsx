@@ -38,15 +38,15 @@ const TurnoSelector: React.FC<TurnoSelectorProps> = ({ courseId, onSelect, selec
   if (loading) return <div className="py-4 flex justify-center"><Spinner /></div>;
   if (error) return <div className="py-2 text-red-500 text-sm">{error}</div>;
   if (turnos.length === 0) return (
-    <div className="py-4 px-4 bg-yellow-50 border border-yellow-200 rounded-lg text-yellow-700 text-sm">
+    <div className="py-4 px-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg text-yellow-600 dark:text-yellow-500 text-sm">
       No hay turnos disponibles para este curso actualmente.
     </div>
   );
 
   return (
-    <div className="space-y-4 my-6">
-      <h3 className="text-lg font-semibold text-gray-800 flex items-center">
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <div className="space-y-4 my-6 transition-colors duration-250">
+      <h3 className="text-lg font-semibold text-foreground flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
         </svg>
         Selecciona tu horario
@@ -67,32 +67,32 @@ const TurnoSelector: React.FC<TurnoSelectorProps> = ({ courseId, onSelect, selec
               className={`
                 relative p-4 rounded-xl border-2 text-left transition-all duration-200
                 ${isFull
-                  ? 'bg-gray-50 border-gray-200 opacity-60 cursor-not-allowed'
+                  ? 'bg-muted/50 border-border opacity-60 cursor-not-allowed'
                   : isSelected
-                    ? 'bg-indigo-50 border-indigo-600 ring-2 ring-indigo-200'
-                    : 'bg-white border-gray-200 hover:border-indigo-300 hover:shadow-md'
+                    ? 'bg-primary/10 border-primary ring-2 ring-primary/20'
+                    : 'bg-card border-border hover:border-primary/30 hover:shadow-md'
                 }
               `}
             >
               <div className="flex justify-between items-start mb-1">
-                <span className={`font-bold ${isSelected ? 'text-indigo-700' : 'text-gray-900'}`}>
+                <span className={`font-bold ${isSelected ? 'text-primary' : 'text-foreground'}`}>
                   {turno.diaSemana || new Date(turno.fecha!).toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long' })}
                 </span>
                 {isFull ? (
-                  <span className="text-[10px] uppercase font-bold px-2 py-0.5 bg-red-100 text-red-600 rounded-full">Lleno</span>
+                  <span className="text-[10px] uppercase font-bold px-2 py-0.5 bg-red-500/10 text-red-500 rounded-full">Lleno</span>
                 ) : (
-                  <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full ${available <= 2 ? 'bg-orange-100 text-orange-600' : 'bg-green-100 text-green-600'}`}>
+                  <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full ${available <= 2 ? 'bg-orange-500/10 text-orange-500' : 'bg-green-500/10 text-green-500'}`}>
                     {available} {available === 1 ? 'lugar' : 'lugares'}
                   </span>
                 )}
               </div>
-              <div className={`text-sm ${isSelected ? 'text-indigo-600' : 'text-gray-500'}`}>
+              <div className={`text-sm ${isSelected ? 'text-primary/80' : 'text-muted-foreground'}`}>
                 {turno.horaInicio} a {turno.horaFin} hs
               </div>
 
               {isSelected && (
                 <div className="absolute top-2 right-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-indigo-600" viewBox="0 0 20 20" fill="currentColor">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-primary" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                   </svg>
                 </div>

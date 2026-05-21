@@ -68,7 +68,7 @@ const EmailTestPage = ({ courseData, onEmailSent }) => { // Recibe courseData y 
           <p><strong>Precio:</strong> ${courseData.price}</p>
         </div>
       )}
-      <form onSubmit={handleSubmit} className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+      <form onSubmit={handleSubmit} className="bg-card p-8 rounded-lg shadow-md w-full max-w-md">
         <div className="mb-4">
           <label htmlFor="name" className="block text-gray-700 text-sm font-bold mb-2">Nombre:</label>
           <input

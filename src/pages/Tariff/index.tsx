@@ -146,26 +146,26 @@ const TariffPage: FC = () => {
       case 'arreglos':
         return <TariffArreglos tariffData={tariffData} />;
       default:
-        return <p className="text-gray-500">Formato de tarifario no reconocido.</p>;
+        return <p className="text-muted-foreground">Formato de tarifario no reconocido.</p>;
     }
   };
 
   return (
-    <div className="bg-gray-50 py-12 min-h-screen">
+    <div className="bg-background py-12 min-h-screen transition-colors duration-250">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:p-8">
         <header className="text-center mb-10">
-          <h1 className="text-4xl font-extrabold text-gray-900 sm:text-5xl mb-4">
+          <h1 className="text-4xl font-extrabold text-foreground sm:text-5xl mb-4">
             {tariff?.metadata?.titulo || 'Tarifarios de Confección'}
           </h1>
           {tariff?.metadata?.notas && tariff.metadata.notas.length > 0 && (
-            <div className="mt-8 mx-auto max-w-4xl p-6 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl shadow-lg border border-purple-200">
-              <h3 className="text-xl font-bold text-purple-800 mb-3 flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <div className="mt-8 mx-auto max-w-4xl p-6 bg-primary/10 rounded-xl shadow-lg border border-primary/20">
+              <h3 className="text-xl font-bold text-primary mb-3 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 Notas Importantes
               </h3>
-              <ul className="list-disc list-inside text-gray-700 space-y-2 text-left">
+              <ul className="list-disc list-inside text-foreground space-y-2 text-left">
                 {tariff.metadata.notas.map((nota, index) => (
                   <li key={index} className="flex items-start"><span className="mr-2">&#x2022;</span><span>{nota}</span></li>
                 ))}
@@ -181,13 +181,13 @@ const TariffPage: FC = () => {
               placeholder="Buscar ítems en el tarifario actual..."
               value={searchText}
               onChange={handleSearchChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              className="w-full px-4 py-2 border border-border bg-card text-foreground rounded-md focus:outline-none focus:ring-primary focus:border-primary"
             />
           </div>
         )}
 
         {uniqueTypes.length > 1 && (
-          <div className="mb-8 border-b border-gray-200">
+          <div className="mb-8 border-b border-border">
             <nav className="-mb-px flex space-x-8" aria-label="Tabs">
               {uniqueTypes.map((type) => (
                 <button
@@ -205,7 +205,7 @@ const TariffPage: FC = () => {
                   className={`
                     ${selectedType === type
                       ? 'border-indigo-500 text-indigo-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                      : 'border-transparent text-muted-foreground hover:text-foreground hover:border-gray-300'
                     }
                     whitespace-nowrap py-4 px-1 border-b-2 font-medium text-lg capitalize
                   `}
@@ -240,25 +240,25 @@ const TariffPage: FC = () => {
         ) : errorTariff ? (
           <ErrorCard title="Error al cargar tarifario" message={errorTariff} />
         ) : searchText.trim() !== '' ? (
-          <div className="bg-white shadow overflow-hidden sm:rounded-lg border border-gray-100">
+          <div className="bg-card shadow overflow-hidden sm:rounded-lg border border-border">
             <div className="p-4 sm:p-6">
               {searchSections.length > 0 ? (
                 <DynamicTariffSection sections={searchSections} />
               ) : (
-                <div className="text-center py-10 text-gray-500">
+                <div className="text-center py-10 text-muted-foreground">
                    <p>No se encontraron resultados para "{searchText}".</p>
                 </div>
               )}
             </div>
           </div>
         ) : tariff ? (
-          <div className="bg-white shadow overflow-hidden sm:rounded-lg border border-gray-100">
+          <div className="bg-card shadow overflow-hidden sm:rounded-lg border border-border">
             <div className="p-4 sm:p-6">
               {renderTariffComponent(tariff)}
             </div>
           </div>
         ) : (
-          <div className="text-center py-10 text-gray-500">
+          <div className="text-center py-10 text-muted-foreground">
             <p>No hay tarifarios disponibles para la selección actual.</p>
             <p>Por favor, selecciona un tipo y período si están disponibles.</p>
           </div>

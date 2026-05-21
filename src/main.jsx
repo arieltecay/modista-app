@@ -6,6 +6,7 @@ import App from './App.jsx';
 import { BrowserRouter } from 'react-router-dom';
 import { registerSW } from 'virtual:pwa-register';
 import { onCLS, onINP, onLCP, onFCP, onTTFB } from 'web-vitals';
+import { ThemeProvider } from './context/ThemeContext';
 
 // Registro de Service Worker para PWA con lógica de auto-update mejorada
 const updateSW = registerSW({
@@ -82,8 +83,11 @@ onTTFB(reportWebVitals);
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
+    <ThemeProvider>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </ThemeProvider>
   </StrictMode>,
 );
+

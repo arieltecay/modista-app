@@ -50,12 +50,12 @@ const FaqSection: React.FC = () => {
   // Esqueleto para evitar CLS (Cumulative Layout Shift)
   if (loading) {
     return (
-      <section className="py-20 bg-gray-50/50">
+      <section className="py-20 bg-background">
         <div className="container mx-auto px-4 max-w-4xl">
-          <div className="h-10 bg-gray-200 rounded-xl w-64 mx-auto mb-16 animate-pulse"></div>
+          <div className="h-10 bg-muted rounded-xl w-64 mx-auto mb-16 animate-pulse"></div>
           <div className="space-y-4">
             {[1, 2, 3].map(i => (
-              <div key={i} className="h-20 bg-white rounded-2xl border border-gray-100 animate-pulse"></div>
+              <div key={i} className="h-20 bg-card rounded-2xl border border-border animate-pulse"></div>
             ))}
           </div>
         </div>
@@ -66,13 +66,13 @@ const FaqSection: React.FC = () => {
   if (faqs.length === 0) return null;
 
   return (
-    <section className="py-20 bg-gray-50/50">
+    <section className="py-20 bg-background">
       <div className="container mx-auto px-4 max-w-4xl">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
             Preguntas Frecuentes
           </h2>
-          <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
             Resolvemos tus dudas para que puedas comenzar tu viaje en el mundo de la costura hoy mismo.
           </p>
         </div>
@@ -85,10 +85,10 @@ const FaqSection: React.FC = () => {
             return (
               <div 
                 key={faq._id}
-                className={`group bg-white rounded-2xl border transition-all duration-300 overflow-hidden ${
+                className={`group bg-card rounded-2xl border transition-all duration-300 overflow-hidden ${
                   isOpen 
-                    ? 'border-indigo-200 shadow-xl shadow-indigo-500/5 ring-1 ring-indigo-50' 
-                    : 'border-gray-100 hover:border-indigo-100 shadow-sm'
+                    ? 'border-primary/50 shadow-xl shadow-primary/5 ring-1 ring-primary/10' 
+                    : 'border-border hover:border-primary/30 shadow-sm'
                 }`}
               >
                 <button
@@ -97,19 +97,19 @@ const FaqSection: React.FC = () => {
                 >
                   <div className="flex items-center gap-4">
                     <div className={`p-2 rounded-xl transition-colors duration-300 ${
-                      isOpen ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-500 group-hover:bg-indigo-50 group-hover:text-indigo-600'
+                      isOpen ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary'
                     }`}>
                       <IconComponent className="w-6 h-6" />
                     </div>
                     <span className={`font-semibold text-lg transition-colors duration-300 ${
-                      isOpen ? 'text-indigo-900' : 'text-gray-700'
+                      isOpen ? 'text-primary' : 'text-foreground'
                     }`}>
                       {faq.question}
                     </span>
                   </div>
                   <ChevronDownIcon 
-                    className={`w-5 h-5 text-gray-400 transition-transform duration-500 ${
-                      isOpen ? 'rotate-180 text-indigo-600' : ''
+                    className={`w-5 h-5 text-muted-foreground transition-transform duration-500 ${
+                      isOpen ? 'rotate-180 text-primary' : ''
                     }`}
                   />
                 </button>
@@ -120,7 +120,7 @@ const FaqSection: React.FC = () => {
                   }`}
                 >
                   <div className="px-6 pb-6 pt-2 ml-14">
-                    <div className="text-gray-600 leading-relaxed whitespace-pre-line text-base">
+                    <div className="text-muted-foreground leading-relaxed whitespace-pre-line text-base">
                       {faq.answer}
                     </div>
                   </div>
@@ -131,7 +131,7 @@ const FaqSection: React.FC = () => {
         </div>
 
         <div className="mt-12 text-center">
-          <p className="text-gray-500 italic">
+          <p className="text-muted-foreground italic">
             ¿Tienes otra duda? Escríbeme directamente por WhatsApp.
           </p>
         </div>

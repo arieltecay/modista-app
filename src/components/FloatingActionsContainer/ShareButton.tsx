@@ -42,7 +42,7 @@ const ShareButton: React.FC = () => {
   return (
     <button
       onClick={handleShare}
-      className="flex items-center justify-center w-12 h-12 bg-white text-indigo-600 rounded-full shadow-2xl border border-indigo-50 hover:bg-indigo-50 hover:scale-110 transition-all duration-300 active:scale-95 animate-in fade-in zoom-in duration-500"
+      className="flex items-center justify-center w-12 h-12 bg-card text-indigo-600 rounded-full shadow-2xl border border-indigo-50 hover:bg-indigo-50 hover:scale-110 transition-all duration-300 active:scale-95 animate-in fade-in zoom-in duration-500"
       aria-label="Compartir curso"
       title="Compartir curso"
     >

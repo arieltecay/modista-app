@@ -42,8 +42,8 @@ export const formatTextToHtml = (text) => {
 
   // 3. FASE DE FORMATO: Negritas, Cursivas y Listas
   // Ahora el motor de cursivas (_texto_) no encontrará coincidencias en nuestros tokens
-  processedText = processedText.replace(/\*\*([^*]+)\*\*/g, '<strong class="font-bold text-gray-900">$1</strong>');
-  processedText = processedText.replace(/_([^_]+)_/g, '<em class="italic text-gray-800">$1</em>');
+  processedText = processedText.replace(/\*\*([^*]+)\*\*/g, '<strong class="font-bold text-foreground">$1</strong>');
+  processedText = processedText.replace(/_([^_]+)_/g, '<em class="italic text-foreground/90">$1</em>');
   
   // Procesar listas
   processedText = processedText.replace(/^(\s*)([*])\s+/gm, '$1• ');

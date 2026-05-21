@@ -1,17 +1,21 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
+import { Course } from '../services/courses/types';
 
 interface CourseContextType {
-  activeCourseTitle: string | null;
-  setActiveCourseTitle: (title: string | null) => void;
+  activeCourse: Course | null;
+  setActiveCourse: (course: Course | null) => void;
+  activeCourseTitle: string | null; // Mantener por compatibilidad si es necesario, o derivar
 }
 
 const CourseContext = createContext<CourseContextType | undefined>(undefined);
 
 export const CourseProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [activeCourseTitle, setActiveCourseTitle] = useState<string | null>(null);
+  const [activeCourse, setActiveCourse] = useState<Course | null>(null);
+
+  const activeCourseTitle = activeCourse?.title || null;
 
   return (
-    <CourseContext.Provider value={{ activeCourseTitle, setActiveCourseTitle }}>
+    <CourseContext.Provider value={{ activeCourse, setActiveCourse, activeCourseTitle }}>
       {children}
     </CourseContext.Provider>
   );

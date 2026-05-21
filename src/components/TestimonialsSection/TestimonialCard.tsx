@@ -6,7 +6,7 @@ import { TestimonialCardProps } from './types';
  */
 export const TestimonialCard: React.FC<TestimonialCardProps> = React.memo(({ testimonial }) => {
   return (
-    <div className="flex-shrink-0 w-[300px] md:w-[350px] bg-white border border-gray-100 rounded-2xl p-6 mx-3 shadow-sm hover:shadow-md transition-all duration-300">
+    <div className="flex-shrink-0 w-[300px] md:w-[350px] bg-card border border-border rounded-2xl p-6 mx-3 shadow-sm hover:shadow-md transition-all duration-300">
       <div className="flex flex-col h-full">
         {/* Estrellas decorativas sutiles */}
         <div className="flex gap-0.5 mb-3">
@@ -17,7 +17,7 @@ export const TestimonialCard: React.FC<TestimonialCardProps> = React.memo(({ tes
           ))}
         </div>
 
-        <p className="text-gray-700 text-sm md:text-base leading-relaxed mb-4 flex-grow italic">
+        <p className="text-foreground text-sm md:text-base leading-relaxed mb-4 flex-grow italic">
           "{testimonial.description}"
         </p>
 
@@ -26,7 +26,7 @@ export const TestimonialCard: React.FC<TestimonialCardProps> = React.memo(({ tes
             {testimonial.name.charAt(0)}
           </div>
           <div>
-            <h4 className="font-bold text-gray-900 text-xs uppercase tracking-wider">{testimonial.name}</h4>
+            <h4 className="font-bold text-foreground text-xs uppercase tracking-wider">{testimonial.name}</h4>
             {testimonial.role && (
               <p className="text-[10px] text-gray-400 font-medium">{testimonial.role}</p>
             )}

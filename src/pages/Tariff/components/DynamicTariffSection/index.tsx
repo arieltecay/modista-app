@@ -17,9 +17,9 @@ const DynamicTariffSection: FC<DynamicSectionProps> = ({ sections }) => {
   }
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md mb-6 border border-gray-100">
+    <div className="bg-card p-6 rounded-lg shadow-md mb-6 border border-border">
       {sections.length > 1 && (
-        <div className="mb-4 border-b border-gray-200">
+        <div className="mb-4 border-b border-border">
           <nav className="-mb-px flex space-x-8" aria-label="Tabs">
             {sections.map((section) => (
               <button
@@ -28,7 +28,7 @@ const DynamicTariffSection: FC<DynamicSectionProps> = ({ sections }) => {
                 className={`
                   ${activeTab === section.title
                     ? "border-indigo-500 text-indigo-600"
-                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                    : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
                   }
                   whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm
                 `}
@@ -41,11 +41,11 @@ const DynamicTariffSection: FC<DynamicSectionProps> = ({ sections }) => {
       )}
 
       <div>
-        <h3 className="text-2xl font-bold text-gray-800 mb-4">{currentSection.title}</h3>
-        <ul className="divide-y divide-gray-200">
+        <h3 className="text-2xl font-bold text-foreground mb-4">{currentSection.title}</h3>
+        <ul className="divide-y divide-border">
           {currentSection.items.map((item, index) => (
             <li key={index} className="py-3 flex items-start">
-              <span className="text-gray-700 font-medium break-words flex-grow mr-4">
+              <span className="text-foreground font-medium break-words flex-grow mr-4">
                 {item.item || item.descripcion}
               </span>
               {item.precio !== undefined && (

@@ -13,7 +13,7 @@ function CourseDetailPage() {
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { setActiveCourseTitle } = useCourseContext();
+  const { setActiveCourse } = useCourseContext();
 
   useEffect(() => {
     const fetchCourse = async () => {
@@ -26,7 +26,7 @@ function CourseDetailPage() {
         // Enviar evento de visualización del curso a GTM
         if (foundCourse) {
           trackCourseView(foundCourse.id, foundCourse.title, parseFloat(foundCourse.price?.toString() || '0'));
-          setActiveCourseTitle(foundCourse.title);
+          setActiveCourse(foundCourse);
         }
       } catch (e) {
         setError(e.message);
@@ -37,8 +37,8 @@ function CourseDetailPage() {
 
     fetchCourse();
 
-    return () => setActiveCourseTitle(null);
-  }, [id, setActiveCourseTitle]);
+    return () => setActiveCourse(null);
+  }, [id, setActiveCourse]);
 
   if (loading) {
     return (
@@ -82,11 +82,11 @@ function CourseDetailPage() {
   return (
     <div className="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8">
       <div className="mb-4">
-        <Link to="/cursos" className="text-sm font-medium text-gray-500 hover:text-gray-700">
+        <Link to="/cursos" className="text-sm font-medium text-muted-foreground hover:text-foreground">
           &larr; Volver a todos los cursos
         </Link>
       </div>
-      <div className="bg-white shadow-lg rounded-lg overflow-hidden">
+      <div className="bg-card shadow-lg rounded-lg overflow-hidden">
         <CourseImage 
           course={course} 
           className="w-full h-auto object-contain" 
@@ -95,7 +95,7 @@ function CourseDetailPage() {
           priority={true} 
         />
         <div className="p-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">{course.title}</h1>
+          <h1 className="text-3xl font-bold text-foreground mb-2">{course.title}</h1>
           {/* Sección del Video */}
           {youtubeVideoId && (
             <div className="my-6 aspect-w-16 aspect-h-9 rounded-lg overflow-hidden shadow-md">
@@ -109,7 +109,7 @@ function CourseDetailPage() {
             </div>
           )}
           <div
-            className="text-gray-700 text-lg mt-4 text-justify"
+            className="text-foreground text-lg mt-4 text-justify"
             dangerouslySetInnerHTML={{ __html: formatTextToHtml(course.longDescription) }}
           />
         </div>

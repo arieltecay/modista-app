@@ -7,19 +7,19 @@ import { sendAnalyticsEvent } from '../../services/analytics';
 
 // Componente Esqueleto para carga visual elegante
 const CourseCardSkeleton = () => (
-  <div className="bg-white shadow-lg rounded-lg overflow-hidden animate-pulse flex flex-col h-full border border-gray-100">
-    <div className="w-full h-48 bg-gray-200"></div>
+  <div className="bg-card shadow-lg rounded-lg overflow-hidden animate-pulse flex flex-col h-full border border-border">
+    <div className="w-full h-48 bg-muted"></div>
     <div className="p-6 flex-grow space-y-4">
-      <div className="h-6 bg-gray-200 rounded w-3/4"></div>
+      <div className="h-6 bg-muted rounded w-3/4"></div>
       <div className="space-y-2">
-        <div className="h-4 bg-gray-200 rounded w-full"></div>
-        <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+        <div className="h-4 bg-muted rounded w-full"></div>
+        <div className="h-4 bg-muted rounded w-5/6"></div>
       </div>
     </div>
     <div className="p-6 pt-0 mt-auto flex flex-col items-center space-y-3">
-      <div className="h-8 bg-gray-100 rounded w-1/4"></div>
-      <div className="h-10 bg-gray-200 rounded w-full"></div>
-      <div className="h-4 bg-gray-100 rounded w-1/4"></div>
+      <div className="h-8 bg-muted rounded w-1/4"></div>
+      <div className="h-10 bg-muted rounded w-full"></div>
+      <div className="h-4 bg-muted rounded w-1/4"></div>
     </div>
   </div>
 );
@@ -68,11 +68,11 @@ function CoursesPage({ limit }) {
 
   if (loading) {
     return (
-      <div className="bg-gray-50 py-12" id="courses">
+      <div className="bg-background py-12 transition-colors duration-250" id="courses">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <div className="h-10 bg-gray-200 rounded w-64 mx-auto mb-4 animate-pulse"></div>
-            <div className="h-6 bg-gray-100 rounded w-96 mx-auto animate-pulse"></div>
+            <div className="h-10 bg-muted rounded w-64 mx-auto mb-4 animate-pulse"></div>
+            <div className="h-6 bg-muted rounded w-96 mx-auto animate-pulse"></div>
           </div>
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {[...Array(limit || 6)].map((_, i) => (
@@ -86,7 +86,7 @@ function CoursesPage({ limit }) {
 
   if (error) {
     return (
-      <div className="py-12">
+      <div className="py-12 bg-background">
         <ErrorCard
           title="No pudimos cargar los cursos"
           message={`Detalle: ${error}`}
@@ -97,13 +97,13 @@ function CoursesPage({ limit }) {
   }
 
   return (
-    <div className="bg-gray-50 py-12" id="courses">
+    <div className="bg-background py-12 transition-colors duration-250" id="courses">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center">
-          <h2 className="text-3xl font-extrabold text-gray-900 sm:text-4xl">
+          <h2 className="text-3xl font-extrabold text-foreground sm:text-4xl">
             Nuestros Cursos
           </h2>
-          <p className="mt-4 text-lg text-gray-500">
+          <p className="mt-4 text-lg text-muted-foreground">
             Explora nuestra oferta educativa y encuentra el curso perfecto para ti.
           </p>
         </div>
@@ -116,7 +116,7 @@ function CoursesPage({ limit }) {
           <div className="mt-10 text-center">
             <Link
               to="/cursos"
-              className="inline-block bg-[var(--color-green-600)] text-gray-500 font-semibold py-3 px-8 rounded-lg hover:brightness-95 focus:outline-none focus:ring-2 focus:ring-[var(--color-green-600)] focus:ring-opacity-50 transition-all duration-300"
+              className="inline-block bg-primary text-primary-foreground font-semibold py-3 px-8 rounded-lg hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 transition-all duration-300"
             >
               Ver todos los cursos
             </Link>

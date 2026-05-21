@@ -8,13 +8,13 @@ function CourseCard({ course }: CourseCardProps) {
   const isFree = isCourseFree(course.price);
 
   return (
-    <div className="bg-white shadow-lg rounded-lg overflow-hidden transform hover:-translate-y-1 transition-transform duration-300 flex flex-col h-full">
+    <div className="bg-card shadow-lg rounded-lg overflow-hidden transform hover:-translate-y-1 transition-transform duration-300 flex flex-col h-full">
       <div className="flex flex-col flex-grow">
         <Link to={`/cursos/${course.id}`} className="flex flex-col flex-grow">
           <CourseImage course={course} className="w-full h-48 object-cover" />
           <div className="p-6 flex-grow">
-            <h3 className="text-xl font-bold text-gray-900 mb-2">{course.title}</h3>
-            <p className="text-gray-600 text-base mb-4">{course.shortDescription}</p>
+            <h3 className="text-xl font-bold text-foreground mb-2">{course.title}</h3>
+            <p className="text-muted-foreground text-base mb-4">{course.shortDescription}</p>
           </div>
         </Link>
         <div className="p-6 pt-0 mt-auto flex flex-col items-center">

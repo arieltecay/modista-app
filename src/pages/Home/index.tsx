@@ -8,7 +8,7 @@ import TestimonialsSection from '../../components/TestimonialsSection';
  */
 const Home: React.FC = () => {
     return (
-        <div className="relative bg-white">
+        <div className="relative bg-background">
             <StaticBanner />
             <TestimonialsSection />
         </div>

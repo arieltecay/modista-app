@@ -1,8 +1,13 @@
 import React from 'react';
+import { SEO } from '@/components';
 
 const About = () => {
   return (
     <section id="about" className="py-20 bg-background">
+      <SEO 
+        title="Sobre Mí"
+        description="Conoce a Mica Guevara, modista de alta costura y creadora de Modista App. Pasión por la enseñanza y el arte de la costura."
+      />
       <div className="container mx-auto px-6">
         <div className="flex flex-col md:flex-row items-center">
           <div className="md:w-1/2 mb-8 md:mb-0 text-center">

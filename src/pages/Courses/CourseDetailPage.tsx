@@ -3,10 +3,11 @@ import { useParams, Link } from 'react-router-dom';
 
 import { getCourseById } from '../../services/courses';
 import { trackCourseView } from '../../services/analytics';
-import { CourseImage, InscriptionForm, Spinner } from '@/components';
+import { CourseImage, InscriptionForm, Spinner, SEO } from '@/components';
 import { formatTextToHtml } from '../../utils/textFormatting';
 import { shouldShowInscription } from '../../utils/courseUtils';
 import { useCourseContext } from '../../context/CourseContext';
+import { getOptimizedUrl } from '../../utils/image-utils';
 
 function CourseDetailPage() {
   const { id } = useParams();
@@ -79,8 +80,34 @@ function CourseDetailPage() {
     }
   }
 
+  const courseStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "Course",
+    "name": course.title,
+    "description": course.shortDescription || course.description,
+    "provider": {
+      "@type": "LocalBusiness",
+      "name": "Modista App",
+      "url": "https://modista-app.com"
+    },
+    "offers": {
+      "@type": "Offer",
+      "price": course.price,
+      "priceCurrency": "ARS",
+      "availability": "https://schema.org/InStock"
+    },
+    "image": getOptimizedUrl(course.imageUrl, 1200, 630)
+  };
+
   return (
     <div className="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8">
+      <SEO 
+        title={course.title}
+        description={course.shortDescription || course.description}
+        ogImage={getOptimizedUrl(course.imageUrl, 1200, 630)}
+        ogType="product"
+        structuredData={courseStructuredData}
+      />
       <div className="mb-4">
         <Link to="/cursos" className="text-sm font-medium text-muted-foreground hover:text-foreground">
           &larr; Volver a todos los cursos

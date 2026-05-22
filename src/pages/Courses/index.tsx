@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { CourseCard, ErrorCard } from '@/components';
+import { CourseCard, ErrorCard, SEO } from '@/components';
 import { getCourses } from '../../services/courses';
 import FaqSection from '../../components/FaqSection/FaqSection';
 import { sendAnalyticsEvent } from '../../services/analytics';
@@ -98,6 +98,10 @@ function CoursesPage({ limit }) {
 
   return (
     <div className="bg-background py-12 transition-colors duration-250" id="courses">
+      <SEO 
+        title="Cursos de Costura"
+        description="Explora nuestra oferta de cursos de costura, alta costura y diseño. Modalidades online y presenciales para todos los niveles."
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center">
           <h2 className="text-3xl font-extrabold text-foreground sm:text-4xl">

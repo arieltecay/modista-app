@@ -11,3 +11,4 @@ export { default as TurnoSelector } from './TurnoSelector';
 export { default as WhatsAppFloatingButton } from './WhatsAppFloatingButton';
 export { default as FloatingActionsContainer } from './FloatingActionsContainer';
 export { default as StaticBanner } from './StaticBanner/StaticBanner';
+export { default as SEO } from './SEO';

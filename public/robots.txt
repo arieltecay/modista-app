@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://modista-app.com/sitemap.xml

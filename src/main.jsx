@@ -7,6 +7,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { registerSW } from 'virtual:pwa-register';
 import { onCLS, onINP, onLCP, onFCP, onTTFB } from 'web-vitals';
 import { ThemeProvider } from './context/ThemeContext';
+import { HelmetProvider } from 'react-helmet-async';
 
 // Registro de Service Worker para PWA con lógica de auto-update mejorada
 const updateSW = registerSW({
@@ -83,11 +84,13 @@ onTTFB(reportWebVitals);
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <ThemeProvider>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </ThemeProvider>
+    <HelmetProvider>
+      <ThemeProvider>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </ThemeProvider>
+    </HelmetProvider>
   </StrictMode>,
 );
 

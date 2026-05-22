@@ -24,10 +24,12 @@ const FaqSection: React.FC = () => {
   const [faqs, setFaqs] = useState<FAQ[]>([]);
   const [openId, setOpenId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [expectedCount, setExpectedCount] = useState(0);
 
   useEffect(() => {
     const loadFaqs = async () => {
       const data = await faqService.getActiveFAQs();
+      setExpectedCount(data.length);
       setFaqs(data);
       setLoading(false);
       
@@ -50,11 +52,11 @@ const FaqSection: React.FC = () => {
   // Esqueleto para evitar CLS (Cumulative Layout Shift)
   if (loading) {
     return (
-      <section className="py-20 bg-background">
+      <section className="py-20 bg-background min-h-[300px]">
         <div className="container mx-auto px-4 max-w-4xl">
           <div className="h-10 bg-muted rounded-xl w-64 mx-auto mb-16 animate-pulse"></div>
           <div className="space-y-4">
-            {[1, 2, 3].map(i => (
+            {Array.from({ length: expectedCount || 3 }).map((_, i) => (
               <div key={i} className="h-20 bg-card rounded-2xl border border-border animate-pulse"></div>
             ))}
           </div>

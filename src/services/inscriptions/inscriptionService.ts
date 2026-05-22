@@ -37,5 +37,5 @@ export type {
  *   courseTitle: 'Curso de React'
  * });
  */
-export const createInscription = (formData: CreateInscriptionData): Promise<Inscription> =>
+export const createInscription = (formData: CreateInscriptionData): Promise<{ success: boolean; data: Inscription; mpPaymentLink: string | null }> =>
     apiClient.post('/inscriptions', formData);

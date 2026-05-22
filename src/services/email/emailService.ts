@@ -14,41 +14,6 @@ import { apiClient } from '../config/apiClient';
 import type { InscriptionEmailData, EmailPayload, CoursePaidResponse } from '../types';
 
 /**
- * Envía un correo de confirmación de inscripción.
- * 
- * @param inscriptionData - Datos de la inscripción
- * @returns Respuesta del servidor
- * @template teamplate.html
- * 
- * @example
- * await sendConfirmationEmail({
- *   email: 'alumno@ejemplo.com',
- *   nombre: 'Juan',
- *   apellido: 'Pérez',
- *   courseTitle: 'Curso de React',
- *   coursePrice: 5000,
- *   courseDeeplink: 'https://...',
- *   courseShortDescription: 'Aprende React desde cero'
- * });
- */
-export const sendConfirmationEmail = (inscriptionData: InscriptionEmailData): Promise<{ message: string }> => {
-    const emailPayload: EmailPayload = {
-        to: inscriptionData.email,
-        subject: `Confirmación de tu Inscripción - ${inscriptionData.courseTitle}`,
-        templateName: 'teamplate', // Template general
-        data: {
-            name: `${inscriptionData.nombre} ${inscriptionData.apellido}`,
-            courseTitle: inscriptionData.courseTitle,
-            price: inscriptionData.coursePrice,
-            deeplink: inscriptionData.courseDeeplink,
-            shortDescription: inscriptionData.courseShortDescription,
-            year: inscriptionData.dateYear,
-        },
-    };
-    return apiClient.post('/email/send-email', emailPayload);
-};
-
-/**
  * Envía un correo de confirmación de pago exitoso.
  * 
  * @param inscriptionData - Datos de la inscripción

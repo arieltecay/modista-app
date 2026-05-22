@@ -1,6 +1,5 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { createInscription } from '../../services/inscriptions';
-import { sendConfirmationEmail } from '../../services/email';
 import { trackFormStart, trackFormError, trackInscriptionSuccess } from '../../services/analytics';
 import Spinner from '../Spinner';
 import TurnoSelector from '../TurnoSelector'; // Ruta corregida
@@ -106,7 +105,7 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
         utmParams: utmData || {}
       };
 
-      await createInscription(inscriptionData);
+      const inscriptionResponse = await createInscription(inscriptionData);
 
       // Track successful inscription
       trackInscriptionSuccess(
@@ -115,14 +114,15 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
         parseFloat(course?.price?.toString() || '0')
       );
 
-      try {
-        await sendConfirmationEmail(inscriptionData);
-      } catch (emailError) {
-        console.error("Error al enviar el correo de confirmación:", emailError);
+      // Redirigir al link de pago de MercadoPago si existe
+      if (inscriptionResponse?.mpPaymentLink) {
+        window.location.href = inscriptionResponse.mpPaymentLink;
+        return;
       }
+
       setFormMessage({ type: 'success', text: '¡Gracias por inscribirte! Revisa tu correo para ver la confirmación. Nos pondremos en contacto contigo pronto.' });
       setFormData({ nombre: '', apellido: '', email: '', celular: '' });
-      setSelectedTurnoId(null); // Clear selected turno after successful inscription
+      setSelectedTurnoId(null);
 
     } catch (error: any) {
       const errorMessage = error.message || 'Ocurrió un error al enviar tu inscripción. Por favor, intenta de nuevo.';

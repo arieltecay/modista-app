@@ -6,6 +6,8 @@ import { useLocation } from 'react-router-dom';
 const GTM_ID = import.meta.env.VITE_GTM_ID;
 const CLARITY_ID = import.meta.env.VITE_CLARITY_ID;
 const FB_PIXEL_ID = import.meta.env.VITE_FACEBOOK_PIXEL_ID;
+const API_URL = import.meta.env.VITE_API_URL;
+const SESSION_KEY = 'modista_session_id';
 
 const GoogleTagManager = () => {
   const location = useLocation();
@@ -48,6 +50,30 @@ const GoogleTagManager = () => {
       'https://connect.facebook.net/en_US/fbevents.js'));
       fbq('init', FB_PIXEL_ID);
       fbq('track', 'PageView');
+    }
+
+    // 4. Session tracking (solo en primer visita)
+    let sessionId = localStorage.getItem(SESSION_KEY);
+    if (!sessionId) {
+      sessionId = crypto.randomUUID();
+      localStorage.setItem(SESSION_KEY, sessionId);
+
+      const params = new URLSearchParams(window.location.search);
+      fetch(`${API_URL}/api/analytics/track`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sessionId,
+          utmSource: params.get('utm_source') || undefined,
+          utmMedium: params.get('utm_medium') || undefined,
+          utmCampaign: params.get('utm_campaign') || undefined,
+          utmTerm: params.get('utm_term') || undefined,
+          utmContent: params.get('utm_content') || undefined,
+          referrer: document.referrer || undefined,
+          device: /Mobi|Android/i.test(navigator.userAgent) ? 'mobile' : 'desktop',
+          landingPage: window.location.pathname,
+        }),
+      }).catch(() => {});
     }
   }, []);
 

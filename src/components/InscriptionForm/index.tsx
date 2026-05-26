@@ -92,6 +92,7 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
     setLoading(true);
     try {
       const utmData = getStoredUTMData();
+      const sessionId = localStorage.getItem('modista_session_id');
       const inscriptionData = {
         ...formData,
         courseId: course?.id || course?._id || '1',
@@ -102,7 +103,8 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
         dateYear: new Date().getFullYear(),
         turnoId: selectedTurnoId,
         marketingSource: utmData?.source || 'organic',
-        utmParams: utmData || {}
+        utmParams: utmData || {},
+        sessionId: sessionId || undefined,
       };
 
       const inscriptionResponse = await createInscription(inscriptionData);

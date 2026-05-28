@@ -8,4 +8,4 @@ import { LandingPage, ApiResponse } from '../types';
  * @returns Promesa con los datos de la landing
  */
 export const getLandingPageBySlug = (slug: string): Promise<ApiResponse<LandingPage>> =>
-    apiClient.get(`/landing-pages/slug/${slug}`);
+    apiClient.get(`/landings/slug/${slug}`);

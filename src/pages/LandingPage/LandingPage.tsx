@@ -71,7 +71,7 @@ const LandingPage: React.FC = () => {
         <LandingInscriptionForm course={course} landingPage={landing} />
       </div>
 
-      <div className="mt-16 text-gray-400 text-sm">
+      <div className="mt-16 text-gray-400 text-sm text-center">
         <p>&copy; {new Date().getFullYear()} Modista App. Todos los derechos reservados.</p>
       </div>
     </div>

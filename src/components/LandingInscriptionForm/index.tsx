@@ -5,23 +5,12 @@ import { Spinner } from '@/components';
 import { validateEmail, validateCelular } from '../../utils/formValidations';
 import { getStoredUTMData } from '../../utils/utm-tracking';
 import { ShieldCheckIcon, LockClosedIcon, CreditCardIcon } from '@heroicons/react/24/outline';
-import { Course, LandingPage, CreateLandingInscriptionData } from '../../services/types';
-
-interface LandingInscriptionFormProps {
-  course: Course;
-  landingPage: LandingPage;
-}
-
-interface FormState {
-  fullName: string;
-  email: string;
-  celular: string;
-}
-
-interface FormMessage {
-  type: 'success' | 'error';
-  text: string;
-}
+import { 
+  LandingInscriptionFormProps, 
+  FormState, 
+  FormMessage, 
+  CreateLandingInscriptionPayload 
+} from './types';
 
 const LandingInscriptionForm: React.FC<LandingInscriptionFormProps> = ({ course, landingPage }) => {
   const [formData, setFormData] = useState<FormState>({
@@ -52,7 +41,7 @@ const LandingInscriptionForm: React.FC<LandingInscriptionFormProps> = ({ course,
     const { name, value } = e.target;
     
     if (!hasStartedFilling) {
-      trackFormStart('landing_form', 'Landing Page Form', course.uuid || (course as any).id, course.title);
+      trackFormStart('landing_form', 'Landing Page Form', course.uuid || course.id, course.title);
       setHasStartedFilling(true);
     }
 
@@ -70,11 +59,11 @@ const LandingInscriptionForm: React.FC<LandingInscriptionFormProps> = ({ course,
       const utmData = getStoredUTMData();
       const sessionId = localStorage.getItem('modista_session_id');
       
-      const payload: CreateLandingInscriptionData = {
+      const payload: CreateLandingInscriptionPayload = {
         fullName: formData.fullName,
         email: formData.email,
         celular: formData.celular,
-        courseId: course.uuid || (course as any).id || (course as any)._id,
+        courseId: course.uuid || course.id || (course as any)._id,
         courseTitle: course.title,
         coursePrice: course.price,
         landingPageId: landingPage._id || landingPage.id || '',

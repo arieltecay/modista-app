@@ -28,22 +28,23 @@ export interface User {
 export interface Inscription {
     id?: string;
     _id?: string;
-    courseId?: string; // UUID del curso
+    courseId: string; // UUID del curso
     nombre: string;
     apellido: string;
     email: string;
     telefono: string;
     celular?: string;
     courseTitle: string;
-    coursePrice?: number;
+    coursePrice: number;
     courseDeeplink?: string;
     courseShortDescription?: string;
     paymentStatus: 'pending' | 'paid' | 'partial';
     sourceType?: 'app' | 'landing';
     landingPageId?: string;
+    marketingSource?: string;
     dateYear?: number;
-    createdAt?: Date;
-    updatedAt?: Date;
+    createdAt?: string;
+    updatedAt?: string;
 }
 
 /**
@@ -171,10 +172,26 @@ export interface CreateInscriptionData {
     email: string;
     telefono: string;
     courseTitle: string;
-    coursePrice?: number;
+    coursePrice: number;
     courseDeeplink?: string;
     courseShortDescription?: string;
     dateYear?: number;
+}
+
+/**
+ * Datos para crear una inscripción desde Landing (Simplificada)
+ */
+export interface CreateLandingInscriptionData {
+    fullName: string;
+    email: string;
+    celular: string;
+    courseId: string;
+    courseTitle: string;
+    coursePrice: number;
+    landingPageId: string;
+    marketingSource?: string;
+    utmParams?: Record<string, string | null | undefined>;
+    sessionId?: string;
 }
 
 // ============================================
@@ -202,7 +219,7 @@ export interface EmailPayload {
     to: string;
     subject: string;
     templateName: string;
-    data: Record<string, any>;
+    data: Record<string, string | number | boolean | null | undefined>;
 }
 
 // ============================================

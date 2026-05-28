@@ -15,11 +15,13 @@ import { apiClient } from '../config/apiClient';
 import type {
     Inscription,
     CreateInscriptionData,
+    CreateLandingInscriptionData,
 } from '../types';
 
 export type {
     Inscription,
     CreateInscriptionData,
+    CreateLandingInscriptionData,
 };
 
 /**
@@ -39,3 +41,12 @@ export type {
  */
 export const createInscription = (formData: CreateInscriptionData): Promise<{ success: boolean; data: Inscription; mpPaymentLink: string | null }> =>
     apiClient.post('/inscriptions', formData);
+
+/**
+ * Registra una nueva inscripción desde una Landing Page (Formulario simplificado).
+ * 
+ * @param formData - Los datos simplificados del formulario
+ * @returns Una promesa que resuelve al objeto de la inscripción creada y el link de pago
+ */
+export const createLandingInscription = (formData: CreateLandingInscriptionData): Promise<{ success: boolean; data: Inscription; mpPaymentLink: string | null }> =>
+    apiClient.post('/inscriptions/landing', formData);

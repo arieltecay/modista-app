@@ -3,6 +3,7 @@ export { default as CourseImage } from './CourseImage';
 export { default as CoursePurchaseSection } from './CoursePurchaseSection';
 export { default as ErrorCard } from './ErrorCard';
 export { default as InscriptionForm } from './InscriptionForm';
+export { default as LandingInscriptionForm } from './LandingInscriptionForm';
 export { Navbar } from './Navbar';
 export { ThemeToggle } from './ThemeToggle/ThemeToggle';
 export { default as Spinner } from './Spinner';

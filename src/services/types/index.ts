@@ -33,14 +33,35 @@ export interface Inscription {
     apellido: string;
     email: string;
     telefono: string;
+    celular?: string;
     courseTitle: string;
     coursePrice?: number;
     courseDeeplink?: string;
     courseShortDescription?: string;
-    paymentStatus: 'pending' | 'paid';
+    paymentStatus: 'pending' | 'paid' | 'partial';
+    sourceType?: 'app' | 'landing';
+    landingPageId?: string;
     dateYear?: number;
     createdAt?: Date;
     updatedAt?: Date;
+}
+
+/**
+ * Landing Page de Campaña
+ */
+export interface LandingPage {
+    id?: string;
+    _id?: string;
+    title: string;
+    slug: string;
+    courseId: string;
+    status: 'active' | 'inactive';
+    customTitle?: string;
+    customDescription?: string;
+    buttonText?: string;
+    videoUrl?: string;
+    createdAt?: string;
+    updatedAt?: string;
 }
 
 /**

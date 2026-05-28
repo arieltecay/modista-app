@@ -6,6 +6,7 @@ import { Spinner, ScrollToTop } from '@/components';
 import { Toaster } from 'react-hot-toast';
 import { CourseProvider } from './context/CourseContext';
 import { captureUTMParameters } from './utils/utm-tracking';
+import LandingPage from './pages/LandingPage/LandingPage';
 
 // Páginas Públicas
 const HomePage = lazy(() => import('./pages/HomePage'));
@@ -45,6 +46,17 @@ function App() {
                 <Route path="privacidad" element={<PrivacyPolicyPage />} />
                 <Route path="terminos" element={<TermsOfServicePage />} />
               </Route>
+
+              {/* Landing Pages de Campaña - Sin Layout (minimalistas) */}
+              <Route path="/lp/:slug" element={
+                <Suspense fallback={
+                  <div className="min-h-screen flex items-center justify-center bg-gray-50">
+                    <Spinner text="Preparando tu lugar..." />
+                  </div>
+                }>
+                  <LandingPage />
+                </Suspense>
+              } />
 
               {/* Página 404 */}
               <Route path="*" element={<NotFoundPage />} />

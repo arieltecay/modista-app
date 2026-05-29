@@ -38,7 +38,7 @@ export const StaticBanner: React.FC = () => {
              <p className="text-lg lg:text-2xl text-slate-200 mb-8">Diseño y moldería profesional</p>
           </div>
         ) : (
-          <div className="absolute inset-0 bg-slate-900 animate-pulse" />
+          <div className="absolute inset-0 bg-indigo-950/50 animate-pulse" />
         )}
       </div>
     );
@@ -62,7 +62,7 @@ export const StaticBanner: React.FC = () => {
             // Atributos clave para Cloudflare/Browser Optimization:
             loading="eager"
             fetchPriority="high"
-            decoding="async"
+            decoding="sync"
           />
         </picture>
         {/* Overlay para legibilidad del texto */}

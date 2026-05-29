@@ -1,20 +1,21 @@
 import React from 'react';
 import { SEO } from '@/components';
+import { getOptimizedUrl } from '../../utils/image-utils';
 
 const About = () => {
   return (
     <section id="about" className="py-20 bg-background">
-      <SEO 
+      <SEO
         title="Sobre Mí"
         description="Conoce a Mica Guevara, modista de alta costura y creadora de Modista App. Pasión por la enseñanza y el arte de la costura."
       />
       <div className="container mx-auto px-6">
         <div className="flex flex-col md:flex-row items-center">
           <div className="md:w-1/2 mb-8 md:mb-0 text-center">
-            <img 
-              src="https://res.cloudinary.com/ddfee9hht/image/upload/f_auto,q_auto,w_600/v1775245847/modista_app/HomeMica.jpg" 
-              alt="Sobre Mí" 
-              className="rounded-lg shadow-lg mx-auto w-full max-w-sm h-auto object-cover" 
+            <img
+              src={getOptimizedUrl("https://res.cloudinary.com/ddfee9hht/image/upload/v1775245847/modista_app/HomeMica.jpg", 600, 800)}
+              alt="Sobre Mí"
+              className="rounded-lg shadow-lg mx-auto w-full max-w-sm h-auto object-cover"
               width="600"
               height="800"
               loading="lazy"

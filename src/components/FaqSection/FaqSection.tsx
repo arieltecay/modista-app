@@ -57,7 +57,21 @@ const FaqSection: React.FC = () => {
           <div className="h-10 bg-muted rounded-xl w-64 mx-auto mb-16 animate-pulse"></div>
           <div className="space-y-4">
             {Array.from({ length: expectedCount || 3 }).map((_, i) => (
-              <div key={i} className="h-20 bg-card rounded-2xl border border-border animate-pulse"></div>
+              <div 
+                key={i} 
+                className={`${i === 0 ? 'h-48' : 'h-20'} bg-card rounded-2xl border border-border animate-pulse flex flex-col`}
+              >
+                <div className="flex items-center gap-4 p-5">
+                  <div className="w-10 h-10 bg-muted rounded-xl"></div>
+                  <div className="h-6 bg-muted rounded-lg w-3/4"></div>
+                </div>
+                {i === 0 && (
+                  <div className="px-6 pb-6 pt-2 ml-14 space-y-2">
+                    <div className="h-4 bg-muted rounded w-full"></div>
+                    <div className="h-4 bg-muted rounded w-5/6"></div>
+                  </div>
+                )}
+              </div>
             ))}
           </div>
         </div>

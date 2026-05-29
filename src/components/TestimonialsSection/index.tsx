@@ -30,11 +30,14 @@ export const TestimonialsSection: React.FC = React.memo(() => {
 
                 <div className="relative mt-10">
                     {loading ? (
-                        <div className="flex gap-6 animate-pulse overflow-hidden">
-                            {[...Array(4)].map((_, i) => (
-                                <div key={i} className="min-w-[300px] h-48 bg-muted rounded-2xl"></div>
-                            ))}
-                        </div>
+                        <>
+                            <div className="flex gap-6 animate-pulse overflow-hidden">
+                                {[...Array(4)].map((_, i) => (
+                                    <div key={i} className="min-w-[300px] md:min-w-[350px] h-48 bg-muted rounded-2xl"></div>
+                                ))}
+                            </div>
+                            <div className="mt-12 h-4 bg-muted/50 rounded w-64 mx-auto animate-pulse"></div>
+                        </>
                     ) : error || testimonials.length === 0 ? (
                         null
                     ) : (

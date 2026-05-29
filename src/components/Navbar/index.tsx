@@ -4,6 +4,7 @@ import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import { GiSewingMachine } from "react-icons/gi";
 import { NavLink } from 'react-router-dom';
 import { ThemeToggle } from '../ThemeToggle/ThemeToggle';
+import { getOptimizedUrl } from '../../utils/image-utils';
 
 interface NavItem {
   name: string;
@@ -35,9 +36,13 @@ export const Navbar: React.FC = () => {
             <GiSewingMachine className="h-8 w-auto text-primary" />
             <div className="w-40 h-10 relative">
                <img 
-                 src="https://res.cloudinary.com/ddfee9hht/image/upload/v1775248530/modista_app/Micaela%20MARCA%20DE%20AGUA.png" 
+                 src={getOptimizedUrl("https://res.cloudinary.com/ddfee9hht/image/upload/v1775248530/modista_app/Micaela%20MARCA%20DE%20AGUA.png", 160, 40)} 
                  alt="Micaela Modista" 
                  className="h-10 w-auto object-contain -ml-2 dark:brightness-110 dark:contrast-125" 
+                 width={160}
+                 height={40}
+                 loading="eager"
+                 {...({ fetchPriority: "high" } as any)}
                />
             </div>
           </NavLink>
@@ -89,9 +94,13 @@ export const Navbar: React.FC = () => {
               <GiSewingMachine className="h-8 w-auto text-primary" />
               <div className="w-40 h-10 relative">
                 <img 
-                  src="https://res.cloudinary.com/ddfee9hht/image/upload/v1775248530/modista_app/Micaela%20MARCA%20DE%20AGUA.png" 
+                  src={getOptimizedUrl("https://res.cloudinary.com/ddfee9hht/image/upload/v1775248530/modista_app/Micaela%20MARCA%20DE%20AGUA.png", 160, 40)} 
                   alt="Micaela Modista" 
                   className="h-10 w-auto object-contain -ml-2 dark:brightness-110 dark:contrast-125" 
+                  width={160}
+                  height={40}
+                  loading="eager"
+                  {...({ fetchPriority: "high" } as any)}
                 />
               </div>
             </NavLink>

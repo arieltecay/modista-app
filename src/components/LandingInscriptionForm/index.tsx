@@ -70,6 +70,8 @@ const LandingInscriptionForm: React.FC<LandingInscriptionFormProps> = ({ course,
         marketingSource: utmData?.source || 'meta_ads',
         utmParams: utmData || {},
         sessionId: sessionId || undefined,
+        metaFbc: utmData?.fbc,
+        metaFbp: utmData?.fbp,
       };
 
       const response = await createLandingInscription(payload);

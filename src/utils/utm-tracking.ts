@@ -12,28 +12,46 @@ export interface UTMData {
   term?: string;
   content?: string;
   full_utm?: string;
+  fbc?: string;
+  fbp?: string;
   timestamp: number;
 }
+
+const getCookie = (name: string): string | undefined => {
+  if (typeof document === 'undefined') return undefined;
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop()?.split(';').shift();
+  return undefined;
+};
 
 export const captureUTMParameters = (): void => {
   if (typeof window === 'undefined') return;
 
   const urlParams = new URLSearchParams(window.location.search);
-  const utmSource = urlParams.get('utm_source') || urlParams.get('utm'); // Soporta ?utm=instagram_paid
+  const utmSource = urlParams.get('utm_source') || urlParams.get('utm'); 
+  const fbc = urlParams.get('fbclid') ? `fb.1.${Date.now()}.${urlParams.get('fbclid')}` : getCookie('_fbc');
+  const fbp = getCookie('_fbp');
 
-  if (utmSource) {
+  // Solo guardamos si hay algo nuevo que rastrear o si ya existe data previa para actualizar fbc/fbp
+  if (utmSource || fbc || fbp) {
+    const existingData = getStoredUTMData() || { timestamp: Date.now() };
+    
     const utmData: UTMData = {
-      source: utmSource,
-      medium: urlParams.get('utm_medium') || undefined,
-      campaign: urlParams.get('utm_campaign') || undefined,
-      term: urlParams.get('utm_term') || undefined,
-      content: urlParams.get('utm_content') || undefined,
-      full_utm: window.location.search,
+      ...existingData,
+      source: utmSource || existingData.source,
+      medium: urlParams.get('utm_medium') || existingData.medium,
+      campaign: urlParams.get('utm_campaign') || existingData.campaign,
+      term: urlParams.get('utm_term') || existingData.term,
+      content: urlParams.get('utm_content') || existingData.content,
+      full_utm: window.location.search || existingData.full_utm,
+      fbc: fbc || existingData.fbc,
+      fbp: fbp || existingData.fbp,
       timestamp: Date.now()
     };
 
     sessionStorage.setItem(UTM_KEY, JSON.stringify(utmData));
-    console.log('[UTM Tracker] Parámetros capturados:', utmData.source);
+    console.log('[Marketing Tracker] Parámetros actualizados:', { source: utmData.source, hasMeta: !!(fbc || fbp) });
   }
 };
 

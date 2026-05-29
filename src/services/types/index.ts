@@ -176,6 +176,8 @@ export interface CreateInscriptionData {
     courseDeeplink?: string;
     courseShortDescription?: string;
     dateYear?: number;
+    metaFbc?: string;
+    metaFbp?: string;
 }
 
 /**
@@ -192,6 +194,8 @@ export interface CreateLandingInscriptionData {
     marketingSource?: string;
     utmParams?: Record<string, string | null | undefined>;
     sessionId?: string;
+    metaFbc?: string;
+    metaFbp?: string;
 }
 
 // ============================================

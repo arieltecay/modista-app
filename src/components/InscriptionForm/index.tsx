@@ -105,6 +105,8 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
         marketingSource: utmData?.source || 'organic',
         utmParams: utmData || {},
         sessionId: sessionId || undefined,
+        metaFbc: utmData?.fbc,
+        metaFbp: utmData?.fbp,
       };
 
       const inscriptionResponse = await createInscription(inscriptionData);

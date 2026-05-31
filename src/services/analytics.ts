@@ -184,12 +184,6 @@ export const trackInscriptionSuccess = (courseId: string, courseTitle: string, v
       value: value,
       currency: 'ARS'
     });
-    // Agregamos también Purchase para campañas de Ventas
-    window.fbq('track', 'Purchase', {
-      content_name: courseTitle,
-      value: value,
-      currency: 'ARS'
-    });
   }
 };
 

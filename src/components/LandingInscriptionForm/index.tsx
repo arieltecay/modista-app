@@ -153,7 +153,7 @@ const LandingInscriptionForm: React.FC<LandingInscriptionFormProps> = ({ course,
             disabled={loading}
             className="w-full bg-primary hover:bg-primary-hover active:scale-[0.98] text-white font-black py-5 rounded-xl text-xl shadow-lg transition-all flex items-center justify-center gap-3 uppercase tracking-wider disabled:opacity-50"
           >
-            {loading ? <Spinner className="w-7 h-7 text-white" /> : landingPage.buttonText || 'INSCRIBIRME Y PAGAR'}
+            {loading ? <Spinner className="w-7 h-7 text-white" /> : landingPage.buttonText || 'RESERVAR MI LUGAR'}
           </button>
         </div>
 

@@ -240,6 +240,7 @@ export type AnalyticsEventName =
     | 'form_start'
     | 'form_submit'
     | 'form_error'
+    | 'form_field_focus'
     | 'inscription_success'
     | 'video_interaction'
     | 'contact_click'
@@ -306,6 +307,8 @@ export interface ConversionParams extends EventParameters {
     transaction_id?: string;
     course_id: string;
     course_title: string;
+    user_email?: string;
+    user_phone?: string;
 }
 
 // ============================================

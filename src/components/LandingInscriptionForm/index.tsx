@@ -1,6 +1,11 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { createLandingInscription } from '../../services/inscriptions';
-import { trackFormStart, trackFormError, trackInscriptionSuccess } from '../../services/analytics';
+import { 
+  trackFormStart, 
+  trackFormError, 
+  trackInscriptionSuccess, 
+  trackFormFieldFocus 
+} from '../../services/analytics';
 import { Spinner } from '@/components';
 import { validateEmail, validateCelular } from '../../utils/formValidations';
 import { getStoredUTMData } from '../../utils/utm-tracking';
@@ -49,6 +54,10 @@ const LandingInscriptionForm: React.FC<LandingInscriptionFormProps> = ({ course,
     if (errors[name as keyof FormState]) setErrors({ ...errors, [name as keyof FormState]: undefined });
   };
 
+  const handleFocus = (fieldName: string) => {
+    trackFormFieldFocus('landing_form', 'Landing Page Form', fieldName);
+  };
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setFormMessage(null);
@@ -76,10 +85,22 @@ const LandingInscriptionForm: React.FC<LandingInscriptionFormProps> = ({ course,
 
       const response = await createLandingInscription(payload);
 
-      trackInscriptionSuccess(payload.courseId, course.title, course.price);
+      // --- TRACKING DE ÉXITO (Conversión) ---
+      // Enviamos email y celular para Enhanced Conversions de Google Ads
+      trackInscriptionSuccess(
+        payload.courseId, 
+        course.title, 
+        course.price, 
+        formData.email, 
+        formData.celular
+      );
 
       if (response.mpPaymentLink) {
-        window.location.href = response.mpPaymentLink;
+        // Delay técnico de 500ms para asegurar que el navegador envíe los beacons de tracking
+        // antes de abandonar la página hacia Mercado Pago.
+        setTimeout(() => {
+          window.location.href = response.mpPaymentLink!;
+        }, 500);
         return;
       }
 
@@ -108,6 +129,7 @@ const LandingInscriptionForm: React.FC<LandingInscriptionFormProps> = ({ course,
             placeholder="Ej: María García"
             value={formData.fullName}
             onChange={handleChange}
+            onFocus={() => handleFocus('fullName')}
             className={`w-full px-4 py-4 rounded-xl border-2 ${errors.fullName ? 'border-red-500' : 'border-gray-100 bg-gray-50'} focus:bg-white focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all text-gray-800 placeholder:text-gray-400`}
           />
           {errors.fullName && <p className="text-red-500 text-xs font-medium mt-1.5 ml-1">{errors.fullName}</p>}
@@ -125,6 +147,7 @@ const LandingInscriptionForm: React.FC<LandingInscriptionFormProps> = ({ course,
             placeholder="maria@ejemplo.com"
             value={formData.email}
             onChange={handleChange}
+            onFocus={() => handleFocus('email')}
             className={`w-full px-4 py-4 rounded-xl border-2 ${errors.email ? 'border-red-500' : 'border-gray-100 bg-gray-50'} focus:bg-white focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all text-gray-800 placeholder:text-gray-400`}
           />
           {errors.email && <p className="text-red-500 text-xs font-medium mt-1.5 ml-1">{errors.email}</p>}
@@ -142,6 +165,7 @@ const LandingInscriptionForm: React.FC<LandingInscriptionFormProps> = ({ course,
             placeholder="+54 9 11 ..."
             value={formData.celular}
             onChange={handleChange}
+            onFocus={() => handleFocus('celular')}
             className={`w-full px-4 py-4 rounded-xl border-2 ${errors.celular ? 'border-red-500' : 'border-gray-100 bg-gray-50'} focus:bg-white focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all text-gray-800 placeholder:text-gray-400`}
           />
           {errors.celular && <p className="text-red-500 text-xs font-medium mt-1.5 ml-1">{errors.celular}</p>}

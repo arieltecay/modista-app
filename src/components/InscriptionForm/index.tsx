@@ -1,6 +1,11 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { createInscription } from '../../services/inscriptions';
-import { trackFormStart, trackFormError, trackInscriptionSuccess } from '../../services/analytics';
+import { 
+  trackFormStart, 
+  trackFormError, 
+  trackInscriptionSuccess, 
+  trackFormFieldFocus 
+} from '../../services/analytics';
 import Spinner from '../Spinner';
 import TurnoSelector from '../TurnoSelector'; // Ruta corregida
 import { validateNombre, validateApellido, validateEmail, validateCelular } from '../../utils/formValidations';
@@ -81,6 +86,10 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
     }
   };
 
+  const handleFocus = (fieldName: string) => {
+    trackFormFieldFocus('inscription_form', 'Formulario de Inscripción', fieldName);
+  };
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setFormMessage(null);
@@ -111,16 +120,23 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
 
       const inscriptionResponse = await createInscription(inscriptionData);
 
-      // Track successful inscription
+      // --- TRACKING DE ÉXITO (Conversión) ---
+      // Enviamos email y celular para Enhanced Conversions de Google Ads
       trackInscriptionSuccess(
         course?.id || course?._id || '1',
         course?.title || 'Curso',
-        parseFloat(course?.price?.toString() || '0')
+        parseFloat(course?.price?.toString() || '0'),
+        formData.email,
+        formData.celular
       );
 
       // Redirigir al link de pago de MercadoPago si existe
       if (inscriptionResponse?.mpPaymentLink) {
-        window.location.href = inscriptionResponse.mpPaymentLink;
+        // Delay técnico de 500ms para asegurar que el navegador envíe los beacons de tracking
+        // antes de abandonar la página hacia Mercado Pago.
+        setTimeout(() => {
+          window.location.href = inscriptionResponse.mpPaymentLink!;
+        }, 500);
         return;
       }
 
@@ -165,6 +181,7 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
                     required
                     value={formData.nombre}
                     onChange={handleChange}
+                    onFocus={() => handleFocus('nombre')}
                     className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground ${errors.nombre ? 'border-red-500' : 'border-border'
                       }`}
                     placeholder="Tu nombre"
@@ -183,6 +200,7 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
                     required
                     value={formData.apellido}
                     onChange={handleChange}
+                    onFocus={() => handleFocus('apellido')}
                     className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground ${errors.apellido ? 'border-red-500' : 'border-border'
                       }`}
                     placeholder="Tu apellido"
@@ -202,6 +220,7 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
                   required
                   value={formData.email}
                   onChange={handleChange}
+                  onFocus={() => handleFocus('email')}
                   className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground ${errors.email ? 'border-red-500' : 'border-border'
                     }`}
                   placeholder="tu@email.com"
@@ -223,6 +242,7 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
                   required
                   value={formData.celular}
                   onChange={handleChange}
+                  onFocus={() => handleFocus('celular')}
                   className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground ${errors.celular ? 'border-red-500' : 'border-border'
                     }`}
                   placeholder="Ej: +543811234567"

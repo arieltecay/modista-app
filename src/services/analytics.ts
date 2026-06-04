@@ -87,6 +87,7 @@ export const AnalyticsEvents = {
   FORM_START: 'form_start' as const,
   FORM_SUBMIT: 'form_submit' as const,
   FORM_ERROR: 'form_error' as const,
+  FORM_FIELD_FOCUS: 'form_field_focus' as const,
   INSCRIPTION_SUCCESS: 'inscription_success' as const,
   VIDEO_INTERACTION: 'video_interaction' as const,
   FAQ_INTERACTION: 'faq_interaction' as const,
@@ -168,12 +169,20 @@ export const trackFormError = (formId: string, formName: string, fieldName: stri
 /**
  * Tracking de éxito en formulario (Conversión)
  */
-export const trackInscriptionSuccess = (courseId: string, courseTitle: string, value: number): void => {
+export const trackInscriptionSuccess = (
+  courseId: string, 
+  courseTitle: string, 
+  value: number,
+  email?: string,
+  phone?: string
+): void => {
   const params: ConversionParams = {
     course_id: courseId,
     course_title: courseTitle,
     value: value,
-    currency: 'ARS'
+    currency: 'ARS',
+    user_email: email,
+    user_phone: phone
   };
   sendAnalyticsEvent(AnalyticsEvents.INSCRIPTION_SUCCESS, params);
 
@@ -182,9 +191,23 @@ export const trackInscriptionSuccess = (courseId: string, courseTitle: string, v
     window.fbq('track', 'Lead', {
       content_name: courseTitle,
       value: value,
-      currency: 'ARS'
+      currency: 'ARS',
+      em: email,
+      ph: phone
     });
   }
+};
+
+/**
+ * Tracking de foco en campos del formulario (Fricción)
+ */
+export const trackFormFieldFocus = (formId: string, formName: string, fieldName: string): void => {
+  const params: FormEventParams = {
+    form_id: formId,
+    form_name: formName,
+    field_name: fieldName
+  };
+  sendAnalyticsEvent(AnalyticsEvents.FORM_FIELD_FOCUS, params);
 };
 
 /**
@@ -228,6 +251,7 @@ export default {
   trackCourseView,
   trackFormStart,
   trackFormError,
+  trackFormFieldFocus,
   trackInscriptionSuccess,
   trackVideoInteraction,
   trackFaqInteraction,

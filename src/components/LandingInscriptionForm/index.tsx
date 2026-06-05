@@ -96,11 +96,23 @@ const LandingInscriptionForm: React.FC<LandingInscriptionFormProps> = ({ course,
       );
 
       if (response.mpPaymentLink) {
-        // Delay técnico de 500ms para asegurar que el navegador envíe los beacons de tracking
-        // antes de abandonar la página hacia Mercado Pago.
+        // navigator.sendBeacon garantiza que los eventos de tracking lleguen al servidor
+        // incluso cuando el navegador abandona la pgina hacia Mercado Pago.
+        // Es el estndar para este caso de uso (no depende de timeouts).
+        if (typeof navigator !== 'undefined' && navigator.sendBeacon) {
+          const sessionId = localStorage.getItem('modista_session_id');
+          navigator.sendBeacon(
+            '/api/analytics/beacon',
+            new Blob(
+              [JSON.stringify({ event: 'redirect_to_payment', sessionId })],
+              { type: 'application/json' }
+            )
+          );
+        }
+        // Delay mnimo para permitir que el Pixel del navegador complete su beacon
         setTimeout(() => {
           window.location.href = response.mpPaymentLink!;
-        }, 500);
+        }, 300);
         return;
       }
 

@@ -7,6 +7,9 @@ import { LandingInscriptionForm, Spinner, SEO } from '@/components';
 import { getOptimizedUrl } from '../../utils/image-utils';
 import { LandingPageData, CourseData } from './types';
 
+import { CheckIcon, StarIcon, ShieldIcon, LockIcon } from './Icons';
+import { TESTIMONIALS, DEFAULT_BENEFITS, SPOTS_LEFT } from './data';
+
 const LandingPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const [landing, setLanding] = useState<LandingPageData | null>(null);
@@ -21,15 +24,14 @@ const LandingPage: React.FC = () => {
         setLoading(true);
         const landingRes = await getLandingPageBySlug(slug);
         if (landingRes.success && landingRes.data) {
-          // Casteo a interfaces locales para mantener el desacoplamiento
           const landingData = landingRes.data as unknown as LandingPageData;
           setLanding(landingData);
-          
+
           const courseRes = await getCourseById(landingData.courseId);
           const courseData = courseRes as unknown as CourseData;
           setCourse(courseData);
-          
-          // Tracking para Meta Pixel y GA4
+
+          // Tracking Meta Pixel ViewContent + GA4
           trackCourseView(courseData.id, courseData.title, courseData.price);
         } else {
           setError(true);
@@ -47,8 +49,8 @@ const LandingPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <Spinner text="Cargando oportunidad..." />
+      <div className="min-h-screen flex items-center justify-center bg-gray-950">
+        <Spinner text="Preparando tu lugar..." />
       </div>
     );
   }
@@ -57,33 +59,200 @@ const LandingPage: React.FC = () => {
     return <Navigate to="/cursos" replace />;
   }
 
+  const title = landing.customTitle || course.title;
+  const description = landing.customDescription || course.shortDescription;
+  const formattedPrice = course.price
+    ? new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(course.price)
+    : null;
+
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center py-12 px-4 sm:px-6 lg:px-8 font-sans">
-      <SEO 
-        title={landing.customTitle || course.title || 'Inscripción'}
-        description={landing.customDescription || course.shortDescription}
+    <>
+      <SEO
+        title={title || 'Inscripción'}
+        description={description}
         ogImage={getOptimizedUrl(course.imageUrl, 1200, 630)}
       />
-      
-      <div className="max-w-4xl w-full text-center mb-10">
-        <h1 className="text-4xl sm:text-5xl font-black text-gray-900 mb-4 tracking-tight leading-tight uppercase">
-          {landing.customTitle || course.title}
-        </h1>
-        {(landing.customDescription || course.shortDescription) && (
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-            {landing.customDescription || course.shortDescription}
+
+      {/* Fuente premium */}
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+      <div style={{ fontFamily: "'Inter', sans-serif" }} className="min-h-screen bg-gray-950 text-white">
+
+        {/* ── HERO ─────────────────────────────────────────────────────────── */}
+        <section className="relative overflow-hidden">
+          {/* Gradiente de fondo */}
+          <div className="absolute inset-0 bg-gradient-to-br from-violet-950 via-gray-950 to-gray-950" />
+          <div className="absolute inset-0 opacity-30"
+            style={{ backgroundImage: 'radial-gradient(ellipse 80% 50% at 50% -20%, rgba(139,92,246,0.4), transparent)' }}
+          />
+
+          <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-16">
+
+            {/* Badge de urgencia */}
+            <div className="flex justify-center mb-6">
+              <span className="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/30 text-amber-400 text-sm font-semibold px-4 py-1.5 rounded-full">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-400" />
+                </span>
+                Solo quedan {SPOTS_LEFT} lugares disponibles
+              </span>
+            </div>
+
+            {/* Grid: copy + imagen */}
+            <div className="grid lg:grid-cols-2 gap-10 items-center">
+
+              {/* Columna izquierda: copy */}
+              <div>
+                <h1 className="text-4xl sm:text-5xl font-black leading-tight tracking-tight mb-5 uppercase">
+                  {title}
+                </h1>
+
+                {description && (
+                  <p className="text-lg text-gray-300 leading-relaxed mb-8">
+                    {description}
+                  </p>
+                )}
+
+                {/* Precio prominente */}
+                {formattedPrice && (
+                  <div className="flex items-baseline gap-3 mb-8">
+                    <span className="text-5xl font-black text-white">{formattedPrice}</span>
+                    <span className="text-gray-400 text-sm">pago único</span>
+                  </div>
+                )}
+
+                {/* Beneficios */}
+                <ul className="space-y-3 mb-8">
+                  {DEFAULT_BENEFITS.map((benefit, i) => (
+                    <li key={i} className="flex items-start gap-3">
+                      <CheckIcon />
+                      <span className="text-gray-200 text-sm leading-relaxed">{benefit}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                {/* CTA mobile: flecha hacia el form */}
+                <p className="text-violet-400 text-sm font-medium lg:hidden">
+                  ↓ Completá el formulario para reservar tu lugar
+                </p>
+              </div>
+
+              {/* Columna derecha: imagen del curso */}
+              <div className="relative">
+                {course.imageUrl ? (
+                  <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-violet-900/40">
+                    <img
+                      src={getOptimizedUrl(course.imageUrl, 800, 600)}
+                      alt={course.title}
+                      className="w-full aspect-[4/3] object-cover"
+                      loading="eager"
+                    />
+                    {/* Overlay sutil */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-gray-950/60 to-transparent" />
+                  </div>
+                ) : (
+                  /* Placeholder si no hay imagen */
+                  <div className="rounded-2xl bg-gradient-to-br from-violet-800/30 to-violet-600/10 border border-violet-700/30 aspect-[4/3] flex items-center justify-center">
+                    <span className="text-6xl">✂️</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ── FORMULARIO + TRUST ──────────────────────────────────────────── */}
+        <section className="bg-gray-950 py-16 px-4 sm:px-6">
+          <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-12 items-start">
+
+            {/* Izquierda: testimonios */}
+            <div>
+              <h2 className="text-2xl font-bold text-white mb-2">
+                Lo que dicen nuestras alumnas
+              </h2>
+              <p className="text-gray-400 text-sm mb-8">
+                Más de 200 alumnas ya pasaron por nuestros cursos
+              </p>
+
+              <div className="space-y-5">
+                {TESTIMONIALS.map((t, i) => (
+                  <div key={i} className="bg-gray-900 border border-gray-800 rounded-2xl p-5">
+                    <div className="flex items-center gap-3 mb-3">
+                      <img
+                        src={t.avatar}
+                        alt={t.name}
+                        className="w-10 h-10 rounded-full object-cover ring-2 ring-violet-500/40"
+                      />
+                      <div>
+                        <p className="text-white text-sm font-semibold">{t.name}</p>
+                        <p className="text-gray-500 text-xs">{t.role}</p>
+                      </div>
+                      <div className="ml-auto flex gap-0.5">
+                        {[1, 2, 3, 4, 5].map(s => <StarIcon key={s} filled={s <= t.rating} />)}
+                      </div>
+                    </div>
+                    <p className="text-gray-300 text-sm leading-relaxed">"{t.text}"</p>
+                  </div>
+                ))}
+              </div>
+
+              {/* Trust badges */}
+              <div className="mt-8 grid grid-cols-1 gap-3">
+                <div className="flex items-center gap-3 bg-gray-900/50 border border-gray-800 rounded-xl p-3">
+                  <ShieldIcon />
+                  <div>
+                    <p className="text-white text-xs font-bold">Datos 100% Seguros</p>
+                    <p className="text-gray-500 text-[11px]">Tu información está protegida y nunca se comparte</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 bg-gray-900/50 border border-gray-800 rounded-xl p-3">
+                  <LockIcon />
+                  <div>
+                    <p className="text-white text-xs font-bold">Pago a través de Mercado Pago</p>
+                    <p className="text-gray-500 text-[11px]">No guardamos datos de tarjeta. Proceso externo y verificado</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Derecha: formulario */}
+            <div className="lg:sticky lg:top-8">
+              <div className="bg-gray-900 border border-gray-800 rounded-3xl p-1 shadow-2xl shadow-violet-900/20">
+                {/* Header del form */}
+                <div className="bg-gradient-to-r from-violet-700 to-violet-600 rounded-2xl p-5 mb-1 text-center">
+                  <p className="text-violet-200 text-xs font-semibold uppercase tracking-widest mb-1">
+                    Cupos limitados
+                  </p>
+                  <h3 className="text-white text-xl font-black">
+                    {landing.buttonText || 'Reservá tu lugar ahora'}
+                  </h3>
+                  {formattedPrice && (
+                    <p className="text-violet-200 text-sm mt-1">
+                      Precio: <span className="font-bold text-white">{formattedPrice}</span>
+                    </p>
+                  )}
+                </div>
+
+                {/* Form component */}
+                <div className="p-4">
+                  <LandingInscriptionForm course={course as any} landingPage={landing as any} />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ── FOOTER ───────────────────────────────────────────────────────── */}
+        <footer className="border-t border-gray-900 py-8 text-center">
+          <p className="text-gray-600 text-sm">
+            &copy; {new Date().getFullYear()} Modista App. Todos los derechos reservados.
           </p>
-        )}
+        </footer>
       </div>
-
-      <div className="w-full flex justify-center">
-        <LandingInscriptionForm course={course as any} landingPage={landing as any} />
-      </div>
-
-      <div className="mt-16 text-gray-400 text-sm text-center">
-        <p>&copy; {new Date().getFullYear()} Modista App. Todos los derechos reservados.</p>
-      </div>
-    </div>
+    </>
   );
 };
 

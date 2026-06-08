@@ -202,3 +202,7 @@
   animation-play-state: paused;
 }
 
+@keyframes shine {
+  0% { transform: translateX(-100%) skewX(12deg); }
+  100% { transform: translateX(400%) skewX(12deg); }
+}

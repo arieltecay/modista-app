@@ -220,26 +220,9 @@ const LandingPage: React.FC = () => {
 
             {/* Derecha: formulario */}
             <div className="lg:sticky lg:top-8">
-              <div className="bg-gray-900 border border-gray-800 rounded-3xl p-1 shadow-2xl shadow-violet-900/20">
-                {/* Header del form */}
-                <div className="bg-gradient-to-r from-violet-700 to-violet-600 rounded-2xl p-5 mb-1 text-center">
-                  <p className="text-violet-200 text-xs font-semibold uppercase tracking-widest mb-1">
-                    Cupos limitados
-                  </p>
-                  <h3 className="text-white text-xl font-black">
-                    {landing.buttonText || 'Reservá tu lugar ahora'}
-                  </h3>
-                  {formattedPrice && (
-                    <p className="text-violet-200 text-sm mt-1">
-                      Precio: <span className="font-bold text-white">{formattedPrice}</span>
-                    </p>
-                  )}
-                </div>
-
+              <div className="bg-gray-900 border border-gray-800 rounded-3xl p-6 sm:p-8 shadow-2xl shadow-violet-900/20">
                 {/* Form component */}
-                <div className="p-4">
-                  <LandingInscriptionForm course={course as any} landingPage={landing as any} />
-                </div>
+                <LandingInscriptionForm course={course as any} landingPage={landing as any} />
               </div>
             </div>
           </div>

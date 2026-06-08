@@ -9,7 +9,6 @@ import {
 import { Spinner } from '@/components';
 import { validateEmail, validateCelular } from '../../utils/formValidations';
 import { getStoredUTMData } from '../../utils/utm-tracking';
-import { ShieldCheckIcon, LockClosedIcon, CreditCardIcon } from '@heroicons/react/24/outline';
 import { 
   LandingInscriptionFormProps, 
   FormState, 
@@ -126,11 +125,15 @@ const LandingInscriptionForm: React.FC<LandingInscriptionFormProps> = ({ course,
     }
   };
 
+  const formattedPrice = course.price
+    ? new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(course.price)
+    : null;
+
   return (
-    <div className="w-full max-w-md mx-auto bg-white p-6 sm:p-8 rounded-2xl shadow-2xl border border-gray-100 font-sans">
+    <div className="w-full font-sans">
       <form onSubmit={handleSubmit} className="space-y-5" noValidate>
         <div>
-          <label htmlFor="fullName" className="block text-sm font-bold text-gray-700 mb-1.5 ml-1">
+          <label htmlFor="fullName" className="block text-sm font-semibold text-gray-300 mb-1.5 ml-1">
             Nombre y Apellido
           </label>
           <input
@@ -142,13 +145,13 @@ const LandingInscriptionForm: React.FC<LandingInscriptionFormProps> = ({ course,
             value={formData.fullName}
             onChange={handleChange}
             onFocus={() => handleFocus('fullName')}
-            className={`w-full px-4 py-4 rounded-xl border-2 ${errors.fullName ? 'border-red-500' : 'border-gray-100 bg-gray-50'} focus:bg-white focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all text-gray-800 placeholder:text-gray-400`}
+            className={`w-full px-4 py-4 rounded-xl border-2 ${errors.fullName ? 'border-red-500' : 'border-gray-800 bg-gray-900'} focus:bg-gray-800 focus:ring-4 focus:ring-violet-500/10 focus:border-violet-500 outline-none transition-all text-white placeholder:text-gray-500`}
           />
-          {errors.fullName && <p className="text-red-500 text-xs font-medium mt-1.5 ml-1">{errors.fullName}</p>}
+          {errors.fullName && <p className="text-red-400 text-xs font-medium mt-1.5 ml-1">{errors.fullName}</p>}
         </div>
 
         <div>
-          <label htmlFor="email" className="block text-sm font-bold text-gray-700 mb-1.5 ml-1">
+          <label htmlFor="email" className="block text-sm font-semibold text-gray-300 mb-1.5 ml-1">
             Tu mejor Email
           </label>
           <input
@@ -160,13 +163,13 @@ const LandingInscriptionForm: React.FC<LandingInscriptionFormProps> = ({ course,
             value={formData.email}
             onChange={handleChange}
             onFocus={() => handleFocus('email')}
-            className={`w-full px-4 py-4 rounded-xl border-2 ${errors.email ? 'border-red-500' : 'border-gray-100 bg-gray-50'} focus:bg-white focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all text-gray-800 placeholder:text-gray-400`}
+            className={`w-full px-4 py-4 rounded-xl border-2 ${errors.email ? 'border-red-500' : 'border-gray-800 bg-gray-900'} focus:bg-gray-800 focus:ring-4 focus:ring-violet-500/10 focus:border-violet-500 outline-none transition-all text-white placeholder:text-gray-500`}
           />
-          {errors.email && <p className="text-red-500 text-xs font-medium mt-1.5 ml-1">{errors.email}</p>}
+          {errors.email && <p className="text-red-400 text-xs font-medium mt-1.5 ml-1">{errors.email}</p>}
         </div>
 
         <div>
-          <label htmlFor="celular" className="block text-sm font-bold text-gray-700 mb-1.5 ml-1">
+          <label htmlFor="celular" className="block text-sm font-semibold text-gray-300 mb-1.5 ml-1">
             Tu WhatsApp de contacto
           </label>
           <input
@@ -178,58 +181,46 @@ const LandingInscriptionForm: React.FC<LandingInscriptionFormProps> = ({ course,
             value={formData.celular}
             onChange={handleChange}
             onFocus={() => handleFocus('celular')}
-            className={`w-full px-4 py-4 rounded-xl border-2 ${errors.celular ? 'border-red-500' : 'border-gray-100 bg-gray-50'} focus:bg-white focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all text-gray-800 placeholder:text-gray-400`}
+            className={`w-full px-4 py-4 rounded-xl border-2 ${errors.celular ? 'border-red-500' : 'border-gray-800 bg-gray-900'} focus:bg-gray-800 focus:ring-4 focus:ring-violet-500/10 focus:border-violet-500 outline-none transition-all text-white placeholder:text-gray-500`}
           />
-          {errors.celular && <p className="text-red-500 text-xs font-medium mt-1.5 ml-1">{errors.celular}</p>}
+          {errors.celular && <p className="text-red-400 text-xs font-medium mt-1.5 ml-1">{errors.celular}</p>}
         </div>
 
-        <div className="pt-2">
+        <div className="pt-4">
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-primary hover:bg-primary-hover active:scale-[0.98] text-white font-black py-5 rounded-xl text-xl shadow-lg transition-all flex items-center justify-center gap-3 uppercase tracking-wider disabled:opacity-50"
+            className="group relative w-full bg-gradient-to-r from-violet-600 to-violet-500 hover:from-violet-500 hover:to-violet-400 active:scale-[0.98] text-white py-5 px-4 rounded-2xl shadow-[0_0_20px_rgba(139,92,246,0.3)] transition-all flex flex-col items-center justify-center disabled:opacity-50 overflow-hidden"
           >
-            {loading ? <Spinner className="w-7 h-7 text-white" /> : landingPage.buttonText || 'RESERVAR MI LUGAR'}
+            {/* Brillo decorativo */}
+            <div className="absolute inset-0 w-1/4 h-full bg-white/20 skew-x-12 -translate-x-full group-hover:animate-[shine_1.5s_ease-in-out_infinite]" />
+            
+            {loading ? (
+              <Spinner className="w-7 h-7 text-white" />
+            ) : (
+              <>
+                <span className="text-xs font-bold text-violet-200 tracking-[0.2em] uppercase mb-1">
+                  Cupos limitados
+                </span>
+                <span className="text-xl font-black uppercase tracking-wide">
+                  {landingPage.buttonText || 'RESERVAR MI LUGAR'}
+                </span>
+                {formattedPrice && (
+                  <span className="text-sm font-medium text-violet-100 normal-case mt-1">
+                    Precio único: <strong className="text-white font-bold">{formattedPrice}</strong>
+                  </span>
+                )}
+              </>
+            )}
           </button>
         </div>
 
         {formMessage && (
-          <div className={`text-center p-3 rounded-xl text-sm font-bold ${formMessage.type === 'success' ? 'bg-green-50 text-green-700 border border-green-100' : 'bg-red-50 text-red-700 border border-red-100'}`}>
+          <div className={`text-center p-4 rounded-xl text-sm font-bold ${formMessage.type === 'success' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'}`}>
             {formMessage.text}
           </div>
         )}
       </form>
-
-      {/* Trust Badges */}
-      <div className="mt-8 pt-8 border-t border-gray-100 grid grid-cols-1 gap-4">
-        <div className="flex items-start gap-4">
-          <div className="bg-green-100 p-2 rounded-lg">
-            <ShieldCheckIcon className="w-6 h-6 text-green-600 flex-shrink-0" />
-          </div>
-          <div>
-            <h4 className="text-xs font-bold text-gray-800 uppercase">Privacidad Total</h4>
-            <p className="text-[10px] text-gray-500 leading-tight mt-0.5">Sus datos están protegidos y se eliminan automáticamente tras finalizar el curso.</p>
-          </div>
-        </div>
-        <div className="flex items-start gap-4">
-          <div className="bg-blue-100 p-2 rounded-lg">
-            <LockClosedIcon className="w-6 h-6 text-blue-600 flex-shrink-0" />
-          </div>
-          <div>
-            <h4 className="text-xs font-bold text-gray-800 uppercase">Transacciones Seguras</h4>
-            <p className="text-[10px] text-gray-500 leading-tight mt-0.5">No solicitamos ni guardamos datos de tarjetas. Todo el proceso es externo.</p>
-          </div>
-        </div>
-        <div className="flex items-start gap-4">
-          <div className="bg-orange-100 p-2 rounded-lg">
-            <CreditCardIcon className="w-6 h-6 text-orange-600 flex-shrink-0" />
-          </div>
-          <div>
-            <h4 className="text-xs font-bold text-gray-800 uppercase">Garantía Mercado Pago</h4>
-            <p className="text-[10px] text-gray-500 leading-tight mt-0.5">Pago 100% verificado y seguro a través de la plataforma líder de Argentina.</p>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };

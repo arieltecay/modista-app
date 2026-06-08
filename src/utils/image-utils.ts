@@ -15,7 +15,7 @@ export const getOptimizedUrl = (url?: string, width?: number, height?: number): 
     let transformations = 'f_auto,q_auto';
     
     if (width) transformations += `,w_${width}`;
-    if (height) transformations += `,h_${height},c_fill`;
+    if (height) transformations += `,h_${height},c_fill,g_auto`;
 
     return `${parts[0]}/upload/${transformations}/${parts[1]}`;
   } catch (e) {

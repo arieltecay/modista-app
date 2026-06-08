@@ -5,8 +5,8 @@ import { getOptimizedUrl } from '../../utils/image-utils';
 const CourseImage: React.FC<CourseImageProps> = ({ 
   course, 
   className, 
-  width = 600, 
-  height = 400, 
+  width = 800, 
+  height = 600, 
   priority = false 
 }) => {
   const isFree = parseFloat(course.price) === 0;

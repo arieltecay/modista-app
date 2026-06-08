@@ -168,14 +168,15 @@ export const trackFormError = (formId: string, formName: string, fieldName: stri
 
 /**
  * Tracking de éxito en formulario (Conversión)
+ * Envía datos a GTM y Meta Pixel
  */
-export const trackInscriptionSuccess = (
+export const trackInscriptionSuccess = async (
   courseId: string, 
   courseTitle: string, 
   value: number,
   email?: string,
   phone?: string
-): void => {
+): Promise<void> => {
   const params: ConversionParams = {
     course_id: courseId,
     course_title: courseTitle,
@@ -184,18 +185,29 @@ export const trackInscriptionSuccess = (
     user_email: email,
     user_phone: phone
   };
+  
+  // 1. Enviar a GTM / DataLayer
   sendAnalyticsEvent(AnalyticsEvents.INSCRIPTION_SUCCESS, params);
 
-  // Meta Pixel: Lead
+  // 2. Meta Pixel: Lead
   if (import.meta.env.PROD && typeof window !== 'undefined' && window.fbq) {
-    window.fbq('track', 'Lead', {
-      content_name: courseTitle,
-      value: value,
-      currency: 'ARS',
-      em: email,
-      ph: phone
+    // Usamos una promesa para dar tiempo al Pixel de procesar
+    return new Promise((resolve) => {
+      window.fbq('track', 'Lead', {
+        content_name: courseTitle,
+        value: value,
+        currency: 'ARS',
+        em: email,
+        ph: phone
+      });
+      
+      // Meta Pixel no tiene callback nativo de finalización garantizado en todas las versiones
+      // así que usamos un pequeño timeout de seguridad para asegurar que el evento se encole
+      setTimeout(resolve, 600);
     });
   }
+
+  return Promise.resolve();
 };
 
 /**

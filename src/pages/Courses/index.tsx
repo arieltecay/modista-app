@@ -8,7 +8,7 @@ import { sendAnalyticsEvent } from '../../services/analytics';
 // Componente Esqueleto para carga visual elegante
 const CourseCardSkeleton = () => (
   <div className="bg-card shadow-lg rounded-lg overflow-hidden animate-pulse flex flex-col h-full border border-border">
-    <div className="w-full h-48 bg-muted"></div>
+    <div className="w-full aspect-[4/3] bg-muted"></div>
     <div className="p-6 flex-grow space-y-4">
       <div className="h-6 bg-muted rounded w-3/4"></div>
       <div className="space-y-2">

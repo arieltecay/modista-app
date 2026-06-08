@@ -85,8 +85,8 @@ const LandingInscriptionForm: React.FC<LandingInscriptionFormProps> = ({ course,
       const response = await createLandingInscription(payload);
 
       // --- TRACKING DE ÉXITO (Conversión) ---
-      // Enviamos email y celular para Enhanced Conversions de Google Ads
-      trackInscriptionSuccess(
+      // Esperamos explícitamente a que el tracking termine antes de navegar
+      await trackInscriptionSuccess(
         payload.courseId, 
         course.title, 
         course.price, 

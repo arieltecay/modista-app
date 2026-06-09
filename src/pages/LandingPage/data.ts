@@ -14,7 +14,7 @@ export const TESTIMONIALS = [
     text: 'El nivel de detalle en cada clase es increíble. La profe explica paso a paso y siempre está disponible.',
   },
   {
-    name: 'Florencia A.',
+    name: 'Fernando A.',
     role: 'Hobbysta creativa',
     avatar: 'https://i.pravatar.cc/80?img=56',
     rating: 5,

@@ -3,15 +3,17 @@ import { useParams, Navigate } from 'react-router-dom';
 import { getLandingPageBySlug } from '../../services/landing';
 import { getCourseById } from '../../services/courses';
 import { trackCourseView } from '../../services/analytics';
-import { LandingInscriptionForm, Spinner, SEO } from '@/components';
+import { LandingInscriptionForm, Spinner, SEO, FloatingActionsContainer, PrivacyNotice } from '@/components';
 import { getOptimizedUrl } from '../../utils/image-utils';
 import { LandingPageData, CourseData } from './types';
+import { useCourseContext } from '../../context/CourseContext';
 
 import { CheckIcon, StarIcon, ShieldIcon, LockIcon } from './Icons';
 import { TESTIMONIALS, DEFAULT_BENEFITS, SPOTS_LEFT } from './data';
 
 const LandingPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
+  const { setActiveCourse } = useCourseContext();
   const [landing, setLanding] = useState<LandingPageData | null>(null);
   const [course, setCourse] = useState<CourseData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -30,6 +32,9 @@ const LandingPage: React.FC = () => {
           const courseRes = await getCourseById(landingData.courseId);
           const courseData = courseRes as unknown as CourseData;
           setCourse(courseData);
+          
+          // Sincronizar con el contexto global para que el botón de WhatsApp sepa qué curso es
+          setActiveCourse(courseData as any);
 
           // Tracking Meta Pixel ViewContent + GA4
           trackCourseView(courseData.id, courseData.title, courseData.price);
@@ -45,7 +50,7 @@ const LandingPage: React.FC = () => {
     };
 
     fetchLandingData();
-  }, [slug]);
+  }, [slug, setActiveCourse]);
 
   if (loading) {
     return (
@@ -228,12 +233,18 @@ const LandingPage: React.FC = () => {
           </div>
         </section>
 
+        {/* Compromiso de Privacidad y Ética */}
+        <PrivacyNotice />
+
         {/* ── FOOTER ───────────────────────────────────────────────────────── */}
         <footer className="border-t border-gray-900 py-8 text-center">
           <p className="text-gray-600 text-sm">
             &copy; {new Date().getFullYear()} Modista App. Todos los derechos reservados.
           </p>
         </footer>
+
+        {/* Botón flotante de WhatsApp sincronizado */}
+        <FloatingActionsContainer />
       </div>
     </>
   );

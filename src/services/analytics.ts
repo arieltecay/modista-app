@@ -17,6 +17,13 @@ import type {
   VideoEventParams
 } from './types';
 
+type FbqTrack = (
+  cmd: string,
+  event: string,
+  params?: Record<string, unknown>,
+  options?: { eventID?: string }
+) => void;
+
 /**
  * Obtiene el rol del usuario desde el almacenamiento local
  */
@@ -175,7 +182,8 @@ export const trackInscriptionSuccess = async (
   courseTitle: string, 
   value: number,
   email?: string,
-  phone?: string
+  phone?: string,
+  inscriptionId?: string
 ): Promise<void> => {
   const params: ConversionParams = {
     course_id: courseId,
@@ -193,13 +201,13 @@ export const trackInscriptionSuccess = async (
   if (import.meta.env.PROD && typeof window !== 'undefined' && window.fbq) {
     // Usamos una promesa para dar tiempo al Pixel de procesar
     return new Promise((resolve) => {
-      window.fbq('track', 'Lead', {
+      (window.fbq as FbqTrack)('track', 'Lead', {
         content_name: courseTitle,
         value: value,
         currency: 'ARS',
         em: email,
         ph: phone
-      });
+      }, inscriptionId ? { eventID: `lead_${inscriptionId}` } : undefined);
       
       // Meta Pixel no tiene callback nativo de finalización garantizado en todas las versiones
       // así que usamos un pequeño timeout de seguridad para asegurar que el evento se encole

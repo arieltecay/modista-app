@@ -3,7 +3,7 @@ import { useParams, Navigate } from 'react-router-dom';
 import { getLandingPageBySlug } from '../../services/landing';
 import { getCourseById } from '../../services/courses';
 import { trackCourseView } from '../../services/analytics';
-import { LandingInscriptionForm, Spinner, SEO, FloatingActionsContainer, PrivacyNotice } from '@/components';
+import { LandingInscriptionForm, Spinner, SEO, FloatingActionsContainer, PrivacyNotice, FaqSection } from '@/components';
 import { getOptimizedUrl } from '../../utils/image-utils';
 import { LandingPageData, CourseData } from './types';
 import { useCourseContext } from '../../context/CourseContext';
@@ -18,6 +18,13 @@ const LandingPage: React.FC = () => {
   const [course, setCourse] = useState<CourseData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+
+  // PageView para Meta Pixel: se dispara en montaje, sin esperar la API
+  useEffect(() => {
+    if (import.meta.env.PROD && typeof window !== 'undefined' && window.fbq) {
+      window.fbq('track', 'PageView');
+    }
+  }, []);
 
   useEffect(() => {
     const fetchLandingData = async () => {
@@ -83,7 +90,7 @@ const LandingPage: React.FC = () => {
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
 
-      <div style={{ fontFamily: "'Inter', sans-serif" }} className="min-h-screen bg-gray-950 text-white">
+      <div style={{ fontFamily: "'Inter', sans-serif" }} className="dark min-h-screen bg-gray-950 text-white">
 
         {/* ── HERO ─────────────────────────────────────────────────────────── */}
         <section className="relative overflow-hidden">
@@ -173,8 +180,15 @@ const LandingPage: React.FC = () => {
         <section className="bg-gray-950 py-16 px-4 sm:px-6">
           <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-12 items-start">
 
-            {/* Izquierda: testimonios */}
-            <div>
+            {/* Formulario: primero en mobile (order-1), sticky derecho en desktop */}
+            <div className="order-1 lg:order-2 lg:sticky lg:top-8">
+              <div className="bg-gray-900 border border-gray-800 rounded-3xl p-6 sm:p-8 shadow-2xl shadow-violet-900/20">
+                <LandingInscriptionForm course={course as any} landingPage={landing as any} />
+              </div>
+            </div>
+
+            {/* Testimonios: segundo en mobile (order-2), izquierdo en desktop */}
+            <div className="order-2 lg:order-1">
               <h2 className="text-2xl font-bold text-white mb-2">
                 Lo que dicen nuestras alumnas
               </h2>
@@ -222,16 +236,11 @@ const LandingPage: React.FC = () => {
                 </div>
               </div>
             </div>
-
-            {/* Derecha: formulario */}
-            <div className="lg:sticky lg:top-8">
-              <div className="bg-gray-900 border border-gray-800 rounded-3xl p-6 sm:p-8 shadow-2xl shadow-violet-900/20">
-                {/* Form component */}
-                <LandingInscriptionForm course={course as any} landingPage={landing as any} />
-              </div>
-            </div>
           </div>
         </section>
+
+        {/* ── FAQ ──────────────────────────────────────────────────────────── */}
+        <FaqSection />
 
         {/* Compromiso de Privacidad y Ética */}
         <PrivacyNotice />

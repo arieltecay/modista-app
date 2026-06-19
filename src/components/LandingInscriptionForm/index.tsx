@@ -83,6 +83,7 @@ const LandingInscriptionForm: React.FC<LandingInscriptionFormProps> = ({ course,
       };
 
       const response = await createLandingInscription(payload);
+      const inscriptionId = response.data?._id || response.data?.id;
 
       // --- TRACKING DE ÉXITO (Conversión) ---
       // Esperamos explícitamente a que el tracking termine antes de navegar
@@ -91,7 +92,8 @@ const LandingInscriptionForm: React.FC<LandingInscriptionFormProps> = ({ course,
         course.title, 
         course.price, 
         formData.email, 
-        formData.celular
+        formData.celular,
+        inscriptionId
       );
 
       if (response.mpPaymentLink) {

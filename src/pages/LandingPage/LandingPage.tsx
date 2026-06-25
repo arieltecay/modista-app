@@ -155,11 +155,11 @@ const LandingPage: React.FC = () => {
               {/* Columna derecha: imagen del curso */}
               <div className="relative">
                 {course.imageUrl ? (
-                  <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-violet-900/40">
+                  <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-violet-900/40 bg-gray-900/50">
                     <img
-                      src={getOptimizedUrl(course.imageUrl, 800, 600)}
+                      src={getOptimizedUrl(course.imageUrl, 800, 600, 'limit')}
                       alt={course.title}
-                      className="w-full aspect-[4/3] object-cover"
+                      className="w-full aspect-[4/3] object-contain"
                       loading="eager"
                     />
                     {/* Overlay sutil */}

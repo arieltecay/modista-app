@@ -120,6 +120,7 @@ function CourseDetailPage() {
           width={1200} 
           height={800} 
           priority={true} 
+          crop="limit"
         />
         <div className="p-6">
           <h1 className="text-3xl font-bold text-foreground mb-2">{course.title}</h1>

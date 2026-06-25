@@ -10,4 +10,5 @@ export interface CourseImageProps {
   width?: number;
   height?: number;
   priority?: boolean;
+  crop?: 'fill' | 'limit' | 'fit';
 }

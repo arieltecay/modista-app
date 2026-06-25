@@ -7,7 +7,8 @@ const CourseImage: React.FC<CourseImageProps> = ({
   className, 
   width = 800, 
   height = 600, 
-  priority = false 
+  priority = false,
+  crop = 'fill'
 }) => {
   const isFree = parseFloat(course.price) === 0;
 
@@ -19,7 +20,7 @@ const CourseImage: React.FC<CourseImageProps> = ({
         </div>
       )}
       <img 
-        src={getOptimizedUrl(course.imageUrl, width, height)} 
+        src={getOptimizedUrl(course.imageUrl, width, height, crop)} 
         alt={`Imagen de ${course.title}`} 
         className={className} 
         width={width}

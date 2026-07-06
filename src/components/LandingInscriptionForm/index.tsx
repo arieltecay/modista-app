@@ -110,10 +110,11 @@ const LandingInscriptionForm: React.FC<LandingInscriptionFormProps> = ({ course,
             )
           );
         }
-        // Delay mnimo para permitir que el Pixel del navegador complete su beacon
+        // Delay aumentado para permitir que el Pixel del navegador y CAPI completen el envío
+        // del evento Lead antes de salir de la página hacia MercadoPago.
         setTimeout(() => {
           window.location.href = response.mpPaymentLink!;
-        }, 300);
+        }, 1500);
         return;
       }
 

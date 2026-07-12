@@ -28,3 +28,20 @@ export interface CourseData {
   category?: string;
   status?: string;
 }
+
+export interface BenefitItem {
+  emoji: string;
+  title: string;
+  desc: string;
+}
+
+export interface TestimonialItem {
+  name: string;
+  role: string;
+  text: string;
+}
+
+export interface StatItem {
+  value: string;
+  label: string;
+}

@@ -3,13 +3,11 @@ import { useParams, Navigate } from 'react-router-dom';
 import { getLandingPageBySlug } from '../../services/landing';
 import { getCourseById } from '../../services/courses';
 import { trackCourseView } from '../../services/analytics';
-import { LandingInscriptionForm, Spinner, SEO, FloatingActionsContainer, PrivacyNotice, FaqSection } from '@/components';
+import { Spinner, SEO, PrivacyNotice, FaqSection, LandingInscriptionForm } from '@/components';
 import { getOptimizedUrl } from '../../utils/image-utils';
-import { LandingPageData, CourseData } from './types';
 import { useCourseContext } from '../../context/CourseContext';
-
-import { CheckIcon, StarIcon, ShieldIcon, LockIcon } from './Icons';
-import { TESTIMONIALS, DEFAULT_BENEFITS, SPOTS_LEFT } from './data';
+import { LandingPageData, CourseData } from './types';
+import { BENEFITS, TESTIMONIALS, STATS } from './data';
 
 const LandingPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -18,13 +16,6 @@ const LandingPage: React.FC = () => {
   const [course, setCourse] = useState<CourseData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-
-  // PageView para Meta Pixel: se dispara en montaje, sin esperar la API
-  useEffect(() => {
-    if (import.meta.env.PROD && typeof window !== 'undefined' && window.fbq) {
-      window.fbq('track', 'PageView');
-    }
-  }, []);
 
   useEffect(() => {
     const fetchLandingData = async () => {
@@ -39,11 +30,8 @@ const LandingPage: React.FC = () => {
           const courseRes = await getCourseById(landingData.courseId);
           const courseData = courseRes as unknown as CourseData;
           setCourse(courseData);
-          
-          // Sincronizar con el contexto global para que el botón de WhatsApp sepa qué curso es
           setActiveCourse(courseData as any);
 
-          // Tracking Meta Pixel ViewContent + GA4
           trackCourseView(courseData.id, courseData.title, courseData.price);
         } else {
           setError(true);
@@ -55,7 +43,6 @@ const LandingPage: React.FC = () => {
         setLoading(false);
       }
     };
-
     fetchLandingData();
   }, [slug, setActiveCourse]);
 
@@ -76,6 +63,7 @@ const LandingPage: React.FC = () => {
   const formattedPrice = course.price
     ? new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(course.price)
     : null;
+  const ctaText = landing.buttonText || 'RESERVAR MI LUGAR';
 
   return (
     <>
@@ -85,175 +73,145 @@ const LandingPage: React.FC = () => {
         ogImage={getOptimizedUrl(course.imageUrl, 1200, 630)}
       />
 
-      {/* Fuente premium */}
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
 
       <div style={{ fontFamily: "'Inter', sans-serif" }} className="dark min-h-screen bg-gray-950 text-white">
 
-        {/* ── HERO ─────────────────────────────────────────────────────────── */}
+        {/* ── 1. HERO ───────────────────────────────────────────────────── */}
         <section className="relative overflow-hidden">
-          {/* Gradiente de fondo */}
-          <div className="absolute inset-0 bg-gradient-to-br from-violet-950 via-gray-950 to-gray-950" />
-          <div className="absolute inset-0 opacity-30"
-            style={{ backgroundImage: 'radial-gradient(ellipse 80% 50% at 50% -20%, rgba(139,92,246,0.4), transparent)' }}
-          />
+          <div className="absolute inset-0 bg-gradient-to-b from-violet-950/30 to-gray-950" />
+          <div className="relative max-w-xl mx-auto px-4 sm:px-6 pt-10 pb-14 text-center">
 
-          <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-16">
+            <span className="inline-block bg-violet-500/10 border border-violet-500/30 text-violet-300 text-xs font-semibold px-3 py-1 rounded-full mb-6">
+              200+ alumnas ya confiaron
+            </span>
 
-            {/* Badge de urgencia */}
-            <div className="flex justify-center mb-6">
-              <span className="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/30 text-amber-400 text-sm font-semibold px-4 py-1.5 rounded-full">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-400" />
-                </span>
-                Solo quedan {SPOTS_LEFT} lugares disponibles
-              </span>
-            </div>
+            <h1 className="text-3xl sm:text-5xl font-black leading-tight tracking-tight mb-5">
+              {title}
+            </h1>
 
-            {/* Grid: copy + imagen */}
-            <div className="grid lg:grid-cols-2 gap-10 items-center">
-
-              {/* Columna izquierda: copy */}
-              <div>
-                <h1 className="text-4xl sm:text-5xl font-black leading-tight tracking-tight mb-5 uppercase">
-                  {title}
-                </h1>
-
-                {description && (
-                  <p className="text-lg text-gray-300 leading-relaxed mb-8">
-                    {description}
-                  </p>
-                )}
-
-                {/* Precio prominente */}
-                {formattedPrice && (
-                  <div className="flex items-baseline gap-3 mb-8">
-                    <span className="text-5xl font-black text-white">{formattedPrice}</span>
-                    <span className="text-gray-400 text-sm">pago único</span>
-                  </div>
-                )}
-
-                {/* Beneficios */}
-                <ul className="space-y-3 mb-8">
-                  {DEFAULT_BENEFITS.map((benefit, i) => (
-                    <li key={i} className="flex items-start gap-3">
-                      <CheckIcon />
-                      <span className="text-gray-200 text-sm leading-relaxed">{benefit}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                {/* CTA mobile: flecha hacia el form */}
-                <p className="text-violet-400 text-sm font-medium lg:hidden">
-                  ↓ Completá el formulario para reservar tu lugar
-                </p>
-              </div>
-
-              {/* Columna derecha: imagen del curso */}
-              <div className="relative">
-                {course.imageUrl ? (
-                  <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-violet-900/40 bg-gray-900/50">
-                    <img
-                      src={getOptimizedUrl(course.imageUrl, 800, 600, 'limit')}
-                      alt={course.title}
-                      className="w-full aspect-[4/3] object-contain"
-                      loading="eager"
-                    />
-                    {/* Overlay sutil */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-gray-950/60 to-transparent" />
-                  </div>
-                ) : (
-                  /* Placeholder si no hay imagen */
-                  <div className="rounded-2xl bg-gradient-to-br from-violet-800/30 to-violet-600/10 border border-violet-700/30 aspect-[4/3] flex items-center justify-center">
-                    <span className="text-6xl">✂️</span>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ── FORMULARIO + TRUST ──────────────────────────────────────────── */}
-        <section className="bg-gray-950 py-16 px-4 sm:px-6">
-          <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-12 items-start">
-
-            {/* Formulario: primero en mobile (order-1), sticky derecho en desktop */}
-            <div className="order-1 lg:order-2 lg:sticky lg:top-8">
-              <div className="bg-gray-900 border border-gray-800 rounded-3xl p-6 sm:p-8 shadow-2xl shadow-violet-900/20">
-                <LandingInscriptionForm course={course as any} landingPage={landing as any} />
-              </div>
-            </div>
-
-            {/* Testimonios: segundo en mobile (order-2), izquierdo en desktop */}
-            <div className="order-2 lg:order-1">
-              <h2 className="text-2xl font-bold text-white mb-2">
-                Lo que dicen nuestras alumnas
-              </h2>
-              <p className="text-gray-400 text-sm mb-8">
-                Más de 200 alumnas ya pasaron por nuestros cursos
+            {description && (
+              <p className="text-base sm:text-lg text-gray-300 leading-relaxed mb-7">
+                {description}
               </p>
+            )}
 
-              <div className="space-y-5">
-                {TESTIMONIALS.map((t, i) => (
-                  <div key={i} className="bg-gray-900 border border-gray-800 rounded-2xl p-5">
-                    <div className="flex items-center gap-3 mb-3">
-                      <img
-                        src={t.avatar}
-                        alt={t.name}
-                        className="w-10 h-10 rounded-full object-cover ring-2 ring-violet-500/40"
-                      />
-                      <div>
-                        <p className="text-white text-sm font-semibold">{t.name}</p>
-                        <p className="text-gray-500 text-xs">{t.role}</p>
-                      </div>
-                      <div className="ml-auto flex gap-0.5">
-                        {[1, 2, 3, 4, 5].map(s => <StarIcon key={s} filled={s <= t.rating} />)}
-                      </div>
-                    </div>
-                    <p className="text-gray-300 text-sm leading-relaxed">"{t.text}"</p>
-                  </div>
-                ))}
+            {formattedPrice && (
+              <div className="mb-7">
+                <span className="text-4xl sm:text-5xl font-black text-white">{formattedPrice}</span>
+                <span className="block text-gray-400 text-sm mt-1">pago único · acceso inmediato</span>
               </div>
+            )}
 
-              {/* Trust badges */}
-              <div className="mt-8 grid grid-cols-1 gap-3">
-                <div className="flex items-center gap-3 bg-gray-900/50 border border-gray-800 rounded-xl p-3">
-                  <ShieldIcon />
-                  <div>
-                    <p className="text-white text-xs font-bold">Datos 100% Seguros</p>
-                    <p className="text-gray-500 text-[11px]">Tu información está protegida y nunca se comparte</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 bg-gray-900/50 border border-gray-800 rounded-xl p-3">
-                  <LockIcon />
-                  <div>
-                    <p className="text-white text-xs font-bold">Pago a través de Mercado Pago</p>
-                    <p className="text-gray-500 text-[11px]">No guardamos datos de tarjeta. Proceso externo y verificado</p>
-                  </div>
-                </div>
+            {course.imageUrl && (
+              <div className="mb-7">
+                <img
+                  src={getOptimizedUrl(course.imageUrl, 400, 300, 'limit')}
+                  alt={course.title}
+                  className="w-full max-w-[240px] mx-auto aspect-[4/3] object-contain rounded-2xl"
+                  loading="eager"
+                />
               </div>
+            )}
+
+            <a
+              href="#inscripcion"
+              className="block w-full bg-gradient-to-r from-violet-600 to-violet-500 hover:from-violet-500 hover:to-violet-400 text-white py-5 px-4 rounded-2xl shadow-[0_0_30px_rgba(139,92,246,0.35)] transition-all active:scale-[0.98]"
+            >
+              <span className="block text-xs font-bold text-violet-200 tracking-[0.2em] uppercase mb-1">
+                Cupos limitados
+              </span>
+              <span className="block text-xl font-black uppercase tracking-wide">
+                {ctaText}
+              </span>
+              {formattedPrice && (
+                <span className="block text-sm font-medium text-violet-100 mt-1">
+                  Precio único: <strong className="text-white">{formattedPrice}</strong>
+                </span>
+              )}
+            </a>
+
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-gray-400">
+              <span>🔒 Pago seguro</span>
+              <span>💬 Soporte WhatsApp</span>
+              <span>📥 Acceso inmediato</span>
             </div>
           </div>
         </section>
 
-        {/* ── FAQ ──────────────────────────────────────────────────────────── */}
-        <FaqSection />
+        {/* ── 2. BENEFITS ──────────────────────────────────────────────── */}
+        <section className="py-14 px-4 sm:px-6">
+          <div className="max-w-2xl mx-auto">
+            <h2 className="text-xl sm:text-2xl font-bold text-center mb-8">
+              Lo que vas a llevarte
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {BENEFITS.map((b, i) => (
+                <div key={i} className="bg-gray-900 border border-gray-800 rounded-2xl p-5">
+                  <div className="text-3xl mb-2">{b.emoji}</div>
+                  <p className="text-white font-semibold text-sm mb-1">{b.title}</p>
+                  <p className="text-gray-400 text-sm leading-relaxed">{b.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
 
-        {/* Compromiso de Privacidad y Ética */}
+        {/* ── 3. SOCIAL PROOF ──────────────────────────────────────────── */}
+        <section className="py-14 px-4 sm:px-6 bg-gray-900/40">
+          <div className="max-w-2xl mx-auto">
+            <div className="flex justify-center items-center gap-6 sm:gap-12 mb-10 text-center">
+              {STATS.map((s, i) => (
+                <div key={i}>
+                  <p className="text-2xl sm:text-3xl font-black text-white">{s.value}</p>
+                  <p className="text-xs text-gray-400 mt-1">{s.label}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="space-y-4">
+              {TESTIMONIALS.map((t, i) => (
+                <div key={i} className="bg-gray-900 border border-gray-800 rounded-2xl p-5">
+                  <div className="flex gap-0.5 mb-2">
+                    {[1, 2, 3, 4, 5].map(s => (
+                      <span key={s} className="text-amber-400 text-sm">★</span>
+                    ))}
+                  </div>
+                  <p className="text-gray-200 text-sm leading-relaxed mb-3">"{t.text}"</p>
+                  <p className="text-white text-xs font-semibold">{t.name}</p>
+                  <p className="text-gray-500 text-xs">{t.role}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── 4. FORM ──────────────────────────────────────────────────── */}
+        <section id="inscripcion" className="py-14 px-4 sm:px-6 scroll-mt-4">
+          <div className="max-w-md mx-auto">
+            <h2 className="text-2xl sm:text-3xl font-black text-center mb-2">
+              ¿Lista para empezar?
+            </h2>
+            <p className="text-gray-400 text-center text-sm mb-7">
+              Completá tus datos y reservá tu lugar
+            </p>
+            <div className="bg-gray-900 border border-gray-800 rounded-3xl p-6 shadow-2xl shadow-violet-900/20">
+              <LandingInscriptionForm course={course as any} landingPage={landing as any} />
+            </div>
+          </div>
+        </section>
+
+        {/* ── 5. FAQ + FOOTER ─────────────────────────────────────────── */}
+        <FaqSection />
         <PrivacyNotice />
 
-        {/* ── FOOTER ───────────────────────────────────────────────────────── */}
         <footer className="border-t border-gray-900 py-8 text-center">
           <p className="text-gray-600 text-sm">
             &copy; {new Date().getFullYear()} Modista App. Todos los derechos reservados.
           </p>
         </footer>
-
-        {/* Botón flotante de WhatsApp sincronizado */}
-        <FloatingActionsContainer />
       </div>
     </>
   );

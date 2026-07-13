@@ -57,6 +57,14 @@ const LandingInscriptionForm: React.FC<LandingInscriptionFormProps> = ({ course,
     trackFormFieldFocus('landing_form', 'Landing Page Form', fieldName);
   };
 
+  const getCookieValue = (name: string): string | undefined => {
+    if (typeof document === 'undefined') return undefined;
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop()?.split(';').shift();
+    return undefined;
+  };
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setFormMessage(null);
@@ -78,8 +86,8 @@ const LandingInscriptionForm: React.FC<LandingInscriptionFormProps> = ({ course,
         marketingSource: utmData?.source || 'meta_ads',
         utmParams: utmData || {},
         sessionId: sessionId || undefined,
-        metaFbc: utmData?.fbc,
-        metaFbp: utmData?.fbp,
+        metaFbc: utmData?.fbc || getCookieValue('_fbc'),
+        metaFbp: utmData?.fbp || getCookieValue('_fbp'),
       };
 
       const response = await createLandingInscription(payload);

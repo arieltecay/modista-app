@@ -30,7 +30,11 @@ export const captureUTMParameters = (): void => {
 
   const urlParams = new URLSearchParams(window.location.search);
   const utmSource = urlParams.get('utm_source') || urlParams.get('utm'); 
-  const fbc = urlParams.get('fbclid') ? `fb.1.${Date.now()}.${urlParams.get('fbclid')}` : getCookie('_fbc');
+  const fbclidFromUrl = urlParams.get('fbclid');
+const fbcFromCookie = getCookie('_fbc');
+const fbc = fbclidFromUrl
+    ? `fb.1.${Date.now()}.${fbclidFromUrl}`
+    : fbcFromCookie;
   const fbp = getCookie('_fbp');
 
   // Solo guardamos si hay algo nuevo que rastrear o si ya existe data previa para actualizar fbc/fbp

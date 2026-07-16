@@ -24,7 +24,6 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
   const [errors, setErrors] = useState<InscriptionFormErrors>({});
   const [loading, setLoading] = useState<boolean>(false);
   const [formMessage, setFormMessage] = useState<FormMessage | null>(null);
-  const [hasStartedFilling, setHasStartedFilling] = useState<boolean>(false);
   const [hasAvailableSpots, setHasAvailableSpots] = useState<boolean>(true);
 
   const validateForm = (): boolean => {
@@ -70,12 +69,6 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
 
-    // Track first interaction with the form
-    if (!hasStartedFilling) {
-      trackFormStart('inscription_form', 'Formulario de Inscripción', course?.id, course?.title);
-      setHasStartedFilling(true);
-    }
-
     setFormData({ ...formData, [name]: value });
 
     if (name === 'celular') {
@@ -120,20 +113,45 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
 
       const inscriptionResponse = await createInscription(inscriptionData);
 
+      const inscriptionId = inscriptionResponse?.data?._id || inscriptionResponse?.data?.id;
+      
+      if (inscriptionId) {
+        trackFormStart('inscription_form', 'Formulario de Inscripción', course?.id || course?._id, course?.title, inscriptionId);
+      }
+
       // --- TRACKING DE ÉXITO (Conversión) ---
       // Enviamos email y celular para Enhanced Conversions de Google Ads
-      trackInscriptionSuccess(
+      await trackInscriptionSuccess(
         course?.id || course?._id || '1',
         course?.title || 'Curso',
         parseFloat(course?.price?.toString() || '0'),
         formData.email,
-        formData.celular
+        formData.celular,
+        inscriptionId
       );
 
-      // Redirigir al link de pago de MercadoPago si existe
-      if (inscriptionResponse?.mpPaymentLink) {
+      // Redirigir al checkout de MercadoPago.
+      // Prioridad: preference dinámica (mpInitPoint) > fallback estático (mpPaymentLink).
+      const initPoint = import.meta.env.DEV
+        ? (inscriptionResponse?.sandboxInitPoint || inscriptionResponse?.mpInitPoint)
+        : inscriptionResponse?.mpInitPoint;
+
+      if (initPoint) {
         // Delay técnico de 500ms para asegurar que el navegador envíe los beacons de tracking
         // antes de abandonar la página hacia Mercado Pago.
+        import('../../utils/funnel-tracker').then(({ trackFunnel }) => {
+          trackFunnel('redirect_to_payment', { courseId: course?.id || course?._id || '1', courseTitle: course?.title, inscriptionId });
+        });
+        setTimeout(() => {
+          window.location.href = initPoint;
+        }, 500);
+        return;
+      }
+
+      if (inscriptionResponse?.mpPaymentLink) {
+        import('../../utils/funnel-tracker').then(({ trackFunnel }) => {
+          trackFunnel('redirect_to_payment', { courseId: course?.id || course?._id || '1', courseTitle: course?.title, inscriptionId });
+        });
         setTimeout(() => {
           window.location.href = inscriptionResponse.mpPaymentLink!;
         }, 500);

@@ -24,6 +24,12 @@ type FbqTrack = (
   options?: { eventID?: string }
 ) => void;
 
+async function sha256(s: string): Promise<string> {
+  const buf = new TextEncoder().encode(s);
+  const hashBuf = await crypto.subtle.digest('SHA-256', buf);
+  return Array.from(new Uint8Array(hashBuf)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
 /**
  * Obtiene el rol del usuario desde el almacenamiento local
  */
@@ -128,20 +134,24 @@ export const trackCourseView = (courseId: string, courseTitle: string, price?: n
 
   // Meta Pixel: ViewContent
   if (import.meta.env.PROD && typeof window !== 'undefined' && window.fbq) {
-    window.fbq('track', 'ViewContent', {
+    const eventId = `view_content_${courseId}`;
+    (window.fbq as FbqTrack)('track', 'ViewContent', {
       content_name: courseTitle,
       content_ids: [courseId],
       content_type: 'product',
       value: price || 0,
       currency: 'ARS'
-    });
+    }, { eventID: eventId });
+    
+    // Y a DataLayer
+    window.dataLayer?.push({ event: 'view_content', event_id: eventId, course_id: courseId });
   }
 };
 
 /**
  * Tracking de inicio de formulario (Intención)
  */
-export const trackFormStart = (formId: string, formName: string, courseId?: string, courseTitle?: string): void => {
+export const trackFormStart = (formId: string, formName: string, courseId?: string, courseTitle?: string, inscriptionId?: string): void => {
   const params: FormEventParams = {
     form_id: formId,
     form_name: formName,
@@ -152,11 +162,11 @@ export const trackFormStart = (formId: string, formName: string, courseId?: stri
 
   // Meta Pixel: InitiateCheckout (opcional, pero buena práctica)
   if (import.meta.env.PROD && typeof window !== 'undefined' && window.fbq) {
-    window.fbq('track', 'InitiateCheckout', {
+    (window.fbq as FbqTrack)('track', 'InitiateCheckout', {
       content_name: courseTitle,
       content_category: 'Courses',
       content_ids: [courseId]
-    });
+    }, inscriptionId ? { eventID: `checkout_${inscriptionId}` } : undefined);
   }
 };
 
@@ -200,13 +210,17 @@ export const trackInscriptionSuccess = async (
   // 2. Meta Pixel: Lead
   if (import.meta.env.PROD && typeof window !== 'undefined' && window.fbq) {
     // Usamos una promesa para dar tiempo al Pixel de procesar
-    return new Promise((resolve) => {
+    return new Promise(async (resolve) => {
+      const hash = async (s?: string) => s ? await sha256(s.trim().toLowerCase()) : undefined;
+      const hashedEmail = await hash(email);
+      const hashedPhone = await hash(phone);
+
       (window.fbq as FbqTrack)('track', 'Lead', {
         content_name: courseTitle,
         value: value,
         currency: 'ARS',
-        em: email,
-        ph: phone
+        em: hashedEmail,
+        ph: hashedPhone
       }, inscriptionId ? { eventID: `lead_${inscriptionId}` } : undefined);
       
       // Meta Pixel no tiene callback nativo de finalización garantizado en todas las versiones

@@ -104,7 +104,12 @@ const LandingInscriptionForm: React.FC<LandingInscriptionFormProps> = ({ course,
         inscriptionId
       );
 
-      if (response.mpPaymentLink) {
+      // Prioridad: preference dinámica (mpInitPoint) > fallback estático (mpPaymentLink).
+      const initPoint = import.meta.env.DEV
+        ? (response.sandboxInitPoint || response.mpInitPoint)
+        : response.mpInitPoint;
+
+      if (initPoint || response.mpPaymentLink) {
         // navigator.sendBeacon garantiza que los eventos de tracking lleguen al servidor
         // incluso cuando el navegador abandona la pgina hacia Mercado Pago.
         // Es el estndar para este caso de uso (no depende de timeouts).
@@ -120,8 +125,11 @@ const LandingInscriptionForm: React.FC<LandingInscriptionFormProps> = ({ course,
         }
         // Delay aumentado para permitir que el Pixel del navegador y CAPI completen el envío
         // del evento Lead antes de salir de la página hacia MercadoPago.
+        import('../../utils/funnel-tracker').then(({ trackFunnel }) => {
+          trackFunnel('redirect_to_payment', { courseId: course.uuid || course.id || (course as any)._id, courseTitle: course.title, inscriptionId });
+        });
         setTimeout(() => {
-          window.location.href = response.mpPaymentLink!;
+          window.location.href = initPoint || response.mpPaymentLink!;
         }, 1500);
         return;
       }

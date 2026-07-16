@@ -29,6 +29,13 @@ const GoogleTagManager = () => {
         })(window, document, "clarity", "script", CLARITY_ID);
     }
 
+    // Generar sessionId temprano para poder usarlo en el pixel
+    let sessionId = localStorage.getItem(SESSION_KEY);
+    if (!sessionId) {
+      sessionId = crypto.randomUUID();
+      localStorage.setItem(SESSION_KEY, sessionId);
+    }
+
     // 3. Meta Pixel (Facebook Pixel)
     if (FB_PIXEL_ID && !window.fbq) {
       (function(f,b,e,v,n,t,s)
@@ -40,14 +47,14 @@ const GoogleTagManager = () => {
       s.parentNode.insertBefore(t,s)}(window, document,'script',
       'https://connect.facebook.net/en_US/fbevents.js'));
       fbq('init', FB_PIXEL_ID);
-      fbq('track', 'PageView');
+      fbq('track', 'PageView', {}, { eventID: `pageview_${sessionId}_init` });
     }
 
-    // 4. Session tracking (solo en primer visita)
-    let sessionId = localStorage.getItem(SESSION_KEY);
-    if (!sessionId) {
-      sessionId = crypto.randomUUID();
-      localStorage.setItem(SESSION_KEY, sessionId);
+    // 4. Session tracking (solo en primer visita, verificando trackeado_inicial)
+    const trackedSession = sessionStorage.getItem('modista_session_tracked');
+    if (!trackedSession) {
+      sessionStorage.setItem('modista_session_tracked', 'true');
+
 
       const params = new URLSearchParams(window.location.search);
       fetch(`${API_URL}/api/analytics/track`, {
@@ -86,7 +93,8 @@ const GoogleTagManager = () => {
     }
 
     if (window.fbq) {
-      window.fbq('track', 'PageView');
+      const sessionId = localStorage.getItem(SESSION_KEY);
+      window.fbq('track', 'PageView', {}, { eventID: `pageview_${sessionId}_${Date.now()}` });
     }
   }, [location]);
 

@@ -41,6 +41,51 @@ function CourseDetailPage() {
     return () => setActiveCourse(null);
   }, [id, setActiveCourse]);
 
+  // 1. pricing_visible on mount if the course has a price > 0
+  useEffect(() => {
+    if (course?.price && Number(course.price) > 0) {
+      import('../../utils/funnel-tracker').then(({ trackFunnel }) => {
+        trackFunnel('pricing_visible', { courseId: course.id, courseTitle: course.title, value: Number(course.price) });
+      });
+    }
+  }, [course?.id]);
+
+  // 2. form_view: fire when the inscription form scrolls into view
+  useEffect(() => {
+    if (!course || !shouldShowInscription(course.price)) return;
+    const observer = new IntersectionObserver((entries) => {
+      if (entries.some(e => e.isIntersecting)) {
+        import('../../utils/funnel-tracker').then(({ trackFunnel }) => {
+          trackFunnel('form_view', { courseId: course.id, courseTitle: course.title });
+        });
+        observer.disconnect();
+      }
+    }, { threshold: 0.3 });
+    const target = document.querySelector('[data-funnel-target="form"]') || document.body;
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, [course?.id]);
+
+  // 3. Scroll depth
+  useEffect(() => {
+    if (!course) return;
+    const fired = { 50: false, 90: false };
+    const onScroll = () => {
+      const docH = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = docH > 0 ? (window.scrollY / docH) * 100 : 0;
+      if (pct >= 50 && !fired[50]) { 
+        fired[50] = true; 
+        import('../../utils/funnel-tracker').then(({ trackFunnel }) => trackFunnel('scroll_50', { courseId: course.id, courseTitle: course.title })); 
+      }
+      if (pct >= 90 && !fired[90]) { 
+        fired[90] = true; 
+        import('../../utils/funnel-tracker').then(({ trackFunnel }) => trackFunnel('scroll_90', { courseId: course.id, courseTitle: course.title })); 
+      }
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [course?.id]);
+
   if (loading) {
     return (
       <div className="min-h-[50vh] flex items-center justify-center">
@@ -142,7 +187,9 @@ function CourseDetailPage() {
           />
         </div>
       </div>
-      {shouldShowInscription(course.price) && <InscriptionForm course={course} />}
+      <div data-funnel-target="form">
+        {shouldShowInscription(course.price) && <InscriptionForm course={course} />}
+      </div>
     </div>
   );
 }

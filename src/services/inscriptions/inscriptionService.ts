@@ -39,14 +39,14 @@ export type {
  *   courseTitle: 'Curso de React'
  * });
  */
-export const createInscription = (formData: CreateInscriptionData): Promise<{ success: boolean; data: Inscription; mpPaymentLink: string | null }> =>
+export const createInscription = (formData: CreateInscriptionData): Promise<{ success: boolean; data: Inscription; mpPaymentLink: string | null; mpInitPoint?: string | null; sandboxInitPoint?: string | null; mpPreferenceId?: string | null }> =>
     apiClient.post('/inscriptions', formData);
 
 /**
  * Registra una nueva inscripción desde una Landing Page (Formulario simplificado).
- * 
+ *
  * @param formData - Los datos simplificados del formulario
  * @returns Una promesa que resuelve al objeto de la inscripción creada y el link de pago
  */
-export const createLandingInscription = (formData: CreateLandingInscriptionData): Promise<{ success: boolean; data: Inscription; mpPaymentLink: string | null }> =>
+export const createLandingInscription = (formData: CreateLandingInscriptionData): Promise<{ success: boolean; data: Inscription; mpPaymentLink: string | null; mpInitPoint?: string | null; sandboxInitPoint?: string | null; mpPreferenceId?: string | null }> =>
     apiClient.post('/inscriptions/landing', formData);

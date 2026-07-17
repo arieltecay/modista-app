@@ -18,6 +18,11 @@ const PrivacyPolicyPage = lazy(() => import('./pages/privacy-policy'));
 const TermsOfServicePage = lazy(() => import('./pages/terms-of-service'));
 const NotFoundPage = lazy(() => import('./pages/NotFound'));
 
+// Páginas de retorno de pago (MercadoPago)
+const PaymentSuccess = lazy(() => import('./pages/Payment/PaymentSuccess'));
+const PaymentFailure = lazy(() => import('./pages/Payment/PaymentFailure'));
+const PaymentPending = lazy(() => import('./pages/Payment/PaymentPending'));
+
 function App() {
   useEffect(() => {
     captureUTMParameters();
@@ -55,6 +60,35 @@ function App() {
                   </div>
                 }>
                   <LandingPage />
+                </Suspense>
+              } />
+
+              {/* Retorno de MercadoPago - sin Layout (UX dedicada) */}
+              <Route path="/payment/success" element={
+                <Suspense fallback={
+                  <div className="min-h-screen flex items-center justify-center bg-gray-50">
+                    <Spinner text="Verificando tu pago..." />
+                  </div>
+                }>
+                  <PaymentSuccess />
+                </Suspense>
+              } />
+              <Route path="/payment/failure" element={
+                <Suspense fallback={
+                  <div className="min-h-screen flex items-center justify-center bg-gray-50">
+                    <Spinner />
+                  </div>
+                }>
+                  <PaymentFailure />
+                </Suspense>
+              } />
+              <Route path="/payment/pending" element={
+                <Suspense fallback={
+                  <div className="min-h-screen flex items-center justify-center bg-gray-50">
+                    <Spinner />
+                  </div>
+                }>
+                  <PaymentPending />
                 </Suspense>
               } />
 

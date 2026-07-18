@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { FaWhatsapp } from 'react-icons/fa';
 import { trackContactClick } from '../../services/analytics';
-import { whatsappNumber } from '../../utils/constants';
+import { buildWhatsAppUrl, WHATSAPP_MESSAGES } from '../../utils/constants';
 import { useCourseContext } from '../../context/CourseContext';
 
 /**
@@ -21,17 +21,10 @@ const WhatsAppFloatingButton: React.FC = () => {
   };
 
   const handleOptionClick = (option: string, isCourse = false) => {
-    let message = '';
-    
-    if (isCourse && activeCourse) {
-      message = encodeURIComponent(
-        `Hola Mila! Me gustaría comprar el curso: ${activeCourse.title}. ` +
-        `El precio es $${activeCourse.price}. ¿Cómo puedo hacer el pago?`
-      );
-    } else {
-      message = encodeURIComponent(`Hola Mila! Tengo una consulta general sobre la academia`);
-    }
-    window.open(`${whatsappNumber}?text=${message}`, '_blank');
+    const message = isCourse && activeCourse
+      ? WHATSAPP_MESSAGES.coursePurchase(activeCourse.title, activeCourse.price)
+      : WHATSAPP_MESSAGES.general;
+    window.open(buildWhatsAppUrl(message), '_blank');
     trackContactClick('whatsapp', `Option: ${option}`);
     setIsOpen(false);
   };

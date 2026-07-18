@@ -1,6 +1,6 @@
 import React from 'react';
 import { FaWhatsapp, FaEnvelope, FaInstagram, FaTiktok } from 'react-icons/fa';
-import { whatsappNumber } from '../../utils/constants';
+import { WHATSAPP_URL } from '../../utils/constants';
 import { Link } from 'react-router-dom';
 
 const Footer: React.FC = () => {
@@ -11,7 +11,7 @@ const Footer: React.FC = () => {
         <h4 className="text-2xl font-bold mb-6">Conectá conmigo</h4>
         <p className="mb-8 text-lg">¿Quieres aprender más?, ¿Hacerme una pregunta o simplemente saludar? Estoy a un click de distancia</p>
         <div className="flex justify-center space-x-6 mb-8">
-          <a href={whatsappNumber} target="_blank" rel="noopener noreferrer" className="text-4xl hover:text-white transition duration-300">
+          <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="text-4xl hover:text-white transition duration-300">
             <FaWhatsapp />
           </a>
           <a href="https://www.instagram.com/soymicaguevara" className="text-4xl hover:text-white transition duration-300"><FaInstagram /></a>

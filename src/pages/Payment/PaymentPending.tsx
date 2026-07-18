@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { usePaymentStatusPolling } from '../../components/PaymentReturnHandler';
 import { FaClock, FaWhatsapp } from 'react-icons/fa';
+import { buildWhatsAppUrl, WHATSAPP_MESSAGES } from '../../utils/constants';
 
-const WHATSAPP_URL = 'https://wa.me/5493813508796?text=' + encodeURIComponent('Hola, mi pago en Modista figura como pendiente y quiero consultar el estado.');
+const whatsappUrl = buildWhatsAppUrl(WHATSAPP_MESSAGES.paymentPending);
 
 const PaymentPending: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -17,7 +18,6 @@ const PaymentPending: React.FC = () => {
     },
   });
 
-  // Si terminó aprobándose, mandamos al success
   if (paymentStatus === 'paid' || paymentStatus === 'partial') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-green-50 to-white p-4">
@@ -41,7 +41,7 @@ const PaymentPending: React.FC = () => {
         </p>
         <div className="flex flex-col gap-3">
           <a
-            href={WHATSAPP_URL}
+            href={whatsappUrl}
             className="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors flex items-center justify-center gap-2 font-semibold"
           >
             <FaWhatsapp size={20} /> Consultar por WhatsApp

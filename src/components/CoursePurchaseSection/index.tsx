@@ -1,6 +1,7 @@
 import React from 'react';
 import { FaWhatsapp } from 'react-icons/fa';
 import { trackContactClick } from '../../services/analytics';
+import { buildWhatsAppUrl, WHATSAPP_MESSAGES } from '../../utils/constants';
 import { CoursePurchaseSectionProps } from './types';
 
 const CoursePurchaseSection: React.FC<CoursePurchaseSectionProps> = ({ course }) => {
@@ -11,8 +12,12 @@ const CoursePurchaseSection: React.FC<CoursePurchaseSectionProps> = ({ course })
   };
 
   if (isFree) {
-    return null; // No renderiza nada si el curso es gratuito
+    return null;
   }
+
+  const whatsappUrl = buildWhatsAppUrl(
+    WHATSAPP_MESSAGES.coursePurchase(course.title, parseFloat(course.price))
+  );
 
   return (
     <section className="bg-background py-12">
@@ -20,7 +25,7 @@ const CoursePurchaseSection: React.FC<CoursePurchaseSectionProps> = ({ course })
         <div className="max-w-3xl mx-auto bg-card p-8 rounded-lg shadow-md border border-border">
           <div className="flex flex-col items-center space-y-4">
             <a
-              href="https://wa.me/3813508796"
+              href={whatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
               onClick={handleContactClick}

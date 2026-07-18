@@ -4,8 +4,9 @@ import { usePaymentStatusPolling } from '../../components/PaymentReturnHandler';
 import type { PaymentStatusResponse } from '../../services/payment/types';
 import Spinner from '../../components/Spinner';
 import { FaWhatsapp, FaCheckCircle } from 'react-icons/fa';
+import { buildWhatsAppUrl, WHATSAPP_MESSAGES } from '../../utils/constants';
 
-const WHATSAPP_URL = 'https://wa.me/5493813508796?text=' + encodeURIComponent('¡Hola! Acabo de pagar un curso en Modista y quiero confirmar mi acceso.');
+const whatsappUrl = buildWhatsAppUrl(WHATSAPP_MESSAGES.paymentSuccess);
 
 const PaymentSuccess: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -27,7 +28,7 @@ const PaymentSuccess: React.FC = () => {
         <h1 className="text-2xl font-bold text-gray-800 mb-2">ID de inscripción no encontrado</h1>
         <p className="text-gray-600 mb-6">No pudimos identificar tu pago. Por favor contactanos por WhatsApp.</p>
         <a
-          href={WHATSAPP_URL}
+          href={whatsappUrl}
           className="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors flex items-center gap-2"
         >
           <FaWhatsapp size={20} /> Contactar por WhatsApp
@@ -62,7 +63,7 @@ const PaymentSuccess: React.FC = () => {
             </p>
             <div className="flex flex-col gap-3">
               <a
-                href={WHATSAPP_URL}
+                href={whatsappUrl}
                 className="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors flex items-center justify-center gap-2 font-semibold"
               >
                 <FaWhatsapp size={20} /> Contactar por WhatsApp
@@ -88,7 +89,7 @@ const PaymentSuccess: React.FC = () => {
             </p>
             {outcome === 'timeout' && (
               <a
-                href={WHATSAPP_URL}
+                href={whatsappUrl}
                 className="inline-flex items-center gap-2 px-5 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
               >
                 <FaWhatsapp size={18} /> Contactar por WhatsApp

@@ -4,8 +4,9 @@ import { usePaymentStatusPolling } from '../../components/PaymentReturnHandler';
 import { createPreferenceForInscription } from '../../services/payment/paymentService';
 import { FaTimesCircle, FaWhatsapp, FaRedo } from 'react-icons/fa';
 import toast from 'react-hot-toast';
+import { buildWhatsAppUrl, WHATSAPP_MESSAGES } from '../../utils/constants';
 
-const WHATSAPP_URL = 'https://wa.me/5493813508796?text=' + encodeURIComponent('Hola, tuve un problema con el pago de un curso en Modista.');
+const whatsappUrl = buildWhatsAppUrl(WHATSAPP_MESSAGES.paymentFailure);
 
 const PaymentFailure: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -20,8 +21,6 @@ const PaymentFailure: React.FC = () => {
     },
   });
 
-  // Si por algún motivo el pago terminó aprobado (a veces MP redirige a failure pero el pago pasó),
-  // mostramos un mensaje positivo en vez del de error.
   if (paymentStatus === 'paid' || paymentStatus === 'partial') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-green-50 to-white p-4">
@@ -64,7 +63,7 @@ const PaymentFailure: React.FC = () => {
             <FaRedo size={18} /> {retrying ? 'Generando link...' : 'Intentar de nuevo'}
           </button>
           <a
-            href={WHATSAPP_URL}
+            href={whatsappUrl}
             className="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors flex items-center justify-center gap-2 font-semibold"
           >
             <FaWhatsapp size={20} /> Contactar por WhatsApp

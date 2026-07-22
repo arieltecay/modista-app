@@ -102,6 +102,7 @@ export const AnalyticsEvents = {
   FORM_ERROR: 'form_error' as const,
   FORM_FIELD_FOCUS: 'form_field_focus' as const,
   INSCRIPTION_SUCCESS: 'inscription_success' as const,
+  PURCHASE: 'purchase' as const,
   VIDEO_INTERACTION: 'video_interaction' as const,
   FAQ_INTERACTION: 'faq_interaction' as const,
   CONTACT_CLICK: 'contact_click' as const,
@@ -200,6 +201,7 @@ export const trackInscriptionSuccess = async (
     course_title: courseTitle,
     value: value,
     currency: 'ARS',
+    transaction_id: inscriptionId,
     user_email: email,
     user_phone: phone
   };
@@ -230,6 +232,34 @@ export const trackInscriptionSuccess = async (
   }
 
   return Promise.resolve();
+};
+
+/**
+ * Tracking de compra confirmada (pago aprobado por MercadoPago)
+ * Se dispara una única vez por inscripción por sesión (dedupe con sessionStorage).
+ * Google Ads además deduplica server-side por transaction_id.
+ */
+export const trackPurchaseSuccess = (
+  inscriptionId: string,
+  courseTitle: string,
+  value: number
+): void => {
+  const dedupeKey = `purchase_fired_${inscriptionId}`;
+  try {
+    if (sessionStorage.getItem(dedupeKey)) return;
+    sessionStorage.setItem(dedupeKey, '1');
+  } catch {
+    // sessionStorage no disponible: se envía igual, dedupe queda a cargo de transaction_id
+  }
+
+  const params: ConversionParams = {
+    transaction_id: inscriptionId,
+    course_id: '',
+    course_title: courseTitle,
+    value,
+    currency: 'ARS'
+  };
+  sendAnalyticsEvent(AnalyticsEvents.PURCHASE, params);
 };
 
 /**
@@ -287,6 +317,7 @@ export default {
   trackFormError,
   trackFormFieldFocus,
   trackInscriptionSuccess,
+  trackPurchaseSuccess,
   trackVideoInteraction,
   trackFaqInteraction,
   trackContactClick,

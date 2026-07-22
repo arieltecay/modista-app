@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { usePaymentStatusPolling } from '../../components/PaymentReturnHandler';
+import { trackPurchaseSuccess } from '../../services/analytics';
 import type { PaymentStatusResponse } from '../../services/payment/types';
 import Spinner from '../../components/Spinner';
 import { FaWhatsapp, FaCheckCircle } from 'react-icons/fa';
@@ -21,6 +22,13 @@ const PaymentSuccess: React.FC = () => {
       setOutcome(oc);
     },
   });
+
+  const isPaid = outcome === 'resolved' && paymentData?.paymentStatus === 'paid';
+
+  useEffect(() => {
+    if (!isPaid || !inscriptionId || !paymentData) return;
+    trackPurchaseSuccess(inscriptionId, paymentData.courseTitle, paymentData.totalPaid || paymentData.coursePrice);
+  }, [isPaid, paymentData, inscriptionId]);
 
   if (!inscriptionId) {
     return (

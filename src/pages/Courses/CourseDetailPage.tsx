@@ -3,7 +3,8 @@ import { useParams, Link } from 'react-router-dom';
 
 import { getCourseById } from '../../services/courses';
 import { trackCourseView } from '../../services/analytics';
-import { CourseImage, InscriptionForm, Spinner, SEO } from '@/components';
+import { CourseImage, InscriptionForm, SEO } from '@/components';
+import { CourseDetailSkeleton } from '@/components/Skeletons';
 import { formatTextToHtml } from '../../utils/textFormatting';
 import { shouldShowInscription } from '../../utils/courseUtils';
 import { useCourseContext } from '../../context/CourseContext';
@@ -87,11 +88,7 @@ function CourseDetailPage() {
   }, [course?.id]);
 
   if (loading) {
-    return (
-      <div className="min-h-[50vh] flex items-center justify-center">
-        <Spinner text="Cargando detalles del curso..." />
-      </div>
-    );
+    return <CourseDetailSkeleton />;
   }
 
   if (error) {

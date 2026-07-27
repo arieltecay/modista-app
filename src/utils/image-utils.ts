@@ -29,3 +29,20 @@ export const getOptimizedUrl = (url?: string, width?: number, height?: number, c
     return url;
   }
 };
+
+/**
+ * Genera una URL LQIP (Low Quality Image Placeholder) para efecto blur-up.
+ * Imagen tiny (20px) con blur agresivo y calidad mínima.
+ */
+export const getBlurUpUrl = (url?: string): string => {
+  if (!url) return '';
+  if (!url.includes('cloudinary.com')) return url;
+
+  try {
+    const parts = url.split('/upload/');
+    if (parts.length !== 2) return url;
+    return `${parts[0]}/upload/e_blur:1000,q_1,w_20,f_auto/${parts[1]}`;
+  } catch {
+    return url;
+  }
+};

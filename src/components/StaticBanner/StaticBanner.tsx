@@ -2,22 +2,24 @@ import React, { useEffect, useState } from 'react';
 import { carouselService } from '../../services/carouselService';
 import { CarouselSlide } from '../../services/types/carousel';
 import { motion } from 'framer-motion';
-import { getOptimizedUrl } from '../../utils/image-utils';
+import { getOptimizedUrl, getBlurUpUrl } from '../../utils/image-utils';
 
 /**
  * StaticBanner: Reemplaza al carrusel dinámico para mejorar el LCP y eliminar el CLS.
  * Carga solo la primera imagen activa con máxima prioridad.
+ * Implementa blur-up (LQIP) para mejorar la percepción de carga.
  */
 export const StaticBanner: React.FC = () => {
   const [banner, setBanner] = useState<CarouselSlide | null>(null);
   const [loading, setLoading] = useState(true);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   useEffect(() => {
     const fetchBanner = async () => {
       try {
         const data = await carouselService.getActiveSlides();
         if (data && data.length > 0) {
-          setBanner(data[0]); // Tomamos solo el primero para máxima velocidad
+          setBanner(data[0]);
         }
       } catch (error) {
         console.error('Error fetching banner:', error);
@@ -28,7 +30,6 @@ export const StaticBanner: React.FC = () => {
     fetchBanner();
   }, []);
 
-  // Si no hay banner o está cargando, mostramos un esqueleto con las dimensiones correctas para evitar CLS
   if (loading || !banner) {
     return (
       <div className="relative bg-indigo-950 h-[450px] lg:h-[650px] w-full overflow-hidden flex items-center justify-center">
@@ -44,25 +45,36 @@ export const StaticBanner: React.FC = () => {
     );
   }
 
+  const fullImageUrl = getOptimizedUrl(banner.imageUrl, 1600, 900);
+  const mobileImageUrl = getOptimizedUrl(banner.imageUrl, 640, 480);
+  const blurUpUrl = getBlurUpUrl(banner.imageUrl);
+
   return (
     <section className="relative bg-slate-900 h-[450px] lg:h-[650px] w-full overflow-hidden">
-      {/* Imagen optimizada con carga prioritaria */}
+      {/* Imagen optimizada con blur-up (LQIP) para mejorar percepción de carga */}
       <div className="absolute inset-0">
-        <picture>
-          {/* Versión móvil: Imagen más pequeña para ahorrar ancho de banda y mejorar LCP */}
-          <source 
-            media="(max-width: 768px)" 
-            srcSet={getOptimizedUrl(banner.imageUrl, 640, 480)} 
+        {/* LQIP placeholder - se muestra inmediatamente con blur */}
+        {blurUpUrl && (
+          <img
+            src={blurUpUrl}
+            alt=""
+            aria-hidden="true"
+            className={`absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-700 ${imageLoaded ? 'opacity-0' : 'opacity-100'}`}
           />
-          {/* Versión desktop */}
-          <img 
-            src={getOptimizedUrl(banner.imageUrl, 1600, 900)} 
+        )}
+        <picture>
+          <source
+            media="(max-width: 768px)"
+            srcSet={mobileImageUrl}
+          />
+          <img
+            src={fullImageUrl}
             alt={banner.title}
-            className="w-full h-full object-cover object-center"
-            // Atributos clave para Cloudflare/Browser Optimization:
+            className={`absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-500 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
             loading="eager"
             fetchPriority="high"
             decoding="sync"
+            onLoad={() => setImageLoaded(true)}
           />
         </picture>
         {/* Overlay para legibilidad del texto */}
@@ -75,7 +87,7 @@ export const StaticBanner: React.FC = () => {
           <motion.h1
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
             className="text-4xl lg:text-7xl font-black mb-4 tracking-tight leading-tight"
           >
             {banner.title}
@@ -85,7 +97,7 @@ export const StaticBanner: React.FC = () => {
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 1, delay: 0.3 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
               className="text-lg lg:text-2xl text-slate-200 mb-10 max-w-xl"
             >
               {banner.subtitle}
@@ -95,7 +107,7 @@ export const StaticBanner: React.FC = () => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.6 }}
+            transition={{ duration: 0.4, delay: 0.3 }}
           >
             <a 
               href={banner.link || '/cursos'}

@@ -5,7 +5,8 @@ import {
   AvailableTariffMeta,
   SearchResultItem,
 } from '../../services/tariff/types';
-import { Spinner, ErrorCard } from '@/components';
+import { Spinner, ErrorCard, SEO } from '@/components';
+import { TariffSkeleton } from '@/components/Skeletons';
 import { getAvailableTariffMetadata as fetchAvailableTariffMetadata, getTariffs as fetchTariffs, searchTariffItems } from '../../services/tariff/tariffService';
 import { TariffModista, TariffAltaCostura, TariffArreglos, DynamicTariffSection } from './components';
 
@@ -32,7 +33,7 @@ const useAvailableTariffsMeta = () => {
 };
 
 const TariffPage: FC = () => {
-  const { meta } = useAvailableTariffsMeta();
+  const { meta, loadingMeta, errorMeta } = useAvailableTariffsMeta();
   const [selectedType, setSelectedType] = useState<string>('');
   const [selectedPeriodIdentifier, setSelectedPeriodIdentifier] = useState<string>('');
 
@@ -152,7 +153,17 @@ const TariffPage: FC = () => {
 
   return (
     <div className="bg-background py-12 min-h-screen transition-colors duration-250">
+      <SEO
+        title="Tarifario de Arreglos y Confección a Medida"
+        description="Precios de servicios de modista: dobladillos, cierres, botones, ajustes y confección a medida. Presupuesto sin cargo."
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:p-8">
+        {loadingMeta ? (
+          <TariffSkeleton />
+        ) : errorMeta ? (
+          <ErrorCard title="Error al cargar metadatos" message={errorMeta} />
+        ) : (
+        <>
         <header className="text-center mb-10">
           <h1 className="text-4xl font-extrabold text-foreground sm:text-5xl mb-4">
             {tariff?.metadata?.titulo || 'Tarifarios de Confección'}
@@ -235,8 +246,12 @@ const TariffPage: FC = () => {
           </div>
         )}
 
-        {loadingTariff || searchLoading ? (
-          <Spinner text={searchLoading ? "Buscando..." : "Cargando tarifario..."} />
+        {loadingTariff ? (
+          <TariffSkeleton />
+        ) : searchLoading ? (
+          <div className="flex justify-center py-8">
+            <Spinner text="Buscando..." />
+          </div>
         ) : errorTariff ? (
           <ErrorCard title="Error al cargar tarifario" message={errorTariff} />
         ) : searchText.trim() !== '' ? (
@@ -262,6 +277,8 @@ const TariffPage: FC = () => {
             <p>No hay tarifarios disponibles para la selección actual.</p>
             <p>Por favor, selecciona un tipo y período si están disponibles.</p>
           </div>
+        )}
+        </>
         )}
       </div>
     </div>

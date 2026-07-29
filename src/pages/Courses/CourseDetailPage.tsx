@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 
 import { getCourseById } from '../../services/courses';
@@ -6,7 +6,7 @@ import { trackCourseView } from '../../services/analytics';
 import { CourseImage, InscriptionForm, SEO } from '@/components';
 import { CourseDetailSkeleton } from '@/components/Skeletons';
 import { formatTextToHtml } from '../../utils/textFormatting';
-import { shouldShowInscription } from '../../utils/courseUtils';
+import { shouldShowInscription, isCourseFree } from '../../utils/courseUtils';
 import { useCourseContext } from '../../context/CourseContext';
 import { getOptimizedUrl } from '../../utils/image-utils';
 
@@ -16,6 +16,14 @@ function CourseDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { setActiveCourse } = useCourseContext();
+  const [showStickyCTA, setShowStickyCTA] = useState(false);
+
+  const scrollToForm = useCallback(() => {
+    const form = document.querySelector('[data-funnel-target="form"]');
+    if (form) {
+      form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, []);
 
   useEffect(() => {
     const fetchCourse = async () => {
@@ -87,6 +95,20 @@ function CourseDetailPage() {
     return () => window.removeEventListener('scroll', onScroll);
   }, [course?.id]);
 
+  useEffect(() => {
+    if (!course || isCourseFree(course.price)) return;
+    const hero = document.querySelector('.bg-card');
+    if (!hero) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setShowStickyCTA(!entry.isIntersecting);
+      },
+      { threshold: 0.1 }
+    );
+    observer.observe(hero);
+    return () => observer.disconnect();
+  }, [course?.id]);
+
   if (loading) {
     return <CourseDetailSkeleton />;
   }
@@ -142,7 +164,7 @@ function CourseDetailPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8">
+    <div className={`max-w-4xl mx-auto p-4 sm:p-6 lg:p-8 ${!isCourseFree(course.price) ? 'pb-20 md:pb-8' : ''}`}>
       <SEO 
         title={course.title}
         description={course.shortDescription || course.description}
@@ -187,6 +209,25 @@ function CourseDetailPage() {
       <div data-funnel-target="form">
         {shouldShowInscription(course.price) && <InscriptionForm course={course} />}
       </div>
+
+      {!isCourseFree(course.price) && showStickyCTA && (
+        <div className="fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-md border-t border-border p-3 md:hidden">
+          <div className="max-w-4xl mx-auto flex items-center justify-between gap-3">
+            <div className="flex flex-col">
+              <span className="text-xs text-muted-foreground font-medium">{course.title}</span>
+              <span className="text-lg font-black text-green-600">
+                {new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(Number(course.price))}
+              </span>
+            </div>
+            <button
+              onClick={scrollToForm}
+              className="bg-primary text-primary-foreground py-2.5 px-5 rounded-xl text-sm font-bold hover:bg-primary-hover active:scale-[0.97] transition-all whitespace-nowrap"
+            >
+              Quiero Anotarme
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

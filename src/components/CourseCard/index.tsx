@@ -27,7 +27,7 @@ function CourseCard({ course }: CourseCardProps) {
                 to={`/cursos/${course.id}`}
                 className="w-full bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 text-center transition-colors duration-200"
               >
-                Ver Curso e Inscribirse
+                Ver Curso y Anotarme
               </Link>
             </>
           )}

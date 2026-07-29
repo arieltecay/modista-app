@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 
 import { getCourseById } from '../../services/courses';
+import type { Course } from './types';
 import { trackCourseView } from '../../services/analytics';
 import { CourseImage, InscriptionForm, SEO } from '@/components';
 import { CourseDetailSkeleton } from '@/components/Skeletons';
@@ -12,9 +13,9 @@ import { getOptimizedUrl } from '../../utils/image-utils';
 
 function CourseDetailPage() {
   const { id } = useParams();
-  const [course, setCourse] = useState(null);
+  const [course, setCourse] = useState<Course | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const { setActiveCourse } = useCourseContext();
   const [showStickyCTA, setShowStickyCTA] = useState(false);
 
@@ -38,8 +39,8 @@ function CourseDetailPage() {
           trackCourseView(foundCourse.id, foundCourse.title, parseFloat(foundCourse.price?.toString() || '0'));
           setActiveCourse(foundCourse);
         }
-      } catch (e) {
-        setError(e.message);
+      } catch (e: unknown) {
+        setError(e instanceof Error ? e.message : 'Error desconocido');
       } finally {
         setLoading(false);
       }
@@ -202,7 +203,7 @@ function CourseDetailPage() {
           )}
           <div
             className="text-foreground text-lg mt-4 text-justify"
-            dangerouslySetInnerHTML={{ __html: formatTextToHtml(course.longDescription) }}
+            dangerouslySetInnerHTML={{ __html: formatTextToHtml(course.longDescription || '') }}
           />
         </div>
       </div>

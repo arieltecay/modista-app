@@ -1,8 +1,8 @@
 export interface InscriptionCourse {
-  id?: string; // It can be `id` or `_id` depending on where it comes from
+  id?: string;
   _id?: string;
   title?: string;
-  price?: string | number;
+  price?: number;
   shortDescription?: string;
   deeplink?: string;
   isPresencial?: boolean;

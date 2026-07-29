@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { CourseCard, ErrorCard, SEO } from '@/components';
 import { getCourses } from '../../services/courses';
+import type { Course } from './types';
 import FaqSection from '../../components/FaqSection/FaqSection';
 import { sendAnalyticsEvent } from '../../services/analytics';
 
@@ -24,24 +25,24 @@ const CourseCardSkeleton = () => (
   </div>
 );
 
-function CoursesPage({ limit }) {
-  const [courses, setCourses] = useState([]);
+function CoursesPage({ limit }: { limit?: number }) {
+  const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const [startTime] = useState(performance.now());
 
-  const fetchCourses = React.useCallback(async () => {
+  const fetchCourses = async () => {
     try {
       setLoading(true);
       const data = await getCourses(limit);
       setCourses(data);
       setError(null);
-    } catch (e) {
-      setError(e.message);
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Error desconocido');
     } finally {
       setLoading(false);
     }
-  }, [limit]);
+  };
 
   useEffect(() => {
     fetchCourses();

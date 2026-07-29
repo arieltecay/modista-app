@@ -10,7 +10,7 @@ const CourseImage: React.FC<CourseImageProps> = ({
   priority = false,
   crop = 'fill'
 }) => {
-  const isFree = parseFloat(course.price) === 0;
+  const isFree = course.price === 0;
   const [imageLoaded, setImageLoaded] = useState(false);
   const blurUpUrl = getBlurUpUrl(course.imageUrl);
 

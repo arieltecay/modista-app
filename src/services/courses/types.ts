@@ -18,6 +18,8 @@ export interface Course {
     coursePaid?: string;
     category?: string;
     shortDescription?: string;
+    longDescription?: string;
+    videoUrl?: string;
     imageUrl?: string;
     isPresencial?: boolean;
     isWorkshop?: boolean;

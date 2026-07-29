@@ -1,6 +1,6 @@
 export interface Course {
-  price: string;
-  imageUrl: string;
+  price: number;
+  imageUrl?: string;
   title: string;
 }
 

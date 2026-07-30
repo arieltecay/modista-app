@@ -15,6 +15,9 @@ export async function onRequest(context: {
 
   // Para todas las demás rutas (SPA), servir index.html
   return context.env.ASSETS.fetch(
-    new Request(`${url.origin}/index.html`, context.request)
+    new Request(`${url.origin}/index.html`, {
+      method: 'GET',
+      headers: context.request.headers,
+    })
   );
 }

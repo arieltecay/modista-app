@@ -46,7 +46,8 @@ function CoursesPage({ limit }: { limit?: number }) {
 
   useEffect(() => {
     fetchCourses();
-  }, [fetchCourses]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [limit]);
 
   // Tracking de rendimiento UX para GA4
   useEffect(() => {

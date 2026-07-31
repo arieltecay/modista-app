@@ -260,6 +260,17 @@ export const trackPurchaseSuccess = (
     currency: 'ARS'
   };
   sendAnalyticsEvent(AnalyticsEvents.PURCHASE, params);
+
+  // Meta Pixel: Purchase
+  if (import.meta.env.PROD && typeof window !== 'undefined' && window.fbq) {
+    (window.fbq as FbqTrack)('track', 'Purchase', {
+      content_name: courseTitle,
+      content_ids: [inscriptionId],
+      content_type: 'product',
+      value,
+      currency: 'ARS'
+    }, { eventID: `purchase_${inscriptionId}` });
+  }
 };
 
 /**

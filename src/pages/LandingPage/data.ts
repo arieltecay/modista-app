@@ -1,27 +1,48 @@
 import type { BenefitItem, TestimonialItem, StatItem } from './types';
 
 export const BENEFITS: BenefitItem[] = [
-  { emoji: '🎥', title: 'Clases grabadas', desc: 'Aprendé a tu ritmo, sin horarios fijos' },
-  { emoji: '📐', title: 'Patrones incluidos', desc: 'Material descargable sin costo extra' },
-  { emoji: '💬', title: 'Acompañamiento directo', desc: 'Consultá por WhatsApp durante todo el curso' },
-  { emoji: '👥', title: 'Comunidad de alumnas', desc: 'Compartí avances, resolvé dudas, conectate' },
+  {
+    emoji: '🎥',
+    title: 'Clases paso a paso en video',
+    desc: 'Técnicas explicadas en detalle. Pausá, retrocedé, practicá a tu ritmo.',
+  },
+  {
+    emoji: '📐',
+    title: 'Moldes a medida',
+    desc: 'Clases explicadas paso a paso.',
+  },
+  {
+    emoji: '💬',
+    title: 'Acompañamiento directo',
+    desc: 'Consultá tus dudas por WhatsApp. Mica te responde durante todo el curso.',
+  },
+  {
+    emoji: '♾️',
+    title: 'Acceso sin vencimiento',
+    desc: 'Entrá cuando quieras, repasá las lecciones. El curso es tuyo para siempre.',
+  },
 ];
 
 export const TESTIMONIALS: TestimonialItem[] = [
   {
-    name: 'Valentina',
-    role: 'estudiante de diseño',
-    text: 'Nunca pensé que aprender a coser pudiera ser tan claro. Terminé mi primer abrigo en días.',
+    name: 'Laura',
+    role: 'ama de casa',
+    text: 'Hice el abrigo para mi hija de 5 años y quedó hermoso. Arranqué sin saber nada de costura y Mica explica todo como si estuviera al lado tuyo.',
   },
   {
-    name: 'Cecilia',
+    name: 'Carolina',
+    role: 'docente',
+    text: 'En 3 semanas terminé mi primer tapado. No podía creer el resultado. El acompañamiento por WhatsApp hace toda la diferencia.',
+  },
+  {
+    name: 'Mariana',
     role: 'emprendedora',
-    text: 'El nivel de detalle en cada clase es increíble. La profe explica todo paso a paso.',
+    text: 'El curso me dio las bases que necesitaba. Ahora estoy haciendo abrigos para vender y mis clientas están felices.',
   },
 ];
 
 export const STATS: StatItem[] = [
-  { value: '200+', label: 'Alumnas' },
-  { value: '4.9', label: '★★★★★' },
+  { value: 'Mica', label: 'Guevara · Instructora' },
+  { value: '8', label: 'Módulos completos' },
   { value: '100%', label: 'Online' },
 ];

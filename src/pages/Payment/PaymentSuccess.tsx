@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { usePaymentStatusPolling } from '../../components/PaymentReturnHandler';
 import { trackPurchaseSuccess } from '../../services/analytics';
 import type { PaymentStatusResponse } from '../../services/payment/types';
@@ -56,32 +56,26 @@ const PaymentSuccess: React.FC = () => {
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
               {paymentData?.paymentStatus === 'paid' ? '¡Pago confirmado!' : '¡Pago parcial registrado!'}
             </h1>
-            <p className="text-gray-600 mb-2">
+            <p className="text-gray-600 mb-1">
               {paymentData?.paymentStatus === 'paid'
-                ? 'Tu lugar está reservado.'
+                ? 'Tu lugar está reservado. Empezá a aprender hoy.'
                 : `Recibimos tu pago parcial. El saldo se confirmará por email.`}
             </p>
             {paymentData?.courseTitle && (
-              <p className="text-sm text-gray-500 mb-6">
+              <p className="text-sm text-gray-500 mb-2">
                 Curso: <span className="font-semibold">{paymentData.courseTitle}</span>
               </p>
             )}
-            <p className="text-sm text-gray-500 mb-6">
-              Te enviamos un email con los detalles de acceso.
+            <p className="text-sm text-gray-500 mb-6 max-w-xs mx-auto leading-relaxed">
+              Te enviamos un email con el enlace de acceso y las instrucciones para empezar.
             </p>
             <div className="flex flex-col gap-3">
               <a
                 href={whatsappUrl}
                 className="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors flex items-center justify-center gap-2 font-semibold"
               >
-                <FaWhatsapp size={20} /> Contactar por WhatsApp
+                <FaWhatsapp size={20} /> Unite al grupo de alumnas
               </a>
-              <Link
-                to="/cursos"
-                className="px-6 py-3 bg-gray-100 text-gray-800 rounded-lg hover:bg-gray-200 transition-colors"
-              >
-                Ver más cursos
-              </Link>
             </div>
           </>
         ) : (

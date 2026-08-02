@@ -209,29 +209,39 @@ const LandingInscriptionForm: React.FC<LandingInscriptionFormProps> = ({ course,
           <button
             type="submit"
             disabled={loading}
-            className="group relative w-full bg-gradient-to-r from-violet-600 to-violet-500 hover:from-violet-500 hover:to-violet-400 active:scale-[0.98] text-white py-5 px-4 rounded-2xl shadow-[0_0_20px_rgba(139,92,246,0.3)] transition-all flex flex-col items-center justify-center disabled:opacity-50 overflow-hidden"
+            className="group relative w-full bg-gradient-to-r from-violet-600 to-violet-500 hover:from-violet-500 hover:to-violet-400 active:scale-[0.98] text-white py-5 px-4 rounded-2xl shadow-[0_0_20px_rgba(139,92,246,0.3)] transition-all flex flex-col items-center justify-center disabled:opacity-50 overflow-hidden mb-3"
           >
-            {/* Brillo decorativo */}
             <div className="absolute inset-0 w-1/4 h-full bg-white/20 skew-x-12 -translate-x-full group-hover:animate-[shine_1.5s_ease-in-out_infinite]" />
-            
+
             {loading ? (
-              <Spinner className="w-7 h-7 text-white" />
+              <>
+                <Spinner />
+                <span className="text-sm text-violet-100 mt-2">Redirigiendo a MercadoPago...</span>
+              </>
             ) : (
               <>
-                <span className="text-xs font-bold text-violet-200 tracking-[0.2em] uppercase mb-1">
-                  Cupos limitados
-                </span>
                 <span className="text-xl font-black uppercase tracking-wide">
-                  {landingPage.buttonText || 'RESERVAR MI LUGAR'}
+                  {landingPage.buttonText || 'QUIERO EMPEZAR AHORA'}
                 </span>
                 {formattedPrice && (
                   <span className="text-sm font-medium text-violet-100 normal-case mt-1">
-                    Precio único: <strong className="text-white font-bold">{formattedPrice}</strong>
+                    <strong className="text-white font-bold">{formattedPrice}</strong> · pago único
                   </span>
                 )}
               </>
             )}
           </button>
+
+          <div className="flex flex-col items-center gap-1.5">
+            <p className="text-[11px] text-gray-500 text-center">
+              Pagás con MercadoPago · Tarjetas, transferencia o efectivo
+            </p>
+            <div className="flex items-center gap-2 text-[10px] text-gray-500">
+              <span>🔒 Pago seguro</span>
+              <span className="text-gray-700">|</span>
+              <span>📥 Acceso inmediato</span>
+            </div>
+          </div>
         </div>
 
         {formMessage && (

@@ -16,6 +16,7 @@ import type {
   FormEventParams,
   VideoEventParams
 } from './types';
+import { getStoredUTMData } from '../utils/utm-tracking';
 
 type FbqTrack = (
   cmd: string,
@@ -44,6 +45,14 @@ const getUserRole = (): 'admin' | 'user' | 'guest' => {
     console.error('Error al obtener el rol del usuario para analytics', e);
   }
   return 'guest';
+};
+
+const getMetaAdvancedParams = (): Record<string, string> => {
+  const utm = getStoredUTMData();
+  const params: Record<string, string> = {};
+  if (utm?.fbc) params.fbc = utm.fbc;
+  if (utm?.fbp) params.fbp = utm.fbp;
+  return params;
 };
 
 /**
@@ -141,7 +150,8 @@ export const trackCourseView = (courseId: string, courseTitle: string, price?: n
       content_ids: [courseId],
       content_type: 'product',
       value: price || 0,
-      currency: 'ARS'
+      currency: 'ARS',
+      ...getMetaAdvancedParams()
     }, { eventID: eventId });
     
     // Y a DataLayer
@@ -166,7 +176,8 @@ export const trackFormStart = (formId: string, formName: string, courseId?: stri
     (window.fbq as FbqTrack)('track', 'InitiateCheckout', {
       content_name: courseTitle,
       content_category: 'Courses',
-      content_ids: [courseId]
+      content_ids: [courseId],
+      ...getMetaAdvancedParams()
     }, inscriptionId ? { eventID: `checkout_${inscriptionId}` } : undefined);
   }
 };
@@ -222,7 +233,9 @@ export const trackInscriptionSuccess = async (
         value: value,
         currency: 'ARS',
         em: hashedEmail,
-        ph: hashedPhone
+        ph: hashedPhone,
+        external_id: inscriptionId,
+        ...getMetaAdvancedParams()
       }, inscriptionId ? { eventID: `lead_${inscriptionId}` } : undefined);
       
       // Meta Pixel no tiene callback nativo de finalización garantizado en todas las versiones
@@ -268,7 +281,9 @@ export const trackPurchaseSuccess = (
       content_ids: [inscriptionId],
       content_type: 'product',
       value,
-      currency: 'ARS'
+      currency: 'ARS',
+      external_id: inscriptionId,
+      ...getMetaAdvancedParams()
     }, { eventID: `purchase_${inscriptionId}` });
   }
 };

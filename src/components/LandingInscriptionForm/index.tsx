@@ -25,7 +25,6 @@ const LandingInscriptionForm: React.FC<LandingInscriptionFormProps> = ({ course,
   const [errors, setErrors] = useState<Partial<FormState>>({});
   const [loading, setLoading] = useState(false);
   const [formMessage, setFormMessage] = useState<FormMessage | null>(null);
-  const [hasStartedFilling, setHasStartedFilling] = useState(false);
 
   const validateForm = () => {
     const newErrors: Partial<FormState> = {};
@@ -43,12 +42,6 @@ const LandingInscriptionForm: React.FC<LandingInscriptionFormProps> = ({ course,
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    
-    if (!hasStartedFilling) {
-      trackFormStart('landing_form', 'Landing Page Form', course.uuid || course.id, course.title);
-      setHasStartedFilling(true);
-    }
-
     setFormData({ ...formData, [name as keyof FormState]: value });
     if (errors[name as keyof FormState]) setErrors({ ...errors, [name as keyof FormState]: undefined });
   };
@@ -93,6 +86,10 @@ const LandingInscriptionForm: React.FC<LandingInscriptionFormProps> = ({ course,
       const response = await createLandingInscription(payload);
       const inscriptionId = response.data?._id || response.data?.id;
 
+      if (inscriptionId) {
+        trackFormStart('landing_form', 'Landing Page Form', payload.courseId, course.title, inscriptionId);
+      }
+
       // --- TRACKING DE ÉXITO (Conversión) ---
       // Esperamos explícitamente a que el tracking termine antes de navegar
       await trackInscriptionSuccess(
@@ -110,19 +107,6 @@ const LandingInscriptionForm: React.FC<LandingInscriptionFormProps> = ({ course,
         : response.mpInitPoint;
 
       if (initPoint || response.mpPaymentLink) {
-        // navigator.sendBeacon garantiza que los eventos de tracking lleguen al servidor
-        // incluso cuando el navegador abandona la pgina hacia Mercado Pago.
-        // Es el estndar para este caso de uso (no depende de timeouts).
-        if (typeof navigator !== 'undefined' && navigator.sendBeacon) {
-          const sessionId = localStorage.getItem('modista_session_id');
-          navigator.sendBeacon(
-            '/api/analytics/beacon',
-            new Blob(
-              [JSON.stringify({ event: 'redirect_to_payment', sessionId })],
-              { type: 'application/json' }
-            )
-          );
-        }
         // Delay aumentado para permitir que el Pixel del navegador y CAPI completen el envío
         // del evento Lead antes de salir de la página hacia MercadoPago.
         import('../../utils/funnel-tracker').then(({ trackFunnel }) => {

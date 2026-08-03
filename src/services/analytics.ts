@@ -162,7 +162,7 @@ export const trackCourseView = (courseId: string, courseTitle: string, price?: n
 /**
  * Tracking de inicio de formulario (Intención)
  */
-export const trackFormStart = (formId: string, formName: string, courseId?: string, courseTitle?: string, inscriptionId?: string): void => {
+export const trackFormStart = (formId: string, formName: string, courseId?: string, courseTitle?: string, inscriptionId?: string, value?: number): void => {
   const params: FormEventParams = {
     form_id: formId,
     form_name: formName,
@@ -176,7 +176,9 @@ export const trackFormStart = (formId: string, formName: string, courseId?: stri
     (window.fbq as FbqTrack)('track', 'InitiateCheckout', {
       content_name: courseTitle,
       content_category: 'Courses',
-      content_ids: [courseId],
+      content_ids: courseId ? [courseId] : undefined,
+      value: value || 0,
+      currency: 'ARS',
       ...getMetaAdvancedParams()
     }, inscriptionId ? { eventID: `checkout_${inscriptionId}` } : undefined);
   }

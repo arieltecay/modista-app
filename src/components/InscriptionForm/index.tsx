@@ -116,7 +116,7 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
       const inscriptionId = inscriptionResponse?.data?._id || inscriptionResponse?.data?.id;
       
       if (inscriptionId) {
-        trackFormStart('inscription_form', 'Formulario de Inscripción', course?.id || course?._id, course?.title, inscriptionId);
+        trackFormStart('inscription_form', 'Formulario de Inscripción', course?.id || course?._id, course?.title, inscriptionId, course?.price);
       }
 
       await trackInscriptionSuccess(

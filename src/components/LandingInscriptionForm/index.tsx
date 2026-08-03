@@ -87,7 +87,7 @@ const LandingInscriptionForm: React.FC<LandingInscriptionFormProps> = ({ course,
       const inscriptionId = response.data?._id || response.data?.id;
 
       if (inscriptionId) {
-        trackFormStart('landing_form', 'Landing Page Form', payload.courseId, course.title, inscriptionId);
+        trackFormStart('landing_form', 'Landing Page Form', payload.courseId, course.title, inscriptionId, course.price);
       }
 
       // --- TRACKING DE ÉXITO (Conversión) ---

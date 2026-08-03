@@ -257,7 +257,8 @@ export const trackInscriptionSuccess = async (
 export const trackPurchaseSuccess = (
   inscriptionId: string,
   courseTitle: string,
-  value: number
+  value: number,
+  courseId?: string
 ): void => {
   const dedupeKey = `purchase_fired_${inscriptionId}`;
   try {
@@ -276,18 +277,18 @@ export const trackPurchaseSuccess = (
   };
   sendAnalyticsEvent(AnalyticsEvents.PURCHASE, params);
 
-  // Meta Pixel: Purchase
-  if (import.meta.env.PROD && typeof window !== 'undefined' && window.fbq) {
-    (window.fbq as FbqTrack)('track', 'Purchase', {
-      content_name: courseTitle,
-      content_ids: [inscriptionId],
-      content_type: 'product',
-      value,
-      currency: 'ARS',
-      external_id: inscriptionId,
-      ...getMetaAdvancedParams()
-    }, { eventID: `purchase_${inscriptionId}` });
-  }
+    // Meta Pixel: Purchase
+    if (import.meta.env.PROD && typeof window !== 'undefined' && window.fbq) {
+      (window.fbq as FbqTrack)('track', 'Purchase', {
+        content_name: courseTitle,
+        content_ids: courseId ? [courseId] : undefined,
+        content_type: 'product',
+        value,
+        currency: 'ARS',
+        external_id: inscriptionId,
+        ...getMetaAdvancedParams()
+      }, { eventID: `purchase_${inscriptionId}` });
+    }
 };
 
 /**

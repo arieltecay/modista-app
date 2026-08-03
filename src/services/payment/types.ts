@@ -5,6 +5,7 @@ export type PaymentSource = 'webhook' | 'manual' | 'link_static';
 export interface PaymentStatusResponse {
   paymentStatus: PaymentStatusValue;
   paymentDate?: string | null;
+  courseId: string;
   courseTitle: string;
   coursePrice: number;
   totalPaid: number;

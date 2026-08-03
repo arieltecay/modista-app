@@ -27,7 +27,7 @@ const PaymentSuccess: React.FC = () => {
 
   useEffect(() => {
     if (!isPaid || !inscriptionId || !paymentData) return;
-    trackPurchaseSuccess(inscriptionId, paymentData.courseTitle, paymentData.totalPaid || paymentData.coursePrice);
+    trackPurchaseSuccess(inscriptionId, paymentData.courseTitle, paymentData.totalPaid || paymentData.coursePrice, paymentData.courseId);
   }, [isPaid, paymentData, inscriptionId]);
 
   if (!inscriptionId) {

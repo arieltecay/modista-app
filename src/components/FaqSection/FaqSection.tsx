@@ -20,11 +20,67 @@ const ICON_MAP: Record<string, any> = {
   'book-open': BookOpenIcon,
 };
 
-const FaqSection: React.FC = () => {
+interface FaqSectionProps {
+  variant?: 'default' | 'light';
+}
+
+const theme = {
+  default: {
+    section: 'py-20 bg-background min-h-[300px]',
+    header: 'mb-16',
+    title: 'text-3xl md:text-4xl font-bold text-foreground mb-4',
+    subtitle: 'text-muted-foreground text-lg',
+    card: 'bg-card border-border',
+    cardOpen: 'border-primary/50 shadow-xl shadow-primary/5 ring-1 ring-primary/10',
+    cardHover: 'hover:border-primary/30',
+    icon: 'bg-muted text-muted-foreground',
+    iconOpen: 'bg-primary text-primary-foreground',
+    question: 'text-foreground',
+    questionOpen: 'text-primary',
+    questionSize: 'text-lg',
+    chevron: 'text-muted-foreground',
+    answer: 'text-muted-foreground',
+    answerSize: 'text-base',
+    cta: 'mt-12 text-muted-foreground',
+    skeleton: 'bg-muted',
+    skeletonSection: 'py-20 bg-background min-h-[300px]',
+    skeletonTitleHeight: 'h-10',
+    skeletonTitleWidth: 'w-64',
+    skeletonTitleMb: 'mb-16',
+    skeletonBarHeight: 'h-6',
+  },
+  light: {
+    section: 'py-10 bg-[#FDFBF7] min-h-[200px]',
+    header: 'mb-6',
+    title: 'text-xl sm:text-2xl font-semibold text-[#141b2b] mb-2',
+    subtitle: 'text-[#747872] text-sm',
+    card: 'bg-white border-[#7d8c7b]/20',
+    cardOpen: 'border-[#516050]/50 shadow-xl shadow-[#516050]/5 ring-1 ring-[#516050]/10',
+    cardHover: 'hover:border-[#516050]/30',
+    icon: 'bg-[#7d8c7b]/10 text-[#516050]',
+    iconOpen: 'bg-[#516050] text-white',
+    question: 'text-[#141b2b]',
+    questionOpen: 'text-[#516050]',
+    questionSize: 'text-base',
+    chevron: 'text-[#747872]',
+    answer: 'text-[#444842]',
+    answerSize: 'text-sm',
+    cta: 'mt-6 text-[#747872]',
+    skeleton: 'bg-[#7d8c7b]/10',
+    skeletonSection: 'py-10 bg-[#FDFBF7] min-h-[200px]',
+    skeletonTitleHeight: 'h-8',
+    skeletonTitleWidth: 'w-48',
+    skeletonTitleMb: 'mb-6',
+    skeletonBarHeight: 'h-5',
+  },
+};
+
+const FaqSection: React.FC<FaqSectionProps> = ({ variant = 'default' }) => {
   const [faqs, setFaqs] = useState<FAQ[]>([]);
   const [openId, setOpenId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [expectedCount, setExpectedCount] = useState(0);
+  const t = theme[variant];
 
   useEffect(() => {
     const loadFaqs = async () => {
@@ -52,23 +108,23 @@ const FaqSection: React.FC = () => {
   // Esqueleto para evitar CLS (Cumulative Layout Shift)
   if (loading) {
     return (
-      <section className="py-20 bg-background min-h-[300px]">
+      <section className={t.skeletonSection}>
         <div className="container mx-auto px-4 max-w-4xl">
-          <div className="h-10 bg-muted rounded-xl w-64 mx-auto mb-16 animate-pulse"></div>
+          <div className={`${t.skeletonTitleHeight} ${t.skeleton} rounded-xl ${t.skeletonTitleWidth} mx-auto ${t.skeletonTitleMb} animate-pulse`}></div>
           <div className="space-y-4">
             {Array.from({ length: expectedCount || 3 }).map((_, i) => (
               <div 
                 key={i} 
-                className={`${i === 0 ? 'h-48' : 'h-20'} bg-card rounded-2xl border border-border animate-pulse flex flex-col`}
+                className={`${i === 0 ? 'h-48' : 'h-20'} ${t.card} rounded-2xl border animate-pulse flex flex-col`}
               >
                 <div className="flex items-center gap-4 p-5">
-                  <div className="w-10 h-10 bg-muted rounded-xl"></div>
-                  <div className="h-6 bg-muted rounded-lg w-3/4"></div>
+                  <div className={`w-10 h-10 ${t.skeleton} rounded-xl`}></div>
+                  <div className={`${t.skeletonBarHeight} ${t.skeleton} rounded-lg w-3/4`}></div>
                 </div>
                 {i === 0 && (
                   <div className="px-6 pb-6 pt-2 ml-14 space-y-2">
-                    <div className="h-4 bg-muted rounded w-full"></div>
-                    <div className="h-4 bg-muted rounded w-5/6"></div>
+                    <div className={`h-4 ${t.skeleton} rounded w-full`}></div>
+                    <div className={`h-4 ${t.skeleton} rounded w-5/6`}></div>
                   </div>
                 )}
               </div>
@@ -82,13 +138,13 @@ const FaqSection: React.FC = () => {
   if (faqs.length === 0) return null;
 
   return (
-    <section className="py-20 bg-background">
+    <section className={t.section}>
       <div className="container mx-auto px-4 max-w-4xl">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+        <div className={`text-center ${t.header}`}>
+          <h2 className={t.title}>
             Preguntas Frecuentes
           </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+          <p className={`${t.subtitle} max-w-2xl mx-auto`}>
             Resolvemos tus dudas para que puedas comenzar tu viaje en el mundo de la costura hoy mismo.
           </p>
         </div>
@@ -101,10 +157,10 @@ const FaqSection: React.FC = () => {
             return (
               <div 
                 key={faq._id}
-                className={`group bg-card rounded-2xl border transition-all duration-300 overflow-hidden ${
+                className={`group ${t.card} border transition-all duration-300 overflow-hidden ${
                   isOpen 
-                    ? 'border-primary/50 shadow-xl shadow-primary/5 ring-1 ring-primary/10' 
-                    : 'border-border hover:border-primary/30 shadow-sm'
+                    ? t.cardOpen
+                    : t.cardHover
                 }`}
               >
                 <button
@@ -113,19 +169,19 @@ const FaqSection: React.FC = () => {
                 >
                   <div className="flex items-center gap-4">
                     <div className={`p-2 rounded-xl transition-colors duration-300 ${
-                      isOpen ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary'
+                      isOpen ? t.iconOpen : t.icon
                     }`}>
                       <IconComponent className="w-6 h-6" />
                     </div>
-                    <span className={`font-semibold text-lg transition-colors duration-300 ${
-                      isOpen ? 'text-primary' : 'text-foreground'
+                    <span className={`font-semibold ${t.questionSize} transition-colors duration-300 ${
+                      isOpen ? t.questionOpen : t.question
                     }`}>
                       {faq.question}
                     </span>
                   </div>
                   <ChevronDownIcon 
-                    className={`w-5 h-5 text-muted-foreground transition-transform duration-500 ${
-                      isOpen ? 'rotate-180 text-primary' : ''
+                    className={`w-5 h-5 transition-transform duration-500 ${
+                      isOpen ? `rotate-180 ${t.questionOpen}` : t.chevron
                     }`}
                   />
                 </button>
@@ -136,7 +192,7 @@ const FaqSection: React.FC = () => {
                   }`}
                 >
                   <div className="px-6 pb-6 pt-2 ml-14">
-                    <div className="text-muted-foreground leading-relaxed whitespace-pre-line text-base">
+                    <div className={`${t.answer} ${t.answerSize} leading-relaxed whitespace-pre-line`}>
                       {faq.answer}
                     </div>
                   </div>
@@ -146,8 +202,8 @@ const FaqSection: React.FC = () => {
           })}
         </div>
 
-        <div className="mt-12 text-center">
-          <p className="text-muted-foreground italic">
+        <div className={`text-center ${t.cta}`}>
+          <p className="italic">
             ¿Tienes otra duda? Escríbeme directamente por WhatsApp.
           </p>
         </div>

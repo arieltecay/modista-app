@@ -133,10 +133,10 @@ const LandingInscriptionForm: React.FC<LandingInscriptionFormProps> = ({ course,
     : null;
 
   return (
-    <div className="w-full font-sans">
+    <div className="w-full" style={{ fontFamily: "'Inter', sans-serif" }}>
       <form onSubmit={handleSubmit} className="space-y-5" noValidate>
         <div>
-          <label htmlFor="fullName" className="block text-sm font-semibold text-gray-300 mb-1.5 ml-1">
+          <label htmlFor="fullName" className="block text-sm font-semibold text-[#444842] mb-1.5 ml-1">
             Nombre y Apellido
           </label>
           <input
@@ -148,13 +148,13 @@ const LandingInscriptionForm: React.FC<LandingInscriptionFormProps> = ({ course,
             value={formData.fullName}
             onChange={handleChange}
             onFocus={() => handleFocus('fullName')}
-            className={`w-full px-4 py-4 rounded-xl border-2 ${errors.fullName ? 'border-red-500' : 'border-gray-800 bg-gray-900'} focus:bg-gray-800 focus:ring-4 focus:ring-violet-500/10 focus:border-violet-500 outline-none transition-all text-white placeholder:text-gray-500`}
+            className={`w-full px-4 py-4 rounded-xl border-2 ${errors.fullName ? 'border-red-500' : 'border-[#7d8c7b]/30 bg-[#FDFBF7]'} focus:bg-white focus:ring-4 focus:ring-[#516050]/10 focus:border-[#516050] outline-none transition-all text-[#141b2b] placeholder:text-[#747872]/60`}
           />
-          {errors.fullName && <p className="text-red-400 text-xs font-medium mt-1.5 ml-1">{errors.fullName}</p>}
+          {errors.fullName && <p className="text-red-600 text-xs font-medium mt-1.5 ml-1">{errors.fullName}</p>}
         </div>
 
         <div>
-          <label htmlFor="email" className="block text-sm font-semibold text-gray-300 mb-1.5 ml-1">
+          <label htmlFor="email" className="block text-sm font-semibold text-[#444842] mb-1.5 ml-1">
             Tu mejor Email
           </label>
           <input
@@ -166,13 +166,13 @@ const LandingInscriptionForm: React.FC<LandingInscriptionFormProps> = ({ course,
             value={formData.email}
             onChange={handleChange}
             onFocus={() => handleFocus('email')}
-            className={`w-full px-4 py-4 rounded-xl border-2 ${errors.email ? 'border-red-500' : 'border-gray-800 bg-gray-900'} focus:bg-gray-800 focus:ring-4 focus:ring-violet-500/10 focus:border-violet-500 outline-none transition-all text-white placeholder:text-gray-500`}
+            className={`w-full px-4 py-4 rounded-xl border-2 ${errors.email ? 'border-red-500' : 'border-[#7d8c7b]/30 bg-[#FDFBF7]'} focus:bg-white focus:ring-4 focus:ring-[#516050]/10 focus:border-[#516050] outline-none transition-all text-[#141b2b] placeholder:text-[#747872]/60`}
           />
-          {errors.email && <p className="text-red-400 text-xs font-medium mt-1.5 ml-1">{errors.email}</p>}
+          {errors.email && <p className="text-red-600 text-xs font-medium mt-1.5 ml-1">{errors.email}</p>}
         </div>
 
         <div>
-          <label htmlFor="celular" className="block text-sm font-semibold text-gray-300 mb-1.5 ml-1">
+          <label htmlFor="celular" className="block text-sm font-semibold text-[#444842] mb-1.5 ml-1">
             Tu WhatsApp de contacto
           </label>
           <input
@@ -184,31 +184,31 @@ const LandingInscriptionForm: React.FC<LandingInscriptionFormProps> = ({ course,
             value={formData.celular}
             onChange={handleChange}
             onFocus={() => handleFocus('celular')}
-            className={`w-full px-4 py-4 rounded-xl border-2 ${errors.celular ? 'border-red-500' : 'border-gray-800 bg-gray-900'} focus:bg-gray-800 focus:ring-4 focus:ring-violet-500/10 focus:border-violet-500 outline-none transition-all text-white placeholder:text-gray-500`}
+            className={`w-full px-4 py-4 rounded-xl border-2 ${errors.celular ? 'border-red-500' : 'border-[#7d8c7b]/30 bg-[#FDFBF7]'} focus:bg-white focus:ring-4 focus:ring-[#516050]/10 focus:border-[#516050] outline-none transition-all text-[#141b2b] placeholder:text-[#747872]/60`}
           />
-          {errors.celular && <p className="text-red-400 text-xs font-medium mt-1.5 ml-1">{errors.celular}</p>}
+          {errors.celular && <p className="text-red-600 text-xs font-medium mt-1.5 ml-1">{errors.celular}</p>}
         </div>
 
         <div className="pt-4">
           <button
             type="submit"
             disabled={loading}
-            className="group relative w-full bg-gradient-to-r from-violet-600 to-violet-500 hover:from-violet-500 hover:to-violet-400 active:scale-[0.98] text-white py-5 px-4 rounded-2xl shadow-[0_0_20px_rgba(139,92,246,0.3)] transition-all flex flex-col items-center justify-center disabled:opacity-50 overflow-hidden mb-3"
+            className="group relative w-full bg-[#516050] hover:bg-[#4A5A4B] active:scale-[0.98] text-white py-5 px-4 rounded-full shadow-lg shadow-[#516050]/25 transition-all flex flex-col items-center justify-center disabled:opacity-50 overflow-hidden mb-3"
           >
             <div className="absolute inset-0 w-1/4 h-full bg-white/20 skew-x-12 -translate-x-full group-hover:animate-[shine_1.5s_ease-in-out_infinite]" />
 
             {loading ? (
               <>
                 <Spinner />
-                <span className="text-sm text-violet-100 mt-2">Redirigiendo a MercadoPago...</span>
+                <span className="text-sm text-[#d7e7d3] mt-2">Redirigiendo a MercadoPago...</span>
               </>
             ) : (
               <>
-                <span className="text-xl font-black uppercase tracking-wide">
+                <span className="text-xl font-bold uppercase tracking-wide">
                   {landingPage.buttonText || 'QUIERO EMPEZAR AHORA'}
                 </span>
                 {formattedPrice && (
-                  <span className="text-sm font-medium text-violet-100 normal-case mt-1">
+                  <span className="text-sm font-medium text-[#d7e7d3] normal-case mt-1">
                     <strong className="text-white font-bold">{formattedPrice}</strong> · pago único
                   </span>
                 )}
@@ -217,19 +217,19 @@ const LandingInscriptionForm: React.FC<LandingInscriptionFormProps> = ({ course,
           </button>
 
           <div className="flex flex-col items-center gap-1.5">
-            <p className="text-[11px] text-gray-500 text-center">
+            <p className="text-[11px] text-[#747872] text-center">
               Pagás con MercadoPago · Tarjetas, transferencia o efectivo
             </p>
-            <div className="flex items-center gap-2 text-[10px] text-gray-500">
+            <div className="flex items-center gap-2 text-[10px] text-[#747872]">
               <span>🔒 Pago seguro</span>
-              <span className="text-gray-700">|</span>
+              <span className="text-[#747872]/40">|</span>
               <span>📥 Acceso inmediato</span>
             </div>
           </div>
         </div>
 
         {formMessage && (
-          <div className={`text-center p-4 rounded-xl text-sm font-bold ${formMessage.type === 'success' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'}`}>
+          <div className={`text-center p-4 rounded-xl text-sm font-bold ${formMessage.type === 'success' ? 'bg-emerald-500/10 text-emerald-700 border border-emerald-500/20' : 'bg-red-500/10 text-red-600 border border-red-500/20'}`}>
             {formMessage.text}
           </div>
         )}

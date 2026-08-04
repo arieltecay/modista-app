@@ -106,6 +106,8 @@ export const AnalyticsEvents = {
   PAGE_VIEW: 'page_view' as const,
   COURSE_VIEW: 'course_view' as const,
   BUTTON_CLICK: 'button_click' as const,
+  CTA_CLICK: 'cta_click' as const,
+  STICKY_CTA_VIEW: 'sticky_cta_view' as const,
   FORM_START: 'form_start' as const,
   FORM_SUBMIT: 'form_submit' as const,
   FORM_ERROR: 'form_error' as const,
@@ -338,6 +340,49 @@ export const trackButtonClick = (buttonName: string, buttonLocation: string): vo
   sendAnalyticsEvent(AnalyticsEvents.BUTTON_CLICK, params);
 };
 
+const getScrollDepthPct = (): number => {
+  const doc = document.documentElement;
+  const max = doc.scrollHeight - window.innerHeight;
+  if (max <= 0) return 100;
+  return Math.min(100, Math.round(((window.scrollY + window.innerHeight) / doc.scrollHeight) * 100));
+};
+
+/**
+ * Tracking de clic en CTAs de conversión (hero, sticky, etc.)
+ */
+export const trackCtaClick = (
+  buttonName: string,
+  section: string,
+  course?: { id?: string; title?: string; price?: number }
+): void => {
+  const params: InteractionParams = {
+    button_name: buttonName,
+    button_location: section,
+    section,
+    scroll_depth_pct: getScrollDepthPct()
+  };
+  if (course) {
+    params.course_id = course.id;
+    params.course_title = course.title;
+    params.course_price = course.price;
+  }
+  sendAnalyticsEvent(AnalyticsEvents.CTA_CLICK, params);
+};
+
+/**
+ * Tracking de impresión del CTA sticky (primera vez que aparece tras scroll)
+ */
+export const trackStickyCtaView = (course?: { id?: string; title?: string }): void => {
+  const params: EventParameters = {
+    section: 'sticky_cta'
+  };
+  if (course) {
+    params.course_id = course.id;
+    params.course_title = course.title;
+  }
+  sendAnalyticsEvent(AnalyticsEvents.STICKY_CTA_VIEW, params);
+};
+
 export default {
   sendAnalyticsEvent,
   AnalyticsEvents,
@@ -350,5 +395,7 @@ export default {
   trackVideoInteraction,
   trackFaqInteraction,
   trackContactClick,
-  trackButtonClick
+  trackButtonClick,
+  trackCtaClick,
+  trackStickyCtaView
 };

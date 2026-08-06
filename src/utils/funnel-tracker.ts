@@ -14,7 +14,14 @@ interface UTMData {
   term?: string;
 }
 
-type Step = 'cta_click' | 'pricing_visible' | 'form_view' | 'scroll_50' | 'scroll_90' | 'redirect_to_payment';
+type Step =
+  | 'course_detail_view'
+  | 'cta_click'
+  | 'pricing_visible'
+  | 'form_view'
+  | 'scroll_50'
+  | 'scroll_90'
+  | 'redirect_to_payment';
 
 const shouldFire = (key: string): boolean => {
   try {
@@ -44,6 +51,7 @@ export const trackFunnel = (step: Step, extra: { courseId?: string; courseTitle?
     courseTitle: extra.courseTitle,
     inscriptionId: extra.inscriptionId,
     value: extra.value,
+    eventTime: Math.floor(Date.now() / 1000),
     utmSource: utm.source,
     utmCampaign: utm.campaign,
     referrer: document.referrer || undefined,

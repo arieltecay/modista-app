@@ -1,7 +1,8 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect, useMemo } from 'react';
 import { Navigate } from 'react-router-dom';
 import { SEO, PrivacyNotice, FaqSection } from '@/components';
 import { getOptimizedUrl } from '../../utils/image-utils';
+import { trackFunnel } from '../../utils/funnel-tracker';
 import { useLandingData } from './hooks/use-landing-data';
 import { BENEFITS, TESTIMONIALS, STATS } from './data';
 import StickyCta from './sections/sticky-cta';
@@ -29,6 +30,18 @@ const LandingSkeleton: React.FC = () => (
 
 const LandingPage: React.FC = () => {
   const { landing, course, loading, error } = useLandingData();
+
+  const courseId = useMemo(() => course?.id || course?._id, [course?.id, course?._id]);
+
+  useEffect(() => {
+    if (!courseId || !course?.title) return;
+
+    trackFunnel('course_detail_view', {
+      courseId,
+      courseTitle: course.title,
+      value: course.price ? Number(course.price) : undefined,
+    });
+  }, [courseId, course?.title, course?.price]);
 
   if (loading) {
     return <LandingSkeleton />;

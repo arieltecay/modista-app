@@ -27,15 +27,21 @@ export const apiClient: AxiosInstance = axios.create({
     headers: {
         'Content-Type': 'application/json',
     },
-    withCredentials: true,
 });
+
+const getCookie = (name: string): string | undefined => {
+    if (typeof document === 'undefined') return undefined;
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop()?.split(';').shift();
+    return undefined;
+};
 
 /**
  * Interceptor de requests de Axios.
- * Inyecta automáticamente el token JWT desde localStorage en cada petición.
- * 
- * @pattern Interceptor Pattern
- * @security Añade autorización Bearer automáticamente
+ * Inyecta automáticamente:
+ * 1. Token JWT desde localStorage
+ * 2. Cookies de Meta Pixel (_fbc, _fbp) en headers custom para server-side tracking
  */
 apiClient.interceptors.request.use(
     (config: InternalAxiosRequestConfig) => {
@@ -43,6 +49,13 @@ apiClient.interceptors.request.use(
         if (token && config.headers) {
             config.headers.Authorization = `Bearer ${token}`;
         }
+
+        // Enviar cookies de Meta Pixel en headers custom para server-side CAPI
+        const fbc = getCookie('_fbc');
+        const fbp = getCookie('_fbp');
+        if (fbc && config.headers) config.headers['X-Meta-Fbc'] = fbc;
+        if (fbp && config.headers) config.headers['X-Meta-Fbp'] = fbp;
+
         return config;
     },
     (error: AxiosError) => Promise.reject(error)

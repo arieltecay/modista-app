@@ -47,11 +47,21 @@ const getUserRole = (): 'admin' | 'user' | 'guest' => {
   return 'guest';
 };
 
+const getCookie = (name: string): string | undefined => {
+  if (typeof document === 'undefined') return undefined;
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop()?.split(';').shift();
+  return undefined;
+};
+
 const getMetaAdvancedParams = (): Record<string, string> => {
   const utm = getStoredUTMData();
   const params: Record<string, string> = {};
   if (utm?.fbc) params.fbc = utm.fbc;
-  if (utm?.fbp) params.fbp = utm.fbp;
+  // fbp: preferir sessionStorage, fallback al cookie _fbp directo
+  const fbp = utm?.fbp || getCookie('_fbp');
+  if (fbp) params.fbp = fbp;
   return params;
 };
 

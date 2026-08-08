@@ -14,6 +14,14 @@ interface UTMData {
   term?: string;
 }
 
+const getCookie = (name: string): string | undefined => {
+  if (typeof document === 'undefined') return undefined;
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop()?.split(';').shift();
+  return undefined;
+};
+
 type Step =
   | 'course_detail_view'
   | 'cta_click'
@@ -44,6 +52,7 @@ export const trackFunnel = (step: Step, extra: { courseId?: string; courseTitle?
   if (!shouldFire(dedupeKey)) return;
 
   const utm: UTMData = (getStoredUTMData() as UTMData) || {};
+  const fbp = utm.fbp || getCookie('_fbp');
   const payload = {
     sessionId,
     step,
@@ -56,7 +65,7 @@ export const trackFunnel = (step: Step, extra: { courseId?: string; courseTitle?
     utmCampaign: utm.campaign,
     referrer: document.referrer || undefined,
     fbc: utm.fbc,
-    fbp: utm.fbp,
+    fbp,
     device: /Mobi|Android/i.test(navigator.userAgent) ? 'mobile' : 'desktop',
   };
 

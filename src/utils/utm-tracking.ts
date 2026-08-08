@@ -72,6 +72,22 @@ export const getStoredUTMData = (): UTMData | null => {
   }
 };
 
+export const updateFbpFromCookie = (): void => {
+  if (typeof document === 'undefined') return;
+  const fbp = getCookie('_fbp');
+  if (!fbp) return;
+
+  const existingData = getStoredUTMData();
+  if (existingData?.fbp === fbp) return;
+
+  const utmData: UTMData = {
+    ...(existingData || { timestamp: Date.now() }),
+    fbp,
+    timestamp: Date.now(),
+  };
+  sessionStorage.setItem(UTM_KEY, JSON.stringify(utmData));
+};
+
 export const clearUTMData = (): void => {
   sessionStorage.removeItem(UTM_KEY);
 };

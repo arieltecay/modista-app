@@ -2,6 +2,7 @@
 // @ts-nocheck
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { updateFbpFromCookie } from '../../utils/utm-tracking';
 
 const GTM_ID = import.meta.env.VITE_GTM_ID;
 const CLARITY_ID = import.meta.env.VITE_CLARITY_ID;
@@ -48,6 +49,16 @@ const GoogleTagManager = () => {
       'https://connect.facebook.net/en_US/fbevents.js'));
       fbq('init', FB_PIXEL_ID);
       fbq('track', 'PageView', {}, { eventID: `pageview_${sessionId}_init` });
+
+      // Capturar fbp después de que el Pixel inicialice y setee el cookie _fbp
+      setTimeout(() => {
+        updateFbpFromCookie();
+      }, 1000);
+    } else if (FB_PIXEL_ID && window.fbq) {
+      // Pixel ya estaba inicializado (navegación SPA), actualizar fbp de todas formas
+      setTimeout(() => {
+        updateFbpFromCookie();
+      }, 500);
     }
 
     // 4. Session tracking (solo en primer visita, verificando trackeado_inicial)

@@ -1,7 +1,7 @@
 import { getStoredUTMData } from './utm-tracking';
+import { apiClient } from '../services/config/apiClient';
 
 const SESSION_KEY = 'modista_session_id';
-const API_URL = import.meta.env.VITE_API_URL;
 const DEDUPE_KEY = 'modista_funnel_dedupe';
 
 interface UTMData {
@@ -71,10 +71,5 @@ export const trackFunnel = (step: Step, extra: { courseId?: string; courseTitle?
 
   window.dataLayer?.push({ event: `funnel_${step}`, ...payload });
 
-  fetch(`${API_URL}/api/funnel/event`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-    keepalive: true,
-  }).catch(() => {});
+  apiClient.post('/funnel/event', payload, { timeout: 5000 }).catch(() => {});
 };

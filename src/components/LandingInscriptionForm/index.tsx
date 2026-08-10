@@ -16,6 +16,8 @@ import {
   CreateLandingInscriptionPayload 
 } from './types';
 
+let hasTrackedLandingFormStart = false;
+
 const LandingInscriptionForm: React.FC<LandingInscriptionFormProps> = ({ course, landingPage }) => {
   const [formData, setFormData] = useState<FormState>({
     fullName: '',
@@ -25,6 +27,10 @@ const LandingInscriptionForm: React.FC<LandingInscriptionFormProps> = ({ course,
   const [errors, setErrors] = useState<Partial<FormState>>({});
   const [loading, setLoading] = useState(false);
   const [formMessage, setFormMessage] = useState<FormMessage | null>(null);
+
+  React.useEffect(() => {
+    return () => { hasTrackedLandingFormStart = false; };
+  }, []);
 
   const validateForm = () => {
     const newErrors: Partial<FormState> = {};
@@ -48,6 +54,12 @@ const LandingInscriptionForm: React.FC<LandingInscriptionFormProps> = ({ course,
 
   const handleFocus = (fieldName: string) => {
     trackFormFieldFocus('landing_form', 'Landing Page Form', fieldName);
+    if (!hasTrackedLandingFormStart) {
+      hasTrackedLandingFormStart = true;
+      import('../../utils/funnel-tracker').then(({ trackFunnel }) => {
+        trackFunnel('form_start', { courseId: course.uuid || course.id || (course as any)._id, courseTitle: course.title });
+      });
+    }
   };
 
   const getCookieValue = (name: string): string | undefined => {
@@ -62,6 +74,10 @@ const LandingInscriptionForm: React.FC<LandingInscriptionFormProps> = ({ course,
     e.preventDefault();
     setFormMessage(null);
     if (!validateForm()) return;
+
+    import('../../utils/funnel-tracker').then(({ trackFunnel }) => {
+      trackFunnel('form_submit', { courseId: course.uuid || course.id || (course as any)._id, courseTitle: course.title });
+    });
 
     setLoading(true);
     try {

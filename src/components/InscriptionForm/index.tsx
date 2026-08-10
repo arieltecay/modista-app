@@ -13,6 +13,8 @@ import { isCourseFree } from '../../utils/courseUtils';
 import { getStoredUTMData } from '../../utils/utm-tracking';
 import { InscriptionFormProps, InscriptionFormData, InscriptionFormErrors, FormMessage } from './types';
 
+let hasTrackedFormStart = false;
+
 const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
   const [formData, setFormData] = useState<InscriptionFormData>({
     nombre: '',
@@ -25,6 +27,10 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [formMessage, setFormMessage] = useState<FormMessage | null>(null);
   const [hasAvailableSpots, setHasAvailableSpots] = useState<boolean>(true);
+
+  React.useEffect(() => {
+    return () => { hasTrackedFormStart = false; };
+  }, []);
 
   const validateForm = (): boolean => {
     if (course?.isPresencial && !hasAvailableSpots) {
@@ -81,6 +87,12 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
 
   const handleFocus = (fieldName: string) => {
     trackFormFieldFocus('inscription_form', 'Formulario de Inscripción', fieldName);
+    if (!hasTrackedFormStart) {
+      hasTrackedFormStart = true;
+      import('../../utils/funnel-tracker').then(({ trackFunnel }) => {
+        trackFunnel('form_start', { courseId: course?.id || course?._id || '1', courseTitle: course?.title });
+      });
+    }
   };
 
   const getCookieValue = (name: string): string | undefined => {
@@ -98,6 +110,10 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
     if (!validateForm()) {
       return;
     }
+
+    import('../../utils/funnel-tracker').then(({ trackFunnel }) => {
+      trackFunnel('form_submit', { courseId: course?.id || course?._id || '1', courseTitle: course?.title });
+    });
 
     setLoading(true);
     try {

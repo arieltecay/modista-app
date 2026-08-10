@@ -27,9 +27,12 @@ type Step =
   | 'cta_click'
   | 'pricing_visible'
   | 'form_view'
+  | 'form_start'
+  | 'form_submit'
   | 'scroll_50'
   | 'scroll_90'
-  | 'redirect_to_payment';
+  | 'redirect_to_payment'
+  | 'purchase';
 
 const shouldFire = (key: string): boolean => {
   try {

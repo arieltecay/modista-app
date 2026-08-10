@@ -28,6 +28,9 @@ const PaymentSuccess: React.FC = () => {
   useEffect(() => {
     if (!isPaid || !inscriptionId || !paymentData) return;
     trackPurchaseSuccess(inscriptionId, paymentData.courseTitle, paymentData.totalPaid || paymentData.coursePrice, paymentData.courseId);
+    import('../../utils/funnel-tracker').then(({ trackFunnel }) => {
+      trackFunnel('purchase', { courseId: paymentData.courseId, courseTitle: paymentData.courseTitle, inscriptionId, value: paymentData.totalPaid || paymentData.coursePrice });
+    });
   }, [isPaid, paymentData, inscriptionId]);
 
   if (!inscriptionId) {

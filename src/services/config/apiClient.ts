@@ -50,8 +50,17 @@ apiClient.interceptors.request.use(
             config.headers.Authorization = `Bearer ${token}`;
         }
 
-        // Enviar cookies de Meta Pixel en headers custom para server-side CAPI
-        const fbc = getCookie('_fbc');
+        // Enviar fbc/fbp en headers custom para server-side CAPI
+        // Prioridad fbc: sessionStorage (incluye fbclid derivado) > cookie _fbc
+        // Prioridad fbp: cookie _fbp (el pixel la setea asincronicamente)
+        const UTM_KEY = 'modista_utm_data';
+        let storedFbc: string | undefined;
+        try {
+            const stored = sessionStorage.getItem(UTM_KEY);
+            storedFbc = stored ? (JSON.parse(stored) as { fbc?: string }).fbc : undefined;
+        } catch { storedFbc = undefined; }
+
+        const fbc = storedFbc || getCookie('_fbc');
         const fbp = getCookie('_fbp');
         if (fbc && config.headers) config.headers['X-Meta-Fbc'] = fbc;
         if (fbp && config.headers) config.headers['X-Meta-Fbp'] = fbp;

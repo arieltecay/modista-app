@@ -156,7 +156,11 @@ export const trackCourseView = (courseId: string, courseTitle: string, price?: n
 
   // Meta Pixel: ViewContent
   if (import.meta.env.PROD && typeof window !== 'undefined' && window.fbq) {
-    const eventId = `view_content_${courseId}`;
+    // eventId unico por usuario: debe coincidir con el CAPI server-side para dedup
+    const sessionId = localStorage.getItem('modista_session_id');
+    const sessionSuffix = sessionId ? `_${sessionId.slice(0, 8)}` : `_${Date.now()}`;
+    const eventId = `view_content_${courseId}${sessionSuffix}`;
+
     (window.fbq as FbqTrack)('track', 'ViewContent', {
       content_name: courseTitle,
       content_ids: [courseId],
@@ -165,7 +169,7 @@ export const trackCourseView = (courseId: string, courseTitle: string, price?: n
       currency: 'ARS',
       ...getMetaAdvancedParams()
     }, { eventID: eventId });
-    
+
     // Y a DataLayer
     window.dataLayer?.push({ event: 'view_content', event_id: eventId, course_id: courseId });
   }

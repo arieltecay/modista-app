@@ -65,6 +65,10 @@ apiClient.interceptors.request.use(
         if (fbc && config.headers) config.headers['X-Meta-Fbc'] = fbc;
         if (fbp && config.headers) config.headers['X-Meta-Fbp'] = fbp;
 
+        // Enviar sessionId para event_id unico por usuario en CAPI
+        const sessionId = localStorage.getItem('modista_session_id');
+        if (sessionId && config.headers) config.headers['X-Session-Id'] = sessionId;
+
         return config;
     },
     (error: AxiosError) => Promise.reject(error)

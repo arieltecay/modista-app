@@ -10,7 +10,8 @@ import Spinner from '../Spinner';
 import TurnoSelector from '../TurnoSelector';
 import { validateNombre, validateApellido, validateEmail, validateCelular } from '../../utils/formValidations';
 import { isCourseFree } from '../../utils/courseUtils';
-import { getStoredUTMData } from '../../utils/utm-tracking';
+import { getStoredUTMData, getUTMPayload } from '../../utils/utm-tracking';
+import { getCookieValue } from '../../utils/cookies';
 import { InscriptionFormProps, InscriptionFormData, InscriptionFormErrors, FormMessage } from './types';
 
 let hasTrackedFormStart = false;
@@ -21,6 +22,7 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
     apellido: '',
     email: '',
     celular: '',
+    website: '', // honeypot anti-bots
   });
   const [selectedTurnoId, setSelectedTurnoId] = useState<string | null>(null);
   const [errors, setErrors] = useState<InscriptionFormErrors>({});
@@ -90,18 +92,10 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
     if (!hasTrackedFormStart) {
       hasTrackedFormStart = true;
       import('../../utils/funnel-tracker').then(({ trackFunnel }) => {
-        trackFunnel('form_start', { courseId: course?.id || course?._id || '1', courseTitle: course?.title });
-      });
-    }
-  };
-
-  const getCookieValue = (name: string): string | undefined => {
-    if (typeof document === 'undefined') return undefined;
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop()?.split(';').shift();
-    return undefined;
-  };
+         trackFunnel('form_start', { courseId: course?.id || course?._id || '1', courseTitle: course?.title });
+       });
+     }
+   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -129,7 +123,7 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
         dateYear: new Date().getFullYear(),
         turnoId: selectedTurnoId,
         marketingSource: utmData?.source || 'organic',
-        utmParams: utmData || {},
+        utmParams: getUTMPayload(),
         sessionId: sessionId || undefined,
         metaFbc: utmData?.fbc || getCookieValue('_fbc'),
         metaFbp: utmData?.fbp || getCookieValue('_fbp'),
@@ -177,7 +171,7 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
       }
 
       setFormMessage({ type: 'success', text: '¡Gracias por inscribirte! Revisa tu correo para ver la confirmación. Nos pondremos en contacto contigo pronto.' });
-      setFormData({ nombre: '', apellido: '', email: '', celular: '' });
+      setFormData({ nombre: '', apellido: '', email: '', celular: '', website: '' });
       setSelectedTurnoId(null);
 
     } catch (error: any) {
@@ -352,6 +346,19 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
                   {errors.turno && <p className="text-red-500 text-sm mt-1">{errors.turno}</p>}
                 </div>
               )}
+
+              {/* Honeypot anti-bots: invisible para humanos, los bots lo completan.
+                  Si llega con valor, el backend responde éxito falso sin crear nada. */}
+              <input
+                type="text"
+                name="website"
+                value={formData.website}
+                onChange={handleChange}
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+                className="absolute -left-[9999px] w-0 h-0 opacity-0 pointer-events-none"
+              />
 
               <div className="flex flex-col items-center space-y-3 pt-4">
                 <button

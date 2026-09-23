@@ -13,12 +13,13 @@ import { apiClient } from '../config/apiClient';
 import type { Testimonial } from '../types';
 
 /**
- * Obtiene la lista de todos los testimonios.
- * 
- * @returns Una promesa que resuelve a un array de testimonios
- * 
+ * Obtiene la lista de testimonios activos.
+ *
+ * @param courseId - uuid del curso (opcional). Si se pasa, devuelve los
+ *   testimonios específicos de ese curso más los genéricos.
+ *
  * @example
- * const testimonials = await getTestimonials();
+ * const testimonials = await getTestimonials(course.id);
  */
-export const getTestimonials = (): Promise<Testimonial[]> =>
-    apiClient.get('/testimonials');
+export const getTestimonials = (courseId?: string): Promise<Testimonial[]> =>
+    apiClient.get('/testimonials', courseId ? { params: { courseId } } : undefined);

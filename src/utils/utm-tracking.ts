@@ -72,6 +72,26 @@ export const getStoredUTMData = (): UTMData | null => {
   }
 };
 
+/**
+ * Payload saneado para enviar al backend: solo los campos string
+ * (excluye `timestamp` numérico y claves vacías). Evita acoplar
+ * la forma interna de UTMData al contrato de la API.
+ */
+export const getUTMPayload = (): Record<string, string> => {
+  const data = getStoredUTMData();
+  if (!data) return {};
+
+  const payload: Record<string, string> = {};
+  const keys: Array<keyof Omit<UTMData, 'timestamp'>> = [
+    'source', 'medium', 'campaign', 'term', 'content', 'full_utm', 'fbc', 'fbp',
+  ];
+  for (const key of keys) {
+    const value = data[key];
+    if (typeof value === 'string' && value) payload[key] = value;
+  }
+  return payload;
+};
+
 export const updateFbpFromCookie = (): void => {
   if (typeof document === 'undefined') return;
   const fbp = getCookie('_fbp');

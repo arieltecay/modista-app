@@ -20,6 +20,7 @@ export interface LandingPageData {
 export interface CourseData {
   id: string;
   _id?: string;
+  uuid?: string;
   title: string;
   description: string;
   price: number;
@@ -27,6 +28,7 @@ export interface CourseData {
   imageUrl?: string;
   category?: string;
   status?: string;
+  isPresencial?: boolean;
 }
 
 export interface BenefitItem {
@@ -39,6 +41,8 @@ export interface TestimonialItem {
   name: string;
   role: string;
   text: string;
+  /** Foto de la alumna (opcional, desde CMS) */
+  avatarUrl?: string;
 }
 
 export interface StatItem {

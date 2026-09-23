@@ -23,6 +23,8 @@ export interface Course {
     imageUrl?: string;
     isPresencial?: boolean;
     isWorkshop?: boolean;
+    /** Badge "Top Ventas" — lo define la admin (contenido real) */
+    isTopSeller?: boolean;
     status?: string;
     lastMonthlyClosureDate?: Date;
     currentPaymentCycleStartDate?: Date;

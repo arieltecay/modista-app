@@ -73,8 +73,15 @@ export interface Testimonial {
     id?: string;
     name: string;
     description: string;
+    role?: string;
     rating?: number;
     courseTitle?: string;
+    /** Foto de la alumna (Cloudinary) */
+    avatarUrl?: string;
+    /** uuid del curso asociado (vacío = genérico) */
+    courseId?: string;
+    order?: number;
+    isActive?: boolean;
     createdAt?: Date;
 }
 
@@ -170,14 +177,21 @@ export interface CreateInscriptionData {
     nombre: string;
     apellido: string;
     email: string;
-    telefono: string;
+    celular: string;
+    courseId: string;
     courseTitle: string;
     coursePrice: number;
     courseDeeplink?: string;
     courseShortDescription?: string;
     dateYear?: number;
+    turnoId?: string | null;
+    marketingSource?: string;
+    utmParams?: Record<string, string>;
+    sessionId?: string;
     metaFbc?: string;
     metaFbp?: string;
+    /** Honeypot anti-bots: campo invisible, debe viajar vacío */
+    website?: string;
 }
 
 /**
@@ -196,6 +210,8 @@ export interface CreateLandingInscriptionData {
     sessionId?: string;
     metaFbc?: string;
     metaFbp?: string;
+    /** Honeypot anti-bots: campo invisible, debe viajar vacío */
+    website?: string;
 }
 
 // ============================================

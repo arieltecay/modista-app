@@ -1,6 +1,7 @@
 export interface Course {
   id: string;
   _id?: string;
+  uuid?: string;
   title: string;
   description: string;
   price: number;
@@ -10,4 +11,6 @@ export interface Course {
   imageUrl?: string;
   deeplink?: string;
   isPresencial?: boolean;
+  /** Badge "Top Ventas" — lo marca la admin (contenido real) */
+  isTopSeller?: boolean;
 }

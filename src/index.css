@@ -93,6 +93,47 @@
   --radius-sm: calc(var(--radius) - 4px);
 
   --animate-scroll: scroll 40s linear infinite;
+
+  /* ============================================================
+     ATELIER DIGITAL (v2) — Landing rediseñada / nueva identidad
+     Co-existe con los tokens legacy de arriba (no se rompe nada).
+     ============================================================ */
+  --color-atelier-canvas: #FAF7F2;      /* crema tela cruda */
+  --color-atelier-cream: #F2EDE4;       /* superficie elevada */
+  --color-atelier-ink: #1C1917;         /* tinta cálida (no negro puro) */
+  --color-atelier-primary: #5B7263;     /* verde modista */
+  --color-atelier-primary-dark: #4A5D50;
+  --color-atelier-pop: #E8604C;         /* coral hilo de bordar (solo CTAs) */
+  --color-atelier-pop-dark: #D14A37;
+  --color-atelier-gold: #C9A24B;        /* dorado botones/badges */
+  --color-atelier-sage: #8FA396;        /* verde apoyo (líneas, íconos) */
+  --color-atelier-muted-text: #747872;  /* gris cálido para texto secundario */
+
+  --font-atelier-serif: "Source Serif 4", Georgia, serif;
+  --font-atelier-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Motivo de marca v2 (Atelier Digital): línea de costura punteada
+   (basting stitch) usada como divider entre secciones de la landing. */
+.stitch-divider {
+  border: 0;
+  border-top: 2px dashed color-mix(in srgb, #8FA396 55%, transparent);
+  width: min(92%, 42rem);
+  margin-inline: auto;
+}
+
+/* Reveal on scroll (v2): entrada suave y barata */
+.reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 500ms ease, transform 500ms ease;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
 }
 
 /* Transiciones de estilo fluidas y seguras */

@@ -5,7 +5,9 @@ import { useLocation } from 'react-router-dom';
 import { updateFbpFromCookie } from '../../utils/utm-tracking';
 
 const GTM_ID = import.meta.env.VITE_GTM_ID;
-const CLARITY_ID = import.meta.env.VITE_CLARITY_ID;
+// Acepta ambos nombres de env (la de prod puede estar con cualquiera de las dos).
+// Sin esto, Clarity NO se cargaba cuando la env se definió como VITE_CLARITY_PROJECT_ID.
+const CLARITY_ID = import.meta.env.VITE_CLARITY_ID || import.meta.env.VITE_CLARITY_PROJECT_ID;
 const FB_PIXEL_ID = import.meta.env.VITE_FACEBOOK_PIXEL_ID;
 const API_URL = import.meta.env.VITE_API_URL;
 const SESSION_KEY = 'modista_session_id';
@@ -48,7 +50,9 @@ const GoogleTagManager = () => {
       s.parentNode.insertBefore(t,s)}(window, document,'script',
       'https://connect.facebook.net/en_US/fbevents.js'));
       fbq('init', FB_PIXEL_ID);
-      fbq('track', 'PageView', {}, { eventID: `pageview_${sessionId}_init` });
+      // NOTA: no disparamos PageView acá. El useEffect de `location` (abajo)
+      // ya emite PageView en el mount inicial y en cada cambio de ruta; hacerlo
+      // en ambos lugares duplicaba el evento en cada carga de página.
 
       // Capturar fbp después de que el Pixel inicialice y setee el cookie _fbp
       setTimeout(() => {

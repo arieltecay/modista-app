@@ -36,9 +36,21 @@ const SocialProofSection: React.FC<SocialProofSectionProps> = ({ stats, testimon
               </div>
               <p className="text-[#444842] text-sm leading-relaxed mb-4" style={{ fontFamily: "'Inter', sans-serif" }}>"{t.text}"</p>
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-[#7d8c7b]/15 flex items-center justify-center text-[#516050] text-xs font-semibold" style={{ fontFamily: "'Inter', sans-serif" }}>
-                  {t.name.charAt(0)}
-                </div>
+                {t.avatarUrl ? (
+                  <img
+                    src={t.avatarUrl}
+                    alt={`Foto de ${t.name}`}
+                    width={32}
+                    height={32}
+                    loading="lazy"
+                    decoding="async"
+                    className="w-8 h-8 rounded-full object-cover border border-[#7d8c7b]/20"
+                  />
+                ) : (
+                  <div className="w-8 h-8 rounded-full bg-[#7d8c7b]/15 flex items-center justify-center text-[#516050] text-xs font-semibold" style={{ fontFamily: "'Inter', sans-serif" }}>
+                    {t.name.charAt(0)}
+                  </div>
+                )}
                 <div>
                   <p className="text-[#141b2b] text-xs font-semibold" style={{ fontFamily: "'Inter', sans-serif" }}>{t.name}</p>
                   <p className="text-[#747872] text-xs" style={{ fontFamily: "'Inter', sans-serif" }}>{t.role}</p>

@@ -8,7 +8,8 @@ import {
 } from '../../services/analytics';
 import { Spinner } from '@/components';
 import { validateEmail, validateCelular } from '../../utils/formValidations';
-import { getStoredUTMData } from '../../utils/utm-tracking';
+import { getUTMPayload, getStoredUTMData } from '../../utils/utm-tracking';
+import { getCookieValue } from '../../utils/cookies';
 import { 
   LandingInscriptionFormProps, 
   FormState, 
@@ -23,6 +24,7 @@ const LandingInscriptionForm: React.FC<LandingInscriptionFormProps> = ({ course,
     fullName: '',
     email: '',
     celular: '',
+    website: '', // honeypot anti-bots
   });
   const [errors, setErrors] = useState<Partial<FormState>>({});
   const [loading, setLoading] = useState(false);
@@ -62,14 +64,6 @@ const LandingInscriptionForm: React.FC<LandingInscriptionFormProps> = ({ course,
     }
   };
 
-  const getCookieValue = (name: string): string | undefined => {
-    if (typeof document === 'undefined') return undefined;
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop()?.split(';').shift();
-    return undefined;
-  };
-
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setFormMessage(null);
@@ -93,10 +87,11 @@ const LandingInscriptionForm: React.FC<LandingInscriptionFormProps> = ({ course,
         coursePrice: course.price,
         landingPageId: landingPage._id || landingPage.id || '',
         marketingSource: utmData?.source || 'organic',
-        utmParams: utmData || {},
+        utmParams: getUTMPayload(),
         sessionId: sessionId || undefined,
         metaFbc: utmData?.fbc || getCookieValue('_fbc'),
         metaFbp: utmData?.fbp || getCookieValue('_fbp'),
+        website: formData.website,
       };
 
       const response = await createLandingInscription(payload);
@@ -204,6 +199,19 @@ const LandingInscriptionForm: React.FC<LandingInscriptionFormProps> = ({ course,
           />
           {errors.celular && <p className="text-red-600 text-xs font-medium mt-1.5 ml-1">{errors.celular}</p>}
         </div>
+
+        {/* Honeypot anti-bots: invisible para humanos, los bots lo completan.
+            Si llega con valor, el backend responde éxito falso sin crear nada. */}
+        <input
+          type="text"
+          name="website"
+          value={formData.website}
+          onChange={handleChange}
+          tabIndex={-1}
+          autoComplete="off"
+          aria-hidden="true"
+          className="absolute -left-[9999px] w-0 h-0 opacity-0 pointer-events-none"
+        />
 
         <div className="pt-4">
           <button

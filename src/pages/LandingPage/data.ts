@@ -7,11 +7,6 @@ export const BENEFITS: BenefitItem[] = [
     desc: 'Técnicas explicadas en detalle. Pausá, retrocedé, practicá a tu ritmo.',
   },
   {
-    emoji: '📐',
-    title: 'Moldes a medida',
-    desc: 'Clases explicadas paso a paso.',
-  },
-  {
     emoji: '💬',
     title: 'Acompañamiento directo',
     desc: 'Consultá tus dudas por WhatsApp. Mica te responde durante todo el curso.',

@@ -4,7 +4,7 @@ import { SEO, PrivacyNotice, FaqSection } from '@/components';
 import { getOptimizedUrl } from '../../utils/image-utils';
 import { trackFunnel } from '../../utils/funnel-tracker';
 import { useLandingData } from './hooks/use-landing-data';
-import { BENEFITS, TESTIMONIALS, STATS } from './data';
+import { BENEFITS, STATS } from './data';
 import StickyCta from './sections/sticky-cta';
 import HeroSection from './sections/hero-section';
 import FormSection from './sections/form-section';
@@ -29,7 +29,7 @@ const LandingSkeleton: React.FC = () => (
 );
 
 const LandingPage: React.FC = () => {
-  const { landing, course, loading, error } = useLandingData();
+  const { landing, course, testimonials, loading, error } = useLandingData();
 
   const courseId = useMemo(() => course?.id || course?._id, [course?.id, course?._id]);
 
@@ -91,7 +91,11 @@ const LandingPage: React.FC = () => {
 
           <InstructorSection />
 
-          <SocialProofSection stats={STATS} testimonials={TESTIMONIALS} />
+          {/* Solo se muestra si hay testimonios reales cargados desde el CMS
+              (regla de honestidad: nunca contenido inventado). */}
+          {testimonials.length > 0 && (
+            <SocialProofSection stats={STATS} testimonials={testimonials} />
+          )}
 
           <SecuritySection />
         </Suspense>

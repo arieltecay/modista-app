@@ -13,6 +13,8 @@ export interface InscriptionFormData {
   apellido: string;
   email: string;
   celular: string;
+  /** Honeypot anti-bots: invisible, debe quedar vacío */
+  website: string;
 }
 
 export interface InscriptionFormErrors {

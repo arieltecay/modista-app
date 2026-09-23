@@ -23,6 +23,10 @@ export interface CreateLandingInscriptionPayload {
   marketingSource?: string;
   utmParams?: Record<string, string | null | undefined>;
   sessionId?: string;
+  metaFbc?: string;
+  metaFbp?: string;
+  /** Honeypot anti-bots: campo invisible, debe viajar vacío */
+  website?: string;
 }
 
 export interface LandingInscriptionFormProps {
@@ -34,6 +38,7 @@ export interface FormState {
   fullName: string;
   email: string;
   celular: string;
+  website: string;
 }
 
 export interface FormMessage {

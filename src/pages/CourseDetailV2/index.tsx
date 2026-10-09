@@ -88,11 +88,10 @@ function CourseDetailV2() {
             <div className="relative">
               <CourseImage
                 course={course}
-                className="w-full aspect-[4/3] object-cover rounded-3xl shadow-lg shadow-atelier-primary/10"
+                className="w-full aspect-[4/5] object-cover rounded-3xl shadow-lg shadow-atelier-primary/10"
                 width={1200}
-                height={900}
+                height={1500}
                 priority
-                crop="limit"
               />
               {course.isTopSeller && (
                 <span className="absolute top-4 left-4 bg-atelier-gold text-white text-xs font-bold uppercase tracking-wider px-4 py-1.5 rounded-full shadow font-atelier-sans">

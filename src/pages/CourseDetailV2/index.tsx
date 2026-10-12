@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import type { MouseEvent } from 'react';
 import { InscriptionForm, SEO, CourseImage } from '@/components';
 import V2Layout from '../../components/V2Layout';
 import { formatTextToHtml } from '../../utils/textFormatting';
@@ -35,6 +36,20 @@ function CourseDetailV2() {
   }
 
   const course = vm.course;
+
+  // Delegación de tracking para botones/CTAs inyectados por el texto enriquecido.
+  const handleRichTextClick = (event: MouseEvent<HTMLDivElement>) => {
+    const cta = (event.target as HTMLElement).closest<HTMLElement>('[data-cta]');
+    if (!cta || !course) return;
+    window.dataLayer?.push({
+      event: 'cta_click',
+      course_name: course.title,
+      section: 'long_description',
+      cta_variant: cta.dataset.cta ?? '',
+      cta_label: cta.dataset.ctaLabel ?? '',
+      timestamp: Date.now(),
+    });
+  };
 
   if (!course) {
     return (
@@ -117,6 +132,7 @@ function CourseDetailV2() {
 
             <div
               className="text-[#444842] text-base leading-relaxed font-atelier-sans"
+              onClick={handleRichTextClick}
               dangerouslySetInnerHTML={{ __html: formatTextToHtml(course.longDescription || '') }}
             />
           </div>

@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom';
 import type { MouseEvent } from 'react';
+import { useState, useEffect } from 'react';
+
 import { InscriptionForm, SEO, CourseImage } from '@/components';
 import V2Layout from '../../components/V2Layout';
 import { formatTextToHtml } from '../../utils/textFormatting';
@@ -18,6 +20,25 @@ import CourseDetailV2Skeleton from './components/CourseDetailV2Skeleton';
  */
 function CourseDetailV2() {
   const vm = useCourseDetail();
+
+  // Visibilidad del sticky CTA móvil: se oculta al llegar al formulario
+  const [showMobileCTA, setShowMobileCTA] = useState(true);
+
+  // Ocultar sticky CTA móvil cuando el formulario entra al viewport
+  useEffect(() => {
+    const course = vm.course;
+    if (!course || !shouldShowInscription(course.price)) return;
+    const form = vm.formRef.current;
+    if (!form || typeof IntersectionObserver === 'undefined') return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        setShowMobileCTA(!entries.some((e) => e.isIntersecting));
+      },
+      { threshold: 0.3 }
+    );
+    observer.observe(form);
+    return () => observer.disconnect();
+  }, [vm.course, vm.formRef]);
 
   if (vm.loading) {
     return (
@@ -184,8 +205,8 @@ function CourseDetailV2() {
         )}
       </div>
 
-      {/* Sticky CTA mobile (con refs, sin selectores frágiles) */}
-      {!vm.isFree && vm.showStickyCTA && (
+      {/* Sticky CTA mobile: aparece siempre (móvil) y desaparece al llegar al formulario */}
+      {!vm.isFree && showMobileCTA && (
         <div className="fixed bottom-0 left-0 right-0 z-50 bg-atelier-canvas/95 backdrop-blur-md border-t border-atelier-sage/15 p-3 md:hidden">
           <div className="max-w-4xl mx-auto flex items-center justify-between gap-3">
             <div className="flex flex-col min-w-0">

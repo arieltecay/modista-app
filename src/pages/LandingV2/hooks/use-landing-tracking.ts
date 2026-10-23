@@ -61,6 +61,8 @@ export const usePricingVisibleOnce = (ref: React.RefObject<Element | null>, extr
 export const useScrollDepthTracking = (extra: TrackExtra): void => {
   useEffect(() => {
     let ticking = false;
+    let fired50 = false;
+    let fired90 = false;
 
     const onScroll = () => {
       if (ticking) return;
@@ -70,8 +72,17 @@ export const useScrollDepthTracking = (extra: TrackExtra): void => {
         const max = doc.scrollHeight - window.innerHeight;
         if (max > 0) {
           const pct = (window.scrollY + window.innerHeight) / max * 100;
-          if (pct >= 50) trackV2('scroll_50', extra);
-          if (pct >= 90) trackV2('scroll_90', extra);
+          if (pct >= 50 && !fired50) {
+            fired50 = true;
+            trackV2('scroll_50', extra);
+          }
+          if (pct >= 90 && !fired90) {
+            fired90 = true;
+            trackV2('scroll_90', extra);
+          }
+          if (fired50 && fired90) {
+            window.removeEventListener('scroll', onScroll);
+          }
         }
         ticking = false;
       });

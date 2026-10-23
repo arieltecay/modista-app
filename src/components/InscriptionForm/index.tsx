@@ -200,25 +200,25 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
 
           {!isFree && (
             <>
-              <div className="flex items-center justify-center gap-2 mb-8">
+              <div className="flex flex-row flex-wrap items-center justify-center gap-2 sm:gap-4 mb-8">
                 {[
                   { num: '1', label: 'Datos', active: true },
                   { num: '2', label: 'Pago', active: false },
                   { num: '3', label: 'Acceso', active: false },
                 ].map((step, i) => (
                   <React.Fragment key={step.num}>
-                    <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-semibold transition-colors ${
+                    <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs sm:text-sm font-semibold transition-colors min-w-[44px] ${
                       step.active 
                         ? 'bg-primary text-primary-foreground' 
                         : 'bg-muted text-muted-foreground'
                     }`}>
-                      <span className="flex items-center justify-center w-5 h-5 rounded-full bg-background/30 text-xs">
+                      <span className="flex items-center justify-center w-4 h-4 rounded-full bg-background/30 text-[10px] sm:text-xs">
                         {step.num}
                       </span>
                       {step.label}
                     </div>
                     {i < 2 && (
-                      <div className="w-6 h-px bg-border" />
+                      <div className="hidden sm:block w-4 h-[1px] bg-border mx-1 sm:mx-1.5" />
                     )}
                   </React.Fragment>
                 ))}

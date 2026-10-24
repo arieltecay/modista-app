@@ -1,13 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
-import { getLandingPageBySlug } from '../../../services/landing';
-import { getCourseById } from '../../../services/courses';
-import { getTestimonials } from '../../../services/testimonials/testimonialService';
-import { trackCourseView } from '../../../services/analytics';
-import { useCourseContext } from '../../../context/CourseContext';
-import { getOptimizedUrl } from '../../../utils/image-utils';
-import { LandingPageData, CourseData, TestimonialItem } from '../types';
-import type { Testimonial } from '../../../services/types';
+import { getLandingPageBySlug } from '../services/landing';
+import { getCourseById } from '../services/courses';
+import { getTestimonials } from '../services/testimonials/testimonialService';
+import { trackCourseView } from '../services/analytics';
+import { useCourseContext } from '../context/CourseContext';
+import { getOptimizedUrl } from '../utils/image-utils';
+import { LandingPageData, CourseData, TestimonialItem } from '../types/landing';
+import type { Testimonial } from '../services/types';
 
 interface UseLandingDataResult {
   landing: LandingPageData | null;

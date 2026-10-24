@@ -108,6 +108,3 @@ export const updateFbpFromCookie = (): void => {
   sessionStorage.setItem(UTM_KEY, JSON.stringify(utmData));
 };
 
-export const clearUTMData = (): void => {
-  sessionStorage.removeItem(UTM_KEY);
-};

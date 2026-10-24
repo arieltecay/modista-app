@@ -10,7 +10,7 @@ import StitchDivider from '../LandingV2/components/StitchDivider';
 
 /**
  * Home V2 — "Atelier Digital".
- * Ruta paralela `/v2`: convive con la Home actual sin romperla.
+ * Ruta canónica `/`.
  * El reveal-on-scroll lo provee V2Layout (cubre también contenido async).
  */
 const HomeV2: React.FC = () => {

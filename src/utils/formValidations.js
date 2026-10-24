@@ -122,26 +122,3 @@ export const validateCelular = (value) => {
     return 'Ingresa un número de celular válido (ej. +543811234567 o 543811234567).';
   }
 };
-
-/**
- * Valida todo el formulario de inscripción.
- * @param {Object} formData - Objeto con los datos del formulario
- * @returns {Object} Objeto con errores por campo (vacío si no hay errores)
- */
-export const validateInscriptionForm = (formData) => {
-  const errors = {};
-
-  const nombreError = validateNombre(formData.nombre);
-  if (nombreError) errors.nombre = nombreError;
-
-  const apellidoError = validateApellido(formData.apellido);
-  if (apellidoError) errors.apellido = apellidoError;
-
-  const emailError = validateEmail(formData.email);
-  if (emailError) errors.email = emailError;
-
-  const celularError = validateCelular(formData.celular);
-  if (celularError) errors.celular = celularError;
-
-  return errors;
-};

@@ -2,8 +2,8 @@ import React, { useEffect, useMemo, useRef } from 'react';
 import { Navigate } from 'react-router-dom';
 import { SEO, PrivacyNotice, FaqSection } from '@/components';
 import { getOptimizedUrl } from '../../utils/image-utils';
-import { useLandingData } from '../LandingPage/hooks/use-landing-data';
-import { BENEFITS } from '../LandingPage/data';
+import { useLandingData } from '../../hooks/use-landing-data';
+import { BENEFITS } from './data';
 import StitchDivider from './components/StitchDivider';
 import LandingSkeleton from './components/LandingSkeleton';
 import HeroSection from './sections/HeroSection';
@@ -19,7 +19,7 @@ import { trackV2, useScrollDepthTracking } from './hooks/use-landing-tracking';
 /**
  * Landing Page V2 — "Atelier Digital".
  *
- * Ruta paralela `/v2/lp/:slug`: convive con la v1 (`/lp/:slug`) sin romperla.
+ * Ruta canónica `/lp/:slug` (puerta de entrada de las campañas de Meta Ads).
  * Misma data (CMS de landings + curso + testimonios vía useLandingData),
  * nuevo sistema visual, form blindado y funnel de tracking completo.
  */

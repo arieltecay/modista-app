@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { getCourseById } from '../../../services/courses';
-import type { Course } from '../../Courses/types';
+import type { Course } from '../../../types/course';
 import { trackCourseView } from '../../../services/analytics';
 import { isCourseFree, shouldShowInscription } from '../../../utils/courseUtils';
 import { useCourseContext } from '../../../context/CourseContext';

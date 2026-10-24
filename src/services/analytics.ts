@@ -13,8 +13,7 @@ import type {
   CourseViewParams,
   InteractionParams,
   ConversionParams,
-  FormEventParams,
-  VideoEventParams
+  FormEventParams
 } from './types';
 import { getStoredUTMData } from '../utils/utm-tracking';
 
@@ -94,12 +93,6 @@ export const sendAnalyticsEvent = (
         event: eventName,
         ...fullParameters
       });
-    }
-
-    // Integración con Meta Pixel (fbq)
-    if (window.fbq) {
-      // Mapeo básico de eventos de GTM a Meta Pixel si es necesario
-      // Pero preferimos usar trackCourseView e trackInscriptionSuccess específicos abajo
     }
   }
 
@@ -320,18 +313,6 @@ export const trackFormFieldFocus = (formId: string, formName: string, fieldName:
 };
 
 /**
- * Tracking de interacción con video
- */
-export const trackVideoInteraction = (videoTitle: string, action: 'play' | 'pause' | 'complete'): void => {
-  const params: VideoEventParams = {
-    video_title: videoTitle,
-    video_provider: 'youtube',
-    video_action: action
-  };
-  sendAnalyticsEvent(AnalyticsEvents.VIDEO_INTERACTION, params);
-};
-
-/**
  * Tracking de clics de contacto (WhatsApp, etc)
  */
 export const trackContactClick = (method: 'whatsapp' | 'email', location: string): void => {
@@ -341,17 +322,6 @@ export const trackContactClick = (method: 'whatsapp' | 'email', location: string
     contact_method: method
   };
   sendAnalyticsEvent(AnalyticsEvents.CONTACT_CLICK, params);
-};
-
-/**
- * Tracking de clics en botones generales
- */
-export const trackButtonClick = (buttonName: string, buttonLocation: string): void => {
-  const params: InteractionParams = {
-    button_name: buttonName,
-    button_location: buttonLocation
-  };
-  sendAnalyticsEvent(AnalyticsEvents.BUTTON_CLICK, params);
 };
 
 const getScrollDepthPct = (): number => {
@@ -406,10 +376,8 @@ export default {
   trackFormFieldFocus,
   trackInscriptionSuccess,
   trackPurchaseSuccess,
-  trackVideoInteraction,
   trackFaqInteraction,
   trackContactClick,
-  trackButtonClick,
   trackCtaClick,
   trackStickyCtaView
 };

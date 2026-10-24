@@ -1,4 +1,4 @@
-import type { LandingPageData, CourseData, TestimonialItem } from '../LandingPage/types';
+import type { LandingPageData, CourseData, TestimonialItem } from '../../types/landing';
 
 /** Reusa los contratos de datos de la landing v1 (misma API). */
 export type { LandingPageData, CourseData, TestimonialItem };

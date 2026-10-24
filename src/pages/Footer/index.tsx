@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaWhatsapp, FaEnvelope, FaInstagram, FaTiktok } from 'react-icons/fa';
+import { FaWhatsapp, FaInstagram, FaTiktok } from 'react-icons/fa';
 import { WHATSAPP_URL } from '../../utils/constants';
 import { Link } from 'react-router-dom';
 

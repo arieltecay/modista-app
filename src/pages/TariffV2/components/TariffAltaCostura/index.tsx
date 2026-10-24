@@ -1,5 +1,5 @@
 import type { FC } from 'react';
-import { TariffSection } from '../../../../api/types/shared-tariff-types.js'; // Importación corregida
+import { TariffSection } from '../../../../services/tariff/types';
 import DynamicTariffSection from '../DynamicTariffSection';
 import { TariffAltaCosturaProps } from './types';
 

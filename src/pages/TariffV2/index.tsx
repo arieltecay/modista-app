@@ -7,7 +7,7 @@ import {
 } from '../../services/tariff/types';
 import { Spinner, ErrorCard, SEO } from '@/components';
 import { getAvailableTariffMetadata as fetchAvailableTariffMetadata, getTariffs as fetchTariffs, searchTariffItems } from '../../services/tariff/tariffService';
-import { TariffModista, TariffAltaCostura, TariffArreglos, DynamicTariffSection } from '../Tariff/components';
+import { TariffModista, TariffAltaCostura, TariffArreglos, DynamicTariffSection } from './components';
 import V2Layout from '../../components/V2Layout';
 
 const useAvailableTariffsMeta = () => {

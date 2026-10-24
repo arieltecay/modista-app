@@ -327,15 +327,3 @@ export interface ConversionParams extends EventParameters {
     user_phone?: string;
 }
 
-// ============================================
-// WINDOW EXTENSIONS
-// ============================================
-
-/**
- * Extensión del objeto Window para incluir dataLayer de GTM
- */
-declare global {
-    interface Window {
-        dataLayer?: Array<Record<string, any>>;
-    }
-}

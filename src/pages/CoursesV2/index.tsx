@@ -7,7 +7,7 @@ import { useVisibleCourses } from '../../hooks/use-visible-courses';
 type FilterMode = 'all' | 'online' | 'presencial';
 
 /**
- * Catálogo completo v2 (/v2/cursos): CourseCardV2 compartida y toggle simple
+ * Catálogo completo (/cursos): CourseCardV2 compartida y toggle simple
  * Online/Presencial (los únicos filtros reales del negocio).
  */
 const CoursesV2: React.FC = () => {

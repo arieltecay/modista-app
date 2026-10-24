@@ -1,5 +1,5 @@
 import React from 'react';
-import type { BenefitItem } from '../../../LandingPage/types';
+import type { BenefitItem } from '../../../../types/landing';
 
 interface BenefitsSectionProps {
   benefits: BenefitItem[];

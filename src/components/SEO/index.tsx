@@ -28,7 +28,6 @@ const SEO: React.FC<SEOProps> = ({
   const fullTitle = title ? `${title} | ${siteName}` : siteName;
   const defaultDescription = 'Academia de costura y diseño. Cursos presenciales y online para aprender a crear tus propias prendas.';
   const defaultImage = 'https://res.cloudinary.com/ddfee9hht/image/upload/f_auto,q_auto,w_1200/v1775245847/modista_app/HomeMica.jpg';
-  const siteUrl = 'https://modista-app.com';
 
   const metaDescription = description || defaultDescription;
   const metaImage = ogImage || defaultImage;

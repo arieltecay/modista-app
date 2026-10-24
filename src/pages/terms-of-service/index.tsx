@@ -1,5 +1,3 @@
-import React from 'react';
-
 const TermsOfServicePage = () => {
   return (
     <div className="bg-background min-h-screen py-20">

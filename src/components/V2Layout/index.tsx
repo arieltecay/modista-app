@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { useRevealOnScroll } from '../../pages/LandingV2/hooks/use-reveal';
 
-const WHATSAPP_URL = 'https://wa.me/5493815430670';
+const WHATSAPP_URL = 'https://wa.me/5493815734249';
 
 const NAV_LINKS = [
   { to: '/', label: 'Inicio', end: true },

@@ -1,14 +1,21 @@
 import { Link } from 'react-router-dom';
 import type { MouseEvent } from 'react';
-import { useState, useEffect } from 'react';
+import { lazy, Suspense, useState, useEffect } from 'react';
 
-import { InscriptionForm, SEO, CourseImage } from '@/components';
+import SEO from '../../components/SEO';
+import CourseImage from '../../components/CourseImage';
 import V2Layout from '../../components/V2Layout';
 import { formatTextToHtml } from '../../utils/textFormatting';
 import { shouldShowInscription } from '../../utils/courseUtils';
 import { getOptimizedUrl } from '../../utils/image-utils';
 import { useCourseDetail } from './hooks/use-course-detail';
 import CourseDetailV2Skeleton from './components/CourseDetailV2Skeleton';
+
+// google-libphonenumber (~570 KB de fuente) vive en este chunk: solo se descarga en el detalle del curso.
+// A nivel de MÓDULO (no dentro del componente): un lazy() creado en cada render haría que el
+// <Suspense> vuelva al fallback en cada re-render (parpadeo del formulario).
+const loadInscriptionForm = () => import('../../components/InscriptionForm');
+const InscriptionForm = lazy(loadInscriptionForm);
 
 /**
  * Course Detail V2 — página de venta orgánica (componente presentacional).
@@ -23,6 +30,19 @@ function CourseDetailV2() {
 
   // Visibilidad del sticky CTA móvil: se oculta al llegar al formulario
   const [showMobileCTA, setShowMobileCTA] = useState(true);
+
+  // Prefetch en idle para que el chunk ya esté listo cuando la usuaria llegue al formulario.
+  useEffect(() => {
+    const prefetch = () => {
+      void loadInscriptionForm();
+    };
+    if (typeof window.requestIdleCallback === 'function') {
+      const id = window.requestIdleCallback(prefetch);
+      return () => window.cancelIdleCallback(id);
+    }
+    const id = window.setTimeout(prefetch, 1500);
+    return () => window.clearTimeout(id);
+  }, []);
 
   // Ocultar sticky CTA móvil cuando el formulario entra al viewport
   useEffect(() => {
@@ -127,6 +147,8 @@ function CourseDetailV2() {
                 className="w-full aspect-[4/5] object-cover rounded-3xl shadow-lg shadow-atelier-primary/10"
                 width={1200}
                 height={1500}
+                srcSetWidths={[480, 720, 960, 1200]}
+                sizes="(min-width: 1024px) 676px, calc(100vw - 32px)"
                 priority
               />
               {course.isTopSeller && (
@@ -200,7 +222,9 @@ function CourseDetailV2() {
         {/* Form de inscripción (componente probado, cadena de conversión intacta) */}
         {shouldShowInscription(course.price) && (
           <div ref={vm.formRef} className="mt-10 scroll-mt-6">
-            <InscriptionForm course={course} />
+            <Suspense fallback={<div className="min-h-[640px]" aria-hidden="true" />}>
+              <InscriptionForm course={course} />
+            </Suspense>
           </div>
         )}
       </div>

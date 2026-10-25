@@ -5,13 +5,13 @@ import './index.css';
 import App from './App.jsx';
 import { BrowserRouter } from 'react-router-dom';
 import { registerSW } from 'virtual:pwa-register';
-import { onCLS, onINP, onLCP, onFCP, onTTFB } from 'web-vitals';
+import { onCLS, onINP, onLCP, onFCP, onTTFB } from 'web-vitals/attribution';
 import { ThemeProvider } from './context/ThemeContext';
 import { HelmetProvider } from 'react-helmet-async';
 
 // Registro de Service Worker para PWA con lógica de auto-update mejorada
 const updateSW = registerSW({
-  immediate: true,
+  immediate: false,
   onNeedRefresh() {
     console.log('✨ Nueva versión disponible. Recargando...');
     updateSW(true); // Fuerza la actualización y recarga
@@ -60,6 +60,22 @@ window.addEventListener('error', (e) => {
 function reportWebVitals(metric) {
   // Solo enviar a GTM en producción
   if (import.meta.env.PROD && window.dataLayer) {
+    const a = metric.attribution || {};
+    const extra = {
+      web_vitals_value: Math.round(metric.name === 'CLS' ? metric.value * 1000 : metric.value),
+      web_vitals_rating: metric.rating,
+      web_vitals_page: window.location.pathname,
+      web_vitals_target: a.target || a.largestShiftTarget || a.interactionTarget,
+      web_vitals_ttfb: a.timeToFirstByte,
+      web_vitals_lcp_load_delay: a.resourceLoadDelay,
+      web_vitals_lcp_load_time: a.resourceLoadDuration,
+      web_vitals_lcp_render_delay: a.elementRenderDelay,
+    };
+    Object.keys(extra).forEach((k) => {
+      if (extra[k] === undefined || extra[k] === null) delete extra[k];
+      else if (typeof extra[k] === 'number') extra[k] = Math.round(extra[k]);
+    });
+
     window.dataLayer.push({
       event: 'web_vitals',
       event_category: 'Web Vitals',
@@ -67,6 +83,7 @@ function reportWebVitals(metric) {
       event_value: Math.round(metric.name === 'CLS' ? metric.delta * 1000 : metric.delta),
       event_label: metric.id,
       non_interaction: true,
+      ...extra,
     });
   }
 

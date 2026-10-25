@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Spinner } from '@/components';
+import Spinner from '../../../../components/Spinner';
 import { useLandingForm } from './use-landing-form';
 import { SUBMIT_PHASE_LABEL } from './types';
 import type { LandingFormField } from './types';

@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useRef } from 'react';
 import { Navigate } from 'react-router-dom';
-import { SEO, PrivacyNotice, FaqSection } from '@/components';
+import SEO from '../../components/SEO';
+import PrivacyNotice from '../../components/PrivacyNotice';
+import FaqSection from '../../components/FaqSection';
 import { getOptimizedUrl } from '../../utils/image-utils';
 import { useLandingData } from '../../hooks/use-landing-data';
 import { BENEFITS } from './data';

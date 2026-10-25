@@ -1,6 +1,6 @@
 import React from 'react';
 import V2Layout from '../../components/V2Layout';
-import { SEO } from '@/components';
+import SEO from '../../components/SEO';
 import { getOptimizedUrl } from '../../utils/image-utils';
 
 /**

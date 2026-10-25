@@ -8,6 +8,8 @@ export const formatPriceAr = (price: number): string =>
 
 interface CourseCardV2Props {
   course: HomeV2Course;
+  /** Tarjeta visible sin scroll (candidata a LCP): sin `reveal` y con carga eager. */
+  priority?: boolean;
 }
 
 /**
@@ -15,10 +17,10 @@ interface CourseCardV2Props {
  * Imagen 4:5 con crop inteligente (Cloudinary g_auto), badge "Top Ventas"
  * solo si la admin lo marcó (contenido real), chip "Presencial" si aplica.
  */
-const CourseCardV2: React.FC<CourseCardV2Props> = ({ course }) => (
+const CourseCardV2: React.FC<CourseCardV2Props> = ({ course, priority = false }) => (
   <Link
     to={`/cursos/${course.id || course._id}`}
-    className="group reveal"
+    className={`group ${priority ? '' : 'reveal'}`}
   >
     <div className="relative">
       <img
@@ -26,8 +28,9 @@ const CourseCardV2: React.FC<CourseCardV2Props> = ({ course }) => (
         alt={course.title}
         width={480}
         height={600}
-        loading="lazy"
+        loading={priority ? 'eager' : 'lazy'}
         decoding="async"
+        {...(priority ? { fetchPriority: 'high' as const } : {})}
         className="w-full aspect-[4/5] object-cover rounded-2xl shadow-sm group-hover:shadow-lg group-hover:scale-[1.015] transition-all duration-300"
       />
       {course.isTopSeller && (

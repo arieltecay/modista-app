@@ -12,6 +12,7 @@
  */
 
 import { apiClient } from '../config/apiClient';
+import { publicClient } from '../config/publicClient';
 import type {
     Course
 } from './types';
@@ -27,7 +28,7 @@ import type {
  * const courses = await getCourses(6);
  */
 export const getCourses = (limit?: number): Promise<Course[]> =>
-    apiClient.get('/courses', {
+    publicClient.get('/courses', {
         params: { limit }
     });
 

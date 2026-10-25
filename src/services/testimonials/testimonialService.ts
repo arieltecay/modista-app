@@ -9,7 +9,7 @@
  * @pattern Service Layer Pattern
  */
 
-import { apiClient } from '../config/apiClient';
+import { publicClient } from '../config/publicClient';
 import type { Testimonial } from '../types';
 
 /**
@@ -22,4 +22,4 @@ import type { Testimonial } from '../types';
  * const testimonials = await getTestimonials(course.id);
  */
 export const getTestimonials = (courseId?: string): Promise<Testimonial[]> =>
-    apiClient.get('/testimonials', courseId ? { params: { courseId } } : undefined);
+    publicClient.get('/testimonials', courseId ? { params: { courseId } } : undefined);

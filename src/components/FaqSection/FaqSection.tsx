@@ -75,11 +75,25 @@ const theme = {
   },
 };
 
+const FAQ_COUNT_KEY = 'modista_faq_count';
+// Cantidad de FAQ por defecto para el skeleton de la PRIMERA visita
+// (verificado en producción: 7 FAQs activas el 2026-10-24).
+const DEFAULT_FAQ_COUNT = 7;
+
+const readStoredFaqCount = (): number => {
+  try {
+    const n = parseInt(localStorage.getItem(FAQ_COUNT_KEY) || '', 10);
+    return Number.isFinite(n) && n > 0 && n <= 20 ? n : DEFAULT_FAQ_COUNT;
+  } catch {
+    return DEFAULT_FAQ_COUNT;
+  }
+};
+
 const FaqSection: React.FC<FaqSectionProps> = ({ variant = 'default' }) => {
   const [faqs, setFaqs] = useState<FAQ[]>([]);
   const [openId, setOpenId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [expectedCount, setExpectedCount] = useState(0);
+  const [expectedCount, setExpectedCount] = useState<number>(readStoredFaqCount);
   const t = theme[variant];
 
   useEffect(() => {
@@ -88,7 +102,15 @@ const FaqSection: React.FC<FaqSectionProps> = ({ variant = 'default' }) => {
       setExpectedCount(data.length);
       setFaqs(data);
       setLoading(false);
-      
+
+      if (data.length > 0) {
+        try {
+          localStorage.setItem(FAQ_COUNT_KEY, String(data.length));
+        } catch {
+          /* almacenamiento no disponible */
+        }
+      }
+
       // Abrir la primera pregunta por defecto si hay datos
       if (data.length > 0) {
         setOpenId(data[0]._id);
@@ -110,9 +132,12 @@ const FaqSection: React.FC<FaqSectionProps> = ({ variant = 'default' }) => {
     return (
       <section className={t.skeletonSection}>
         <div className="container mx-auto px-4 max-w-4xl">
-          <div className={`${t.skeletonTitleHeight} ${t.skeleton} rounded-xl ${t.skeletonTitleWidth} mx-auto ${t.skeletonTitleMb} animate-pulse`}></div>
+          <div className={`text-center animate-pulse ${t.header}`}>
+            <div className={`${t.skeletonTitleHeight} ${t.skeleton} rounded-xl ${t.skeletonTitleWidth} mx-auto mb-2`}></div>
+            <div className={`h-4 ${t.skeleton} rounded-lg w-2/3 max-w-md mx-auto`}></div>
+          </div>
           <div className="space-y-4">
-            {Array.from({ length: expectedCount || 3 }).map((_, i) => (
+            {Array.from({ length: expectedCount }).map((_, i) => (
               <div 
                 key={i} 
                 className={`${i === 0 ? 'h-48' : 'h-20'} ${t.card} rounded-2xl border animate-pulse flex flex-col`}

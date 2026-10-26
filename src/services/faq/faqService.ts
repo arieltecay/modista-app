@@ -1,4 +1,4 @@
-import { apiClient } from '../config/apiClient';
+import { publicClient } from '../config/publicClient';
 
 export interface FAQ {
   _id: string;
@@ -12,7 +12,7 @@ export interface FAQ {
 export const faqService = {
   async getActiveFAQs(): Promise<FAQ[]> {
     try {
-      return await apiClient.get('/faq/active');
+      return await publicClient.get('/faq/active');
     } catch (error) {
       console.error('Error fetching FAQs:', error);
       return [];

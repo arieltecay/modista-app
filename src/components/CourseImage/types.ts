@@ -11,4 +11,6 @@ export interface CourseImageProps {
   height?: number;
   priority?: boolean;
   crop?: 'fill' | 'limit' | 'fit';
+  srcSetWidths?: number[];
+  sizes?: string;
 }

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import V2Layout from '../../components/V2Layout';
 import CourseCardV2 from '../../components/CourseCardV2';
-import { SEO } from '@/components';
+import SEO from '../../components/SEO';
 import { useVisibleCourses } from '../../hooks/use-visible-courses';
 
 type FilterMode = 'all' | 'online' | 'presencial';
@@ -79,8 +79,8 @@ const CoursesV2: React.FC = () => {
             </p>
           ) : (
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-              {filtered.map((course) => (
-                <CourseCardV2 key={course.id || course._id} course={course} />
+              {filtered.map((course, index) => (
+                <CourseCardV2 key={course.id || course._id} course={course} priority={index < 2} />
               ))}
             </div>
           )}

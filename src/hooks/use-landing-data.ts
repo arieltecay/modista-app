@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
-import { getLandingPageBySlug } from '../services/landing';
+import { getLandingPageBySlug, getLandingFullBySlug } from '../services/landing';
 import { getCourseById } from '../services/courses';
 import { getTestimonials } from '../services/testimonials/testimonialService';
 import { trackCourseView } from '../services/analytics';
 import { useCourseContext } from '../context/CourseContext';
-import { getOptimizedUrl } from '../utils/image-utils';
+import { getLandingHeroUrl } from '../utils/image-utils';
 import { LandingPageData, CourseData, TestimonialItem } from '../types/landing';
 import type { Testimonial } from '../services/types';
 
@@ -44,8 +44,8 @@ const writeCache = (slug: string, data: LandingCache): void => {
 
 const preloadLcpImage = (imageUrl?: string): void => {
   if (!imageUrl) return;
-  const href = getOptimizedUrl(imageUrl, 500, 375);
-  if (document.querySelector(`link[href="${href}"]`)) return;
+  const href = getLandingHeroUrl(imageUrl);
+  if (!href || document.querySelector(`link[rel="preload"][href="${href}"]`)) return;
   const link = document.createElement('link');
   link.rel = 'preload';
   link.as = 'image';
@@ -73,6 +73,8 @@ export function useLandingData(): UseLandingDataResult {
   const hasData = useRef(false);
 
   useEffect(() => {
+    let cancelled = false;
+
     const fetchLandingData = async () => {
       if (!slug) return;
 
@@ -88,34 +90,63 @@ export function useLandingData(): UseLandingDataResult {
       }
 
       try {
-        const landingRes = await getLandingPageBySlug(slug);
-        if (landingRes.success && landingRes.data) {
-          const landingData = landingRes.data as unknown as LandingPageData;
+        let landingData: LandingPageData | null = null;
+        let courseData: CourseData | null = null;
+        let testimonialItems: TestimonialItem[] | null = null;
 
-          const cachedCourse = cached?.course && cached.landing?.courseId === landingData.courseId
-            ? cached.course
-            : null;
+        // Camino rápido: landing + curso + testimonios en UNA llamada.
+        try {
+          const fullRes = await getLandingFullBySlug(slug);
+          if (cancelled) return;
+          if (fullRes.success && fullRes.data?.landing && fullRes.data?.course) {
+            landingData = fullRes.data.landing as unknown as LandingPageData;
+            courseData = fullRes.data.course as unknown as CourseData;
 
-          const courseRes = cachedCourse
-            ? await getCourseById(landingData.courseId).catch(() => cachedCourse)
-            : await getCourseById(landingData.courseId);
-          const courseData = courseRes as unknown as CourseData;
+            const raw = Array.isArray(fullRes.data.testimonials) ? fullRes.data.testimonials : [];
+            testimonialItems = raw.map(mapTestimonial);
+          }
+        } catch {
+          // Endpoint combinado no disponible o error transitorio → fallback.
+        }
 
-          // Testimonios del curso (específicos + genéricos) desde el CMS.
-          // No bloqueante: si falla, la landing se muestra sin esa sección.
-          const courseIdForFilter = courseData.id || courseData._id;
-          const testimonialsRes = await getTestimonials(courseIdForFilter).catch(() => [] as Testimonial[]);
-          const testimonialItems = (Array.isArray(testimonialsRes) ? testimonialsRes : []).map(mapTestimonial);
+        // Fallback: camino anterior (landing → curso), sin esperar testimonios.
+        if (!landingData || !courseData) {
+          const landingRes = await getLandingPageBySlug(slug);
+          if (cancelled) return;
+          if (landingRes.success && landingRes.data) {
+            landingData = landingRes.data as unknown as LandingPageData;
 
+            const cachedCourse = cached?.course && cached.landing?.courseId === landingData.courseId
+              ? cached.course
+              : null;
+
+            const courseRes = cachedCourse
+              ? await getCourseById(landingData.courseId).catch(() => cachedCourse)
+              : await getCourseById(landingData.courseId);
+            if (cancelled) return;
+            courseData = courseRes as unknown as CourseData;
+          }
+        }
+
+        if (landingData && courseData) {
           hasData.current = true;
+          preloadLcpImage(courseData.imageUrl);
           setLanding(landingData);
           setCourse(courseData);
-          setTestimonials(testimonialItems);
           setActiveCourse(courseData as any);
-          writeCache(slug, { landing: landingData, course: courseData, testimonials: testimonialItems });
-          preloadLcpImage(courseData.imageUrl);
-
+          setLoading(false);
           trackCourseView(courseData.id, courseData.title, courseData.price);
+
+          if (testimonialItems === null) {
+            // Solo en el fallback: testimonios no bloqueantes.
+            writeCache(slug, { landing: landingData, course: courseData, testimonials: cached?.testimonials || [] });
+            const courseIdForFilter = courseData.id || courseData._id;
+            const res = await getTestimonials(courseIdForFilter).catch(() => [] as Testimonial[]);
+            if (cancelled) return;
+            testimonialItems = (Array.isArray(res) ? res : []).map(mapTestimonial);
+          }
+          setTestimonials(testimonialItems);
+          writeCache(slug, { landing: landingData, course: courseData, testimonials: testimonialItems });
         } else if (!hasData.current) {
           setError(true);
         }
@@ -125,10 +156,14 @@ export function useLandingData(): UseLandingDataResult {
           setError(true);
         }
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
     fetchLandingData();
+
+    return () => {
+      cancelled = true;
+    };
   }, [slug, setActiveCourse]);
 
   return { landing, course, testimonials, loading, error };

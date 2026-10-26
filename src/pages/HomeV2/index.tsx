@@ -1,5 +1,6 @@
 import React from 'react';
-import { SEO, FaqSection } from '@/components';
+import SEO from '../../components/SEO';
+import FaqSection from '../../components/FaqSection';
 import V2Layout from '../../components/V2Layout';
 import HeroSection from './sections/HeroSection';
 import CoursesSection from './sections/CoursesSection';

@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { getOptimizedUrl } from '../../../../utils/image-utils';
+import { getLandingHeroUrl, LANDING_HERO_IMAGE } from '../../../../utils/image-utils';
 import { trackCtaClick } from '../../../../services/analytics';
 import { trackV2 } from '../../hooks/use-landing-tracking';
 import type { HeroSectionProps } from './types';
@@ -49,10 +49,10 @@ const HeroSection: React.FC<HeroSectionProps> = ({
         {imageUrl && (
           <div className="mb-7" data-pricing>
             <img
-              src={getOptimizedUrl(imageUrl, 560, 700)}
+              src={getLandingHeroUrl(imageUrl)}
               alt={title}
-              width={560}
-              height={700}
+              width={LANDING_HERO_IMAGE.width}
+              height={LANDING_HERO_IMAGE.height}
               fetchPriority="high"
               decoding="async"
               loading="eager"

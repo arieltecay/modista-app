@@ -46,3 +46,27 @@ export const getBlurUpUrl = (url?: string): string => {
     return url;
   }
 };
+
+/**
+ * Dimensiones de la imagen del hero de la landing. Fuente ÚNICA: el <img> de
+ * HeroSection y el <link rel="preload"> de use-landing-data deben pedir
+ * exactamente la misma URL para que el navegador reutilice la descarga.
+ */
+export const LANDING_HERO_IMAGE = { width: 560, height: 700 } as const;
+
+export const getLandingHeroUrl = (url?: string): string =>
+  getOptimizedUrl(url, LANDING_HERO_IMAGE.width, LANDING_HERO_IMAGE.height);
+
+/**
+ * Genera un `srcset` de Cloudinary a partir de una lista de anchos.
+ * @param aspect alto/ancho (4:5 → 1.25)
+ */
+export const getSrcSet = (
+  url: string | undefined,
+  widths: number[],
+  aspect: number,
+  crop: 'fill' | 'limit' | 'fit' = 'fill'
+): string =>
+  url
+    ? widths.map((w) => `${getOptimizedUrl(url, w, Math.round(w * aspect), crop)} ${w}w`).join(', ')
+    : '';

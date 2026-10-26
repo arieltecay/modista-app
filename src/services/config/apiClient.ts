@@ -110,7 +110,7 @@ apiClient.interceptors.response.use(
  * @param data - Datos de respuesta (objeto o array)
  * @returns Datos normalizados
  */
-const normalizeResponseData = (data: any): any => {
+export const normalizeResponseData = (data: any): any => {
     if (Array.isArray(data)) {
         return data.map(item => normalizeResponseData(item));
     } else if (data !== null && typeof data === 'object') {

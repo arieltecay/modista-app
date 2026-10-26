@@ -1,14 +1,17 @@
 import { lazy, Suspense, useEffect } from 'react';
 import GoogleTagManager from './components/GoogleTagManager';
 import { Routes, Route } from 'react-router-dom';
-import { Layout } from './components/Layout';
-import { Spinner, ScrollToTop } from '@/components';
+import Spinner from './components/Spinner';
+import ScrollToTop from './components/ScrollToTop';
 import { Toaster } from 'react-hot-toast';
 import { CourseProvider } from './context/CourseContext';
 import { captureUTMParameters } from './utils/utm-tracking';
+import LandingSkeleton from './pages/LandingV2/components/LandingSkeleton';
 
 // Landing v2 "Atelier Digital"
 const LandingPageV2 = lazy(() => import('./pages/LandingV2'));
+
+const Layout = lazy(() => import('./components/Layout').then((m) => ({ default: m.Layout })));
 const HomeV2 = lazy(() => import('./pages/HomeV2'));
 const CoursesV2 = lazy(() => import('./pages/CoursesV2'));
 const CourseDetailV2 = lazy(() => import('./pages/CourseDetailV2'));
@@ -60,17 +63,13 @@ function App() {
 
               {/* Landing Pages de Campaña (puerta de entrada de Meta Ads) */}
               <Route path="/lp/:slug" element={
-                <Suspense fallback={
-                  <div className="min-h-screen flex items-center justify-center bg-[#FAF7F2]">
-                    <Spinner text="Preparando tu lugar..." />
-                  </div>
-                }>
+                <Suspense fallback={<LandingSkeleton />}>
                   <LandingPageV2 />
                 </Suspense>
               } />
 
               {/* Legal: contenido canónico con Layout v1 (sin rediseño, a propósito) */}
-              <Route path="/" element={<Layout />}>
+              <Route path="/" element={<Suspense fallback={<div className="min-h-screen bg-[#FAF7F2]" />}><Layout /></Suspense>}>
                 <Route path="privacidad" element={<PrivacyPolicyPage />} />
                 <Route path="terminos" element={<TermsOfServicePage />} />
               </Route>

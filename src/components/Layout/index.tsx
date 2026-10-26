@@ -1,4 +1,5 @@
-import { Navbar, FloatingActionsContainer } from '@/components';
+import { Navbar } from '../Navbar';
+import FloatingActionsContainer from '../FloatingActionsContainer';
 import Footer from '../../pages/Footer';
 import { Outlet, useLocation } from 'react-router-dom';
 import FaqSection from '../FaqSection/FaqSection';

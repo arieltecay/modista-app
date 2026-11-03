@@ -49,7 +49,9 @@ const GoogleTagManager = () => {
       t.src=v;s=b.getElementsByTagName(e)[0];
       s.parentNode.insertBefore(t,s)}(window, document,'script',
       'https://connect.facebook.net/en_US/fbevents.js'));
-      fbq('init', FB_PIXEL_ID);
+      // Advanced Matching: external_id representa este navegador y se conserva
+      // igual en Pixel y CAPI para los eventos de esta sesión persistente.
+      fbq('init', FB_PIXEL_ID, { external_id: sessionId });
       // NOTA: no disparamos PageView acá. El useEffect de `location` (abajo)
       // ya emite PageView en el mount inicial y en cada cambio de ruta; hacerlo
       // en ambos lugares duplicaba el evento en cada carga de página.

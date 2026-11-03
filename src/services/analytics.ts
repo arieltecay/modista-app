@@ -234,7 +234,7 @@ export const trackInscriptionSuccess = async (
   // 2. Meta Pixel: Lead
   if (import.meta.env.PROD && typeof window !== 'undefined' && window.fbq) {
     // Usamos una promesa para dar tiempo al Pixel de procesar
-    return new Promise(async (resolve) => {
+    return (async () => {
       const hash = async (s?: string) => s ? await sha256(s.trim().toLowerCase()) : undefined;
       const hashedEmail = await hash(email);
       const hashedPhone = await hash(phone);
@@ -245,14 +245,13 @@ export const trackInscriptionSuccess = async (
         currency: 'ARS',
         em: hashedEmail,
         ph: hashedPhone,
-        external_id: inscriptionId,
         ...getMetaAdvancedParams()
       }, inscriptionId ? { eventID: `lead_${inscriptionId}` } : undefined);
       
       // Meta Pixel no tiene callback nativo de finalización garantizado en todas las versiones
       // así que usamos un pequeño timeout de seguridad para asegurar que el evento se encole
-      setTimeout(resolve, 600);
-    });
+      await new Promise<void>(resolve => setTimeout(resolve, 600));
+    })();
   }
 
   return Promise.resolve();
@@ -294,7 +293,6 @@ export const trackPurchaseSuccess = (
         content_type: 'product',
         value,
         currency: 'ARS',
-        external_id: inscriptionId,
         ...getMetaAdvancedParams()
       }, { eventID: `purchase_${inscriptionId}` });
     }

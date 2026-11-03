@@ -8,7 +8,7 @@ const PrivacyPolicyPage = () => {
           <section>
             <h2 className="text-2xl font-semibold text-foreground mb-3">1. Introducción</h2>
             <p>
-              En Modista App, propiedad de Micaela Guevara, nos tomamos muy en serio tu privacidad. Esta política explica cómo recopilamos, usamos y protegemos tu información personal cuando interactúas con nuestro bot de WhatsApp y nuestro sitio web.
+              En Modista App, propiedad de Micaela Guevara, nos tomamos muy en serio tu privacidad. Esta política explica cómo recopilamos, usamos y protegemos tu información personal cuando interactúas con nuestro sitio web, nuestros cursos y nuestro bot de WhatsApp.
             </p>
           </section>
 
@@ -17,9 +17,10 @@ const PrivacyPolicyPage = () => {
             <p>Recopilamos la siguiente información necesaria para brindarte nuestro servicio:</p>
             <ul className="list-disc ml-6 mt-2 space-y-1">
               <li>Nombre y Apellido.</li>
-              <li>Número de teléfono (a través de la interacción con WhatsApp).</li>
+              <li>Correo electrónico y número de teléfono que proporcionas al inscribirte o al comunicarte por WhatsApp.</li>
               <li>Información sobre inscripciones a cursos y turnos solicitados.</li>
               <li>Comprobantes de pago enviados voluntariamente por el usuario.</li>
+              <li>Datos técnicos y de navegación, como páginas visitadas, interacciones con formularios, dirección IP, navegador e identificadores de cookies o del navegador.</li>
             </ul>
           </section>
 
@@ -31,29 +32,43 @@ const PrivacyPolicyPage = () => {
               <li>Coordinar turnos de modistería.</li>
               <li>Enviar notificaciones sobre el estado de tus pagos o cambios en el servicio.</li>
               <li>Responder a tus consultas de manera personalizada.</li>
+              <li>Medir las visitas y conversiones de nuestras campañas publicitarias y mejorar su rendimiento.</li>
             </ul>
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold text-foreground mb-3">4. Protección de Datos</h2>
+            <h2 className="text-2xl font-semibold text-foreground mb-3">4. Medición publicitaria con Meta</h2>
             <p>
-              Implementamos medidas de seguridad técnicas para proteger tu información. No compartimos tus datos personales con terceros con fines comerciales. Los datos solo se procesan a través de las herramientas oficiales de Meta (WhatsApp Business API) para la comunicación.
+              En nuestro sitio usamos Meta Pixel y Conversions API para medir visitas y conversiones, atribuir resultados a campañas y mejorar el rendimiento de nuestros anuncios. Para estos fines, podemos enviar a Meta Platforms información sobre eventos del sitio, como visitas a páginas de cursos, inicio o envío de formularios e inscripciones o compras.
+            </p>
+            <p>
+              Estas señales pueden incluir dirección IP, información del navegador, identificadores de clic o cookies de Meta y un identificador seudónimo que guardamos en el navegador. Ese identificador puede permanecer allí hasta que borres los datos del sitio desde tu navegador. Cuando corresponde, también enviamos datos como correo electrónico, teléfono, nombre, ciudad o país en formato hash SHA-256 para ayudar a relacionar eventos. El hash reduce la exposición del dato legible, pero no significa que sea anónimo.
+            </p>
+            <p>
+              Meta recibe estos datos y los procesa conforme a sus propias condiciones y políticas. Puedes consultar la <a href="https://www.facebook.com/privacy/policy/" target="_blank" rel="noreferrer" className="underline">Política de privacidad de Meta</a>.
             </p>
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold text-foreground mb-3">5. Eliminación de datos</h2>
+            <h2 className="text-2xl font-semibold text-foreground mb-3">5. Protección de Datos</h2>
             <p>
-              Meta requiere que proporcionemos instrucciones claras para que los usuarios soliciten la eliminación de sus datos. Si deseas que eliminemos tu información de nuestra base de datos, por favor envía un correo electrónico a:
+              Implementamos medidas de seguridad técnicas para proteger tu información y limitar el acceso a quienes la necesitan para brindar nuestros servicios.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold text-foreground mb-3">6. Derechos y eliminación de datos</h2>
+            <p>
+              Puedes solicitar acceso, actualización o eliminación de tus datos personales, y consultar cómo ejercer tus derechos, escribiendo a:
             </p>
             <p className="font-semibold mt-2 text-foreground">modistaapp@gmail.com</p>
             <p className="mt-2">
-              Una vez recibida la solicitud, procederemos a borrar tu historial de interacciones y datos personales en un plazo máximo de 72 horas hábiles.
+              Para solicitudes de eliminación relacionadas con aplicaciones o servicios de Meta, también puedes escribirnos a esa dirección. Revisaremos cada solicitud y te informaremos el resultado.
             </p>
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold text-foreground mb-3">6. Cambios en la política</h2>
+            <h2 className="text-2xl font-semibold text-foreground mb-3">7. Cambios en la política</h2>
             <p>
               Podemos actualizar esta política ocasionalmente. Te recomendamos revisar esta página periódicamente para estar al tanto de cualquier cambio.
             </p>

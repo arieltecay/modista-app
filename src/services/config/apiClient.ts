@@ -12,6 +12,7 @@
  */
 
 import axios, { AxiosInstance, AxiosResponse, InternalAxiosRequestConfig, AxiosError } from 'axios';
+import { hasMarketingConsent, META_MARKETING_CONSENT_VERSION } from '../../utils/privacy-consent';
 
 /**
  * Instancia de Axios pre-configurada con la URL base de la API.
@@ -53,6 +54,14 @@ apiClient.interceptors.request.use(
         // Enviar fbc/fbp en headers custom para server-side CAPI
         // Prioridad fbc: sessionStorage (incluye fbclid derivado) > cookie _fbc
         // Prioridad fbp: cookie _fbp (el pixel la setea asincronicamente)
+        const marketingConsent = hasMarketingConsent();
+        if (config.headers) {
+            config.headers['X-Meta-Consent'] = marketingConsent ? 'granted' : 'denied';
+            config.headers['X-Meta-Consent-Version'] = META_MARKETING_CONSENT_VERSION;
+        }
+
+        if (!marketingConsent) return config;
+
         const UTM_KEY = 'modista_utm_data';
         let storedFbc: string | undefined;
         try {

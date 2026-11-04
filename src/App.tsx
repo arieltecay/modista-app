@@ -6,6 +6,8 @@ import ScrollToTop from './components/ScrollToTop';
 import { Toaster } from 'react-hot-toast';
 import { CourseProvider } from './context/CourseContext';
 import { captureUTMParameters } from './utils/utm-tracking';
+import { hasMarketingConsent, META_MARKETING_CONSENT_EVENT } from './utils/privacy-consent';
+import PrivacyConsentBanner from './components/PrivacyConsentBanner';
 import LandingSkeleton from './pages/LandingV2/components/LandingSkeleton';
 
 // Landing v2 "Atelier Digital"
@@ -30,7 +32,12 @@ const PaymentPending = lazy(() => import('./pages/Payment/PaymentPending'));
 
 function App() {
   useEffect(() => {
-    captureUTMParameters();
+    const captureWithConsent = () => {
+      if (hasMarketingConsent()) captureUTMParameters();
+    };
+    captureWithConsent();
+    window.addEventListener(META_MARKETING_CONSENT_EVENT, captureWithConsent);
+    return () => window.removeEventListener(META_MARKETING_CONSENT_EVENT, captureWithConsent);
   }, []);
 
   return (
@@ -109,6 +116,7 @@ function App() {
           </Suspense>
         </main>
       </div>
+      <PrivacyConsentBanner />
     </CourseProvider>
   );
 }

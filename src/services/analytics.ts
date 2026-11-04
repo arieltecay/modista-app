@@ -16,6 +16,7 @@ import type {
   FormEventParams
 } from './types';
 import { getStoredUTMData } from '../utils/utm-tracking';
+import { hasMarketingConsent } from '../utils/privacy-consent';
 
 type FbqTrack = (
   cmd: string,
@@ -55,6 +56,7 @@ const getCookie = (name: string): string | undefined => {
 };
 
 const getMetaAdvancedParams = (): Record<string, string> => {
+  if (!hasMarketingConsent()) return {};
   const utm = getStoredUTMData();
   const params: Record<string, string> = {};
   if (utm?.fbc) params.fbc = utm.fbc;
@@ -74,6 +76,8 @@ export const sendAnalyticsEvent = (
   eventName: AnalyticsEventName | string,
   parameters: EventParameters = {}
 ): void => {
+  if (!hasMarketingConsent()) return;
+
   // Bloquear eventos en el panel de administración
   if (typeof window !== 'undefined' && window.location.pathname.startsWith('/admin')) {
     return;
@@ -148,7 +152,7 @@ export const trackCourseView = (courseId: string, courseTitle: string, price?: n
   sendAnalyticsEvent(AnalyticsEvents.COURSE_VIEW, params);
 
   // Meta Pixel: ViewContent
-  if (import.meta.env.PROD && typeof window !== 'undefined' && window.fbq) {
+  if (hasMarketingConsent() && import.meta.env.PROD && typeof window !== 'undefined' && window.fbq) {
     // eventId unico por usuario: debe coincidir con el CAPI server-side para dedup
     const sessionId = localStorage.getItem('modista_session_id');
     const sessionSuffix = sessionId ? `_${sessionId.slice(0, 8)}` : `_${Date.now()}`;
@@ -181,7 +185,7 @@ export const trackFormStart = (formId: string, formName: string, courseId?: stri
   sendAnalyticsEvent(AnalyticsEvents.FORM_START, params);
 
   // Meta Pixel: InitiateCheckout (opcional, pero buena práctica)
-  if (import.meta.env.PROD && typeof window !== 'undefined' && window.fbq) {
+  if (hasMarketingConsent() && import.meta.env.PROD && typeof window !== 'undefined' && window.fbq) {
     (window.fbq as FbqTrack)('track', 'InitiateCheckout', {
       content_name: courseTitle,
       content_category: 'Courses',
@@ -232,7 +236,7 @@ export const trackInscriptionSuccess = async (
   sendAnalyticsEvent(AnalyticsEvents.INSCRIPTION_SUCCESS, params);
 
   // 2. Meta Pixel: Lead
-  if (import.meta.env.PROD && typeof window !== 'undefined' && window.fbq) {
+  if (hasMarketingConsent() && import.meta.env.PROD && typeof window !== 'undefined' && window.fbq) {
     // Usamos una promesa para dar tiempo al Pixel de procesar
     return (async () => {
       const hash = async (s?: string) => s ? await sha256(s.trim().toLowerCase()) : undefined;
@@ -286,7 +290,7 @@ export const trackPurchaseSuccess = (
   sendAnalyticsEvent(AnalyticsEvents.PURCHASE, params);
 
     // Meta Pixel: Purchase
-    if (import.meta.env.PROD && typeof window !== 'undefined' && window.fbq) {
+    if (hasMarketingConsent() && import.meta.env.PROD && typeof window !== 'undefined' && window.fbq) {
       (window.fbq as FbqTrack)('track', 'Purchase', {
         content_name: courseTitle,
         content_ids: courseId ? [courseId] : undefined,

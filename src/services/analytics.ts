@@ -227,9 +227,7 @@ export const trackInscriptionSuccess = async (
     course_title: courseTitle,
     value: value,
     currency: 'ARS',
-    transaction_id: inscriptionId,
-    user_email: email,
-    user_phone: phone
+    transaction_id: inscriptionId
   };
   
   // 1. Enviar a GTM / DataLayer

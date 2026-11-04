@@ -8,6 +8,7 @@ import V2Layout from '../../components/V2Layout';
 import { formatTextToHtml } from '../../utils/textFormatting';
 import { shouldShowInscription } from '../../utils/courseUtils';
 import { getOptimizedUrl } from '../../utils/image-utils';
+import { hasMarketingConsent } from '../../utils/privacy-consent';
 import { useCourseDetail } from './hooks/use-course-detail';
 import CourseDetailV2Skeleton from './components/CourseDetailV2Skeleton';
 
@@ -82,6 +83,7 @@ function CourseDetailV2() {
   const handleRichTextClick = (event: MouseEvent<HTMLDivElement>) => {
     const cta = (event.target as HTMLElement).closest<HTMLElement>('[data-cta]');
     if (!cta || !course) return;
+    if (!hasMarketingConsent()) return;
     window.dataLayer?.push({
       event: 'cta_click',
       course_name: course.title,

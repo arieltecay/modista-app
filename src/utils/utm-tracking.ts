@@ -67,7 +67,7 @@ export const getStoredUTMData = (): UTMData | null => {
 
   try {
     return JSON.parse(stored) as UTMData;
-  } catch (e) {
+  } catch {
     return null;
   }
 };

@@ -8,6 +8,10 @@ import { registerSW } from 'virtual:pwa-register';
 import { onCLS, onINP, onLCP, onFCP, onTTFB } from 'web-vitals/attribution';
 import { ThemeProvider } from './context/ThemeContext';
 import { HelmetProvider } from 'react-helmet-async';
+import { initializePrivacyConsent } from './utils/privacy-consent';
+
+// Bloquea los trackers opcionales y limpia identificadores previos hasta obtener consentimiento.
+initializePrivacyConsent();
 
 // Registro de Service Worker para PWA con lógica de auto-update mejorada
 const updateSW = registerSW({
@@ -59,7 +63,7 @@ window.addEventListener('error', (e) => {
 // Función para reportar métricas de rendimiento a GA4
 function reportWebVitals(metric) {
   // Solo enviar a GTM en producción
-  if (import.meta.env.PROD && window.dataLayer) {
+  if (import.meta.env.PROD && hasMarketingConsent() && window.dataLayer) {
     const a = metric.attribution || {};
     const extra = {
       web_vitals_value: Math.round(metric.name === 'CLS' ? metric.value * 1000 : metric.value),

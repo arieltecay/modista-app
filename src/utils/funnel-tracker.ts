@@ -1,5 +1,6 @@
 import { getStoredUTMData } from './utm-tracking';
 import { apiClient } from '../services/config/apiClient';
+import { hasMarketingConsent } from './privacy-consent';
 
 const SESSION_KEY = 'modista_session_id';
 const DEDUPE_KEY = 'modista_funnel_dedupe';
@@ -45,6 +46,8 @@ const shouldFire = (key: string): boolean => {
 };
 
 export const trackFunnel = (step: Step, extra: { courseId?: string; courseTitle?: string; inscriptionId?: string; value?: number } = {}): void => {
+  if (!hasMarketingConsent()) return;
+
   if (import.meta.env.DEV) {
     console.log(`[Funnel] ${step}`, extra);
     return;

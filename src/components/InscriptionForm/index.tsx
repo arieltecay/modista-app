@@ -12,6 +12,7 @@ import { validateNombre, validateApellido, validateEmail, validateCelular } from
 import { isCourseFree } from '../../utils/courseUtils';
 import { getStoredUTMData, getUTMPayload } from '../../utils/utm-tracking';
 import { getCookieValue } from '../../utils/cookies';
+import { hasMarketingConsent } from '../../utils/privacy-consent';
 import { InscriptionFormProps, InscriptionFormData, InscriptionFormErrors, FormMessage } from './types';
 
 let hasTrackedFormStart = false;
@@ -113,6 +114,7 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
     try {
       const utmData = getStoredUTMData();
       const sessionId = localStorage.getItem('modista_session_id');
+      const marketingConsent = hasMarketingConsent();
       const inscriptionData = {
         ...formData,
         courseId: course?.id || course?._id || '1',
@@ -124,9 +126,9 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
         turnoId: selectedTurnoId,
         marketingSource: utmData?.source || 'organic',
         utmParams: getUTMPayload(),
-        sessionId: sessionId || undefined,
-        metaFbc: utmData?.fbc || getCookieValue('_fbc'),
-        metaFbp: utmData?.fbp || getCookieValue('_fbp'),
+        sessionId: marketingConsent ? sessionId || undefined : undefined,
+        metaFbc: marketingConsent ? utmData?.fbc || getCookieValue('_fbc') : undefined,
+        metaFbp: marketingConsent ? utmData?.fbp || getCookieValue('_fbp') : undefined,
       };
 
       const inscriptionResponse = await createInscription(inscriptionData);

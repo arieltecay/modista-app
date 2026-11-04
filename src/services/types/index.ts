@@ -323,7 +323,5 @@ export interface ConversionParams extends EventParameters {
     transaction_id?: string;
     course_id: string;
     course_title: string;
-    user_email?: string;
-    user_phone?: string;
 }
 

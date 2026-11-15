@@ -1,6 +1,7 @@
 # Changelog
 
 ## [Unreleased]
+- Eleva las preferencias de privacidad sobre el CTA fijo de inscripción en pantallas móviles.
 - Solicita consentimiento antes de cargar herramientas opcionales y permite revocarlo desde el sitio.
 - Excluye email y teléfono del dataLayer de Google Tag Manager.
 - Alinea el identificador de usuario del Pixel y CAPI con el UUID persistente del navegador.

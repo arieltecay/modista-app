@@ -129,7 +129,7 @@ const LandingPageV2: React.FC = () => {
         </div>
         <PrivacyNotice />
 
-        <footer className="border-t border-atelier-sage/15 py-8 text-center bg-atelier-canvas">
+        <footer className="min-h-24 border-t border-atelier-sage/15 py-8 text-center bg-atelier-canvas">
           <p className="text-atelier-muted-text text-sm font-atelier-sans">
             &copy; {new Date().getFullYear()} Modista App. Todos los derechos reservados.
           </p>

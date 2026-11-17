@@ -54,8 +54,16 @@ export const getBlurUpUrl = (url?: string): string => {
  */
 export const LANDING_HERO_IMAGE = { width: 560, height: 700 } as const;
 
+export const LANDING_HERO_WIDTHS = [320, 480, LANDING_HERO_IMAGE.width] as const;
+
+export const LANDING_HERO_SIZES =
+  '(max-width: 380px) calc(100vw - 40px), 340px';
+
 export const getLandingHeroUrl = (url?: string): string =>
   getOptimizedUrl(url, LANDING_HERO_IMAGE.width, LANDING_HERO_IMAGE.height);
+
+export const getLandingHeroSrcSet = (url?: string): string =>
+  getSrcSet(url, LANDING_HERO_WIDTHS, LANDING_HERO_IMAGE.height / LANDING_HERO_IMAGE.width);
 
 /**
  * Genera un `srcset` de Cloudinary a partir de una lista de anchos.
@@ -63,7 +71,7 @@ export const getLandingHeroUrl = (url?: string): string =>
  */
 export const getSrcSet = (
   url: string | undefined,
-  widths: number[],
+  widths: readonly number[],
   aspect: number,
   crop: 'fill' | 'limit' | 'fit' = 'fill'
 ): string =>

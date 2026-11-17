@@ -103,7 +103,7 @@ const V2Layout: React.FC<V2LayoutProps> = ({ children }) => {
 
       <main>{children}</main>
 
-      <footer className="border-t border-atelier-sage/15 py-8 text-center bg-atelier-canvas">
+      <footer className="min-h-24 border-t border-atelier-sage/15 py-8 text-center bg-atelier-canvas">
         <div className="max-w-6xl mx-auto px-5 flex flex-col sm:flex-row items-center justify-between gap-3 font-atelier-sans text-sm text-atelier-muted-text">
           <span>&copy; {new Date().getFullYear()} Modista App · Tucumán, Argentina</span>
           <div className="flex items-center gap-4 text-xs">

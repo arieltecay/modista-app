@@ -24,7 +24,7 @@ const PaymentFailure: React.FC = () => {
   if (paymentStatus === 'paid' || paymentStatus === 'partial') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-green-50 to-white p-4">
-        <div className="max-w-md w-full text-center bg-white p-8 rounded-2xl shadow-lg">
+        <div className="flex min-h-[22rem] w-full max-w-md flex-col justify-center rounded-2xl bg-white p-8 text-center shadow-lg">
           <p className="text-gray-700">¡Tu pago fue confirmado! Te enviamos los detalles por email.</p>
           <Link to="/" className="mt-4 inline-block px-6 py-3 bg-[var(--color-green-600)] text-white rounded-lg">
             Volver al inicio
@@ -48,7 +48,7 @@ const PaymentFailure: React.FC = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-red-50 to-white p-4">
-      <div className="max-w-md w-full text-center bg-white p-8 rounded-2xl shadow-lg">
+      <div className="flex min-h-[22rem] w-full max-w-md flex-col justify-center rounded-2xl bg-white p-8 text-center shadow-lg">
         <FaTimesCircle className="text-6xl text-red-500 mx-auto mb-4" />
         <h1 className="text-3xl font-bold text-gray-900 mb-2">No pudimos procesar el pago</h1>
         <p className="text-gray-600 mb-6">

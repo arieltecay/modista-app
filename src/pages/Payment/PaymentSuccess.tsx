@@ -52,7 +52,7 @@ const PaymentSuccess: React.FC = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-green-50 to-white p-4">
-      <div className="max-w-md w-full text-center bg-white p-8 rounded-2xl shadow-lg">
+      <div className="flex min-h-[22rem] w-full max-w-md flex-col justify-center rounded-2xl bg-white p-8 text-center shadow-lg">
         {showPaid ? (
           <>
             <FaCheckCircle className="text-6xl text-green-500 mx-auto mb-4" />

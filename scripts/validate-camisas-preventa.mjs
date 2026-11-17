@@ -21,6 +21,8 @@ assert.match(security, /accessLabel/);
 assert.match(formSection, /accessLabel/);
 assert.match(form, /accessLabel/);
 assert.doesNotMatch(`${hero}${security}${formSection}${form}`, /Acceso inmediato|acceso inmediato/);
+assert.doesNotMatch(security, /Garantía de satisfacción/);
+assert.match(security, /Confirmación por email y WhatsApp/);
 assert.match(styles, /--color-atelier-pop: #C74432;/);
 assert.match(styles, /--color-atelier-pop-dark: #B83D2E;/);
 assert.match(styles, /--color-atelier-gold: #8A6818;/);

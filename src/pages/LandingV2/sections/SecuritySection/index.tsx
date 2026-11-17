@@ -20,7 +20,7 @@ const SecuritySection: React.FC<SecuritySectionProps> = ({ accessLabel, accessDe
     '🔒 Pago seguro con MercadoPago',
     '💳 Tarjetas, transferencia o efectivo',
     `📅 ${accessLabel}`,
-    '🔄 Garantía de satisfacción',
+    '📩 Confirmación por email y WhatsApp',
   ];
 
   return (

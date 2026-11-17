@@ -6,6 +6,7 @@ export interface HeroSectionProps {
   imageUrl?: string;
   price: PriceInfo;
   ctaText: string;
+  accessLabel: string;
   isPresencial?: boolean;
   /** Ref a la sección del form (scroll sin selectores frágiles) */
   formRef: React.RefObject<HTMLElement | null>;

@@ -18,6 +18,9 @@ import StickyCta from './sections/StickyCta';
 import { useRevealOnScroll } from './hooks/use-reveal';
 import { trackV2, useScrollDepthTracking } from './hooks/use-landing-tracking';
 
+const CAMISAS_PRESALE_DESCRIPTION =
+  'Aprendé a crear una camisa a medida y a confeccionar distintos tipos de cuellos, paso a paso y con explicaciones claras. Inscribite hoy en la preventa y el 23 de noviembre recibirás acceso completo a todas las clases grabadas, para avanzar a tu ritmo y sin vencimiento.';
+
 /**
  * Landing Page V2 — "Atelier Digital".
  *
@@ -52,15 +55,18 @@ const LandingPageV2: React.FC = () => {
     return <Navigate to="/cursos" replace />;
   }
 
+  const isCamisasPreSale = landing.slug === 'curso-online-de-camisas';
+  const description = landing.customDescription || (isCamisasPreSale ? CAMISAS_PRESALE_DESCRIPTION : course.shortDescription);
   const title = landing.customTitle || course.title;
-  const description = landing.customDescription || course.shortDescription;
+  const accessLabel = isCamisasPreSale ? 'Acceso completo desde el 23/11' : 'Acceso al finalizar la compra';
+  const accessDescription = isCamisasPreSale ? 'Recibís las clases el 23/11' : 'Recibís el curso al completar el pago';
   const price = {
     formatted: course.price
       ? new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(course.price)
       : null,
     raw: course.price,
   };
-  const ctaText = landing.buttonText || 'QUIERO EMPEZAR AHORA';
+  const ctaText = landing.buttonText || (isCamisasPreSale ? 'RESERVAR MI LUGAR EN PREVENTA' : 'QUIERO EMPEZAR AHORA');
 
   return (
     <>
@@ -85,6 +91,7 @@ const LandingPageV2: React.FC = () => {
           imageUrl={course.imageUrl}
           price={price}
           ctaText={ctaText}
+          accessLabel={accessLabel}
           isPresencial={(course as { isPresencial?: boolean }).isPresencial}
           formRef={formRef}
         />
@@ -106,9 +113,16 @@ const LandingPageV2: React.FC = () => {
 
         <StitchDivider />
 
-        <SecuritySection />
+        <SecuritySection accessLabel={accessLabel} accessDescription={accessDescription} />
 
-        <FormSection ref={formRef} course={course} landing={landing} price={price} />
+        <FormSection
+          ref={formRef}
+          course={course}
+          landing={landing}
+          price={price}
+          accessLabel={accessLabel}
+          isPreSale={isCamisasPreSale}
+        />
 
         <div className="bg-white">
           <FaqSection variant="light" />

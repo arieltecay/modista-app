@@ -14,7 +14,7 @@ interface ImportMeta {
 
 interface Window {
     dataLayer: any[];
-    fbq: (type: string, name: string, parameters?: any) => void;
+    fbq?: (type: string, name: string, parameters?: any) => void;
     _fbq: any;
     clarity: (...args: any[]) => void;
 }

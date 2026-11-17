@@ -1,6 +1,8 @@
 # Changelog
 
 ## [Unreleased]
+- Aclara la preventa del curso de camisas, el acceso desde el 23/11 y mejora el contraste móvil de la landing.
+- Corrige el reporte de Web Vitals al importar la validación de consentimiento de marketing.
 - Fija el color de negritas y cursivas del contenido enriquecido para mantener contraste en el detalle del curso.
 - Eleva las preferencias de privacidad sobre el CTA fijo de inscripción en pantallas móviles.
 - Solicita consentimiento antes de cargar herramientas opcionales y permite revocarlo desde el sitio.

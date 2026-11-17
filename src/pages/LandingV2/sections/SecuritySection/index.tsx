@@ -1,23 +1,29 @@
 import React from 'react';
 
-const steps = [
-  { emoji: '📝', title: 'Completá tus datos', desc: 'Nombre, email y WhatsApp' },
-  { emoji: '🔒', title: 'Pago seguro', desc: 'MercadoPago protege tu compra' },
-  { emoji: '📥', title: 'Acceso inmediato', desc: 'Recibís el curso al instante' },
-];
-
-const badges = [
-  '🔒 Pago seguro con MercadoPago',
-  '💳 Tarjetas, transferencia o efectivo',
-  '📥 Acceso inmediato al inscribirte',
-  '🔄 Garantía de satisfacción',
-];
+interface SecuritySectionProps {
+  accessLabel: string;
+  accessDescription: string;
+}
 
 /**
  * Seguridad + cómo funciona: contenido real de v1, layout v2.
  * La línea que une los pasos se dibuja con el motivo de costura punteada.
  */
-const SecuritySection: React.FC = () => (
+const SecuritySection: React.FC<SecuritySectionProps> = ({ accessLabel, accessDescription }) => {
+  const steps = [
+    { emoji: '📝', title: 'Completá tus datos', desc: 'Nombre, email y WhatsApp' },
+    { emoji: '🔒', title: 'Pago seguro', desc: 'MercadoPago protege tu compra' },
+    { emoji: '📅', title: accessLabel, desc: accessDescription },
+  ];
+
+  const badges = [
+    '🔒 Pago seguro con MercadoPago',
+    '💳 Tarjetas, transferencia o efectivo',
+    `📅 ${accessLabel}`,
+    '🔄 Garantía de satisfacción',
+  ];
+
+  return (
   <section className="py-12 px-4 sm:px-6 bg-white">
     <div className="max-w-xl mx-auto">
       <h2 className="font-atelier-serif text-3xl sm:text-4xl font-semibold text-center mb-2 text-atelier-ink">
@@ -51,6 +57,7 @@ const SecuritySection: React.FC = () => (
       </div>
     </div>
   </section>
-);
+  );
+};
 
 export default SecuritySection;

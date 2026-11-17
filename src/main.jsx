@@ -8,7 +8,10 @@ import { registerSW } from 'virtual:pwa-register';
 import { onCLS, onINP, onLCP, onFCP, onTTFB } from 'web-vitals/attribution';
 import { ThemeProvider } from './context/ThemeContext';
 import { HelmetProvider } from 'react-helmet-async';
-import { initializePrivacyConsent } from './utils/privacy-consent';
+import {
+  hasMarketingConsent,
+  initializePrivacyConsent,
+} from './utils/privacy-consent';
 
 // Bloquea los trackers opcionales y limpia identificadores previos hasta obtener consentimiento.
 initializePrivacyConsent();

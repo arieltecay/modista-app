@@ -14,6 +14,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
   imageUrl,
   price,
   ctaText,
+  accessLabel,
   isPresencial,
   formRef,
 }) => {
@@ -70,7 +71,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
             {ctaText}
           </span>
           {price.formatted && (
-            <span className="text-sm font-medium text-white/85 normal-case mt-1 font-atelier-sans">
+            <span className="text-sm font-medium text-white normal-case mt-1 font-atelier-sans">
               <strong className="text-white font-bold">{price.formatted}</strong> · pago único
             </span>
           )}
@@ -78,7 +79,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
 
         <div className="mt-7 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-atelier-muted-text font-atelier-sans">
           <span>🔒 Pago seguro</span>
-          <span>📥 Acceso inmediato</span>
+          <span>📅 {accessLabel}</span>
           <span>♾️ Sin vencimiento</span>
         </div>
       </div>

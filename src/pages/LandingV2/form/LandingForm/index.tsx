@@ -8,6 +8,7 @@ import type { CourseData, LandingPageData } from '../../types';
 interface LandingFormProps {
   course: CourseData;
   landing: LandingPageData;
+  accessLabel: string;
 }
 
 const FORM_FIELDS: Array<{
@@ -26,7 +27,7 @@ const FORM_FIELDS: Array<{
  * Formulario de inscripción de la landing v2 — COMPONENTE PRESENTACIONAL.
  * Toda la lógica (validación, submit, conversión) vive en `useLandingForm`.
  */
-const LandingForm: React.FC<LandingFormProps> = ({ course, landing }) => {
+const LandingForm: React.FC<LandingFormProps> = ({ course, landing, accessLabel }) => {
   const form = useLandingForm({ course, landing });
 
   const formattedPrice = useMemo(
@@ -101,7 +102,7 @@ const LandingForm: React.FC<LandingFormProps> = ({ course, landing }) => {
           {form.loading ? (
             <>
               <Spinner />
-              <span className="text-sm text-white/90 mt-2 font-atelier-sans">
+              <span className="text-sm text-white mt-2 font-atelier-sans">
                 {SUBMIT_PHASE_LABEL[form.phase as Exclude<typeof form.phase, 'idle'>]}
               </span>
             </>
@@ -111,7 +112,7 @@ const LandingForm: React.FC<LandingFormProps> = ({ course, landing }) => {
                 {landing.buttonText || 'QUIERO EMPEZAR AHORA'}
               </span>
               {formattedPrice && (
-                <span className="text-sm font-medium text-white/90 normal-case mt-1 font-atelier-sans">
+                <span className="text-sm font-medium text-white normal-case mt-1 font-atelier-sans">
                   <strong className="text-white font-bold">{formattedPrice}</strong> · pago único
                 </span>
               )}
@@ -126,7 +127,7 @@ const LandingForm: React.FC<LandingFormProps> = ({ course, landing }) => {
           <div className="flex items-center gap-2 text-[10px] text-atelier-muted-text font-atelier-sans">
             <span>🔒 Pago seguro</span>
             <span className="text-atelier-muted-text/40">|</span>
-            <span>📥 Acceso inmediato</span>
+            <span>📅 {accessLabel}</span>
           </div>
         </div>
       </div>

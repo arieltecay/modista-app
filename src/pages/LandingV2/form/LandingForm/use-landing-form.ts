@@ -1,7 +1,12 @@
 import React, { useRef, useState } from 'react';
 import { createLandingInscription } from '../../../../services/inscriptions';
 import { trackFormStart, trackFormError, trackFormFieldFocus, trackInscriptionSuccess } from '../../../../services/analytics';
-import { validateEmailAddress, validateFullName, validatePhone } from '../../../../utils/validators';
+import {
+  validateEmailAddress,
+  validateFullName,
+  validatePhone,
+  validatePhoneStrict,
+} from '../../../../utils/validators';
 import { getUTMPayload, getStoredUTMData } from '../../../../utils/utm-tracking';
 import { getCookieValue } from '../../../../utils/cookies';
 import { hasMarketingConsent } from '../../../../utils/privacy-consent';
@@ -98,11 +103,29 @@ export const useLandingForm = ({ course, landing }: UseLandingFormArgs) => {
       return;
     }
 
-    setFormMessage(null);
-    trackV2('form_submit', { courseId, courseTitle: course.title });
-
     submittingRef.current = true;
     setPhase('creating');
+
+    let strictPhoneError: string | null = null;
+    try {
+      strictPhoneError = await validatePhoneStrict(formData.celular);
+    } catch {
+      // Si un deploy dejó el chunk diferido momentáneamente inaccesible, la
+      // validación básica ya aplicada no debe bloquear una compra legítima.
+      trackFormError('landing_form_v2', 'Landing V2 Form', 'celular', 'strict_validation_unavailable');
+    }
+    if (strictPhoneError) {
+      setFieldErrors((previous) => ({ ...previous, celular: strictPhoneError }));
+      setPhase('idle');
+      submittingRef.current = false;
+      trackFormError('landing_form_v2', 'Landing V2 Form', 'celular', strictPhoneError);
+      fieldRefs.current.celular?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      fieldRefs.current.celular?.focus({ preventScroll: true });
+      return;
+    }
+
+    setFormMessage(null);
+    trackV2('form_submit', { courseId, courseTitle: course.title });
 
     try {
       const utmData = getStoredUTMData();

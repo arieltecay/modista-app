@@ -40,7 +40,7 @@ const CoursesV2: React.FC = () => {
           </p>
 
           {/* Toggle modalidad (los únicos filtros reales del negocio) */}
-          <div className="flex justify-center gap-2 mb-10">
+          <div className="mx-auto mb-10 grid min-h-10 w-full max-w-md grid-cols-3 gap-2">
             {(
               [
                 { key: 'all', label: 'Todos' },
@@ -52,7 +52,7 @@ const CoursesV2: React.FC = () => {
                 key={f.key}
                 type="button"
                 onClick={() => setFilter(f.key)}
-                className={`px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all font-atelier-sans ${
+                className={`px-2 py-2.5 sm:px-5 rounded-full text-xs font-bold uppercase tracking-wider transition-all font-atelier-sans ${
                   filter === f.key
                     ? 'bg-atelier-primary text-white shadow-md shadow-atelier-primary/20'
                     : 'bg-white text-atelier-muted-text border border-atelier-sage/20 hover:border-atelier-primary/40'

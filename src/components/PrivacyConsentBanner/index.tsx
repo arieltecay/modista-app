@@ -66,7 +66,7 @@ const PrivacyConsentBanner = () => {
       {shouldShowPanel && (
         <section
           aria-label="Preferencias de privacidad y medición"
-          className="fixed inset-x-3 bottom-[calc(5rem+env(safe-area-inset-bottom)+0.75rem)] z-[100] mx-auto max-w-3xl rounded-2xl border border-atelier-sage/20 bg-white p-5 text-atelier-dark shadow-2xl sm:inset-x-6 sm:bottom-3 sm:p-6"
+          className="fixed inset-x-3 bottom-[calc(5rem+env(safe-area-inset-bottom)+0.75rem)] z-[100] mx-auto h-[min(21rem,calc(100dvh-7rem-env(safe-area-inset-bottom)))] max-w-3xl overflow-y-auto rounded-2xl border border-atelier-sage/20 bg-white p-5 text-atelier-dark shadow-2xl sm:inset-x-6 sm:bottom-3 sm:h-auto sm:min-h-[13rem] sm:max-h-[calc(100dvh-1.5rem)] sm:p-6"
         >
           <div className="flex items-start justify-between gap-4">
             <h2 className="text-base font-bold">Privacidad y medición</h2>

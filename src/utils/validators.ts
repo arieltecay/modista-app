@@ -1,14 +1,10 @@
-/**
- * Validadores livianos para formularios v2.
- *
- * Reemplazan a google-libphonenumber (~500KB de JS) por reglas simples y
- * predecibles para WhatsApp latinoamericano: 8-15 dígitos con formato libre
- * (se aceptan +, espacios, guiones y paréntesis). La verdad del dato la confirma
- * el envío real de WhatsApp/email post-compra; el form solo filtra errores obvios.
- */
+/** Validadores compartidos por los formularios v2. */
 
 const NAME_REGEX = /^[a-zA-ZÀ-ÿ\s'-]+$/;
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+const SUPPORTED_PHONE_REGIONS = new Set([
+  'AR', 'UY', 'CL', 'BO', 'PE', 'PY', 'VE', 'CO', 'MX', 'BR', 'EC', 'US', 'CA',
+]);
 
 export const validateFullName = (value: string): string | null => {
   const trimmed = value.trim();
@@ -27,11 +23,6 @@ export const validateEmailAddress = (value: string): string | null => {
   return null;
 };
 
-/**
- * Celular/WhatsApp flexible: acepta formatos AR y del resto de LatAm.
- * Normalizamos a dígitos (más `+` inicial) y exigimos entre 8 y 15 dígitos.
- * Ejemplos válidos: "+54 9 11 2345-6789", "1123456789", "+54 911 2345 6789".
- */
 export const validatePhone = (value: string): string | null => {
   const trimmed = value.trim();
   if (!trimmed) return 'Necesitamos tu WhatsApp para darte acceso.';
@@ -39,9 +30,25 @@ export const validatePhone = (value: string): string | null => {
   if (!/^\+?[0-9\s\-()]+$/.test(trimmed)) {
     return 'Usá solo números, espacios y guiones.';
   }
-  const digits = trimmed.replace(/[^0-9]/g, '');
-  if (digits.length < 8 || digits.length > 15) {
+  const digits = trimmed.replace(/\D/g, '');
+  if (digits.length < 8 || digits.length > 15 || /^(\d)\1+$/.test(digits)) {
     return 'Ingresá un número válido (ej. +54 9 11 2345-6789).';
   }
+
+  return null;
+};
+
+/**
+ * Validación estricta diferida: descarga la metadata telefónica solo cuando la
+ * usuaria envía el formulario, para no competir con el render inicial de la landing.
+ */
+export const validatePhoneStrict = async (value: string): Promise<string | null> => {
+  const { parsePhoneNumberFromString } = await import('libphonenumber-js/min');
+  const phone = parsePhoneNumberFromString(value.trim(), 'AR');
+
+  if (!phone?.isValid() || !phone.country || !SUPPORTED_PHONE_REGIONS.has(phone.country)) {
+    return 'Ingresá un número válido (ej. +54 9 11 2345-6789).';
+  }
+
   return null;
 };

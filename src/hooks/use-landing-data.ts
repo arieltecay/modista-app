@@ -5,7 +5,11 @@ import { getCourseById } from '../services/courses';
 import { getTestimonials } from '../services/testimonials/testimonialService';
 import { trackCourseView } from '../services/analytics';
 import { useCourseContext } from '../context/CourseContext';
-import { getLandingHeroUrl } from '../utils/image-utils';
+import {
+  getLandingHeroSrcSet,
+  getLandingHeroUrl,
+  LANDING_HERO_SIZES,
+} from '../utils/image-utils';
 import { LandingPageData, CourseData, TestimonialItem } from '../types/landing';
 import type { Testimonial } from '../services/types';
 
@@ -50,6 +54,8 @@ const preloadLcpImage = (imageUrl?: string): void => {
   link.rel = 'preload';
   link.as = 'image';
   link.href = href;
+  link.imageSrcset = getLandingHeroSrcSet(imageUrl);
+  link.imageSizes = LANDING_HERO_SIZES;
   link.setAttribute('fetchpriority', 'high');
   document.head.appendChild(link);
 };
@@ -84,7 +90,7 @@ export function useLandingData(): UseLandingDataResult {
         setLanding(cached.landing);
         setCourse(cached.course);
         setTestimonials(cached.testimonials || []);
-        setActiveCourse(cached.course as any);
+        setActiveCourse(cached.course);
         setLoading(false);
         preloadLcpImage(cached.course.imageUrl);
       }
@@ -133,7 +139,7 @@ export function useLandingData(): UseLandingDataResult {
           preloadLcpImage(courseData.imageUrl);
           setLanding(landingData);
           setCourse(courseData);
-          setActiveCourse(courseData as any);
+          setActiveCourse(courseData);
           setLoading(false);
           trackCourseView(courseData.id, courseData.title, courseData.price);
 

@@ -1,5 +1,10 @@
 import React, { useCallback } from 'react';
-import { getLandingHeroUrl, LANDING_HERO_IMAGE } from '../../../../utils/image-utils';
+import {
+  getLandingHeroSrcSet,
+  getLandingHeroUrl,
+  LANDING_HERO_IMAGE,
+  LANDING_HERO_SIZES,
+} from '../../../../utils/image-utils';
 import { trackCtaClick } from '../../../../services/analytics';
 import { trackV2 } from '../../hooks/use-landing-tracking';
 import type { HeroSectionProps } from './types';
@@ -51,6 +56,8 @@ const HeroSection: React.FC<HeroSectionProps> = ({
           <div className="mb-7" data-pricing>
             <img
               src={getLandingHeroUrl(imageUrl)}
+              srcSet={getLandingHeroSrcSet(imageUrl)}
+              sizes={LANDING_HERO_SIZES}
               alt={title}
               width={LANDING_HERO_IMAGE.width}
               height={LANDING_HERO_IMAGE.height}

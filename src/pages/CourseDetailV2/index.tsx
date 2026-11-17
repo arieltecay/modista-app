@@ -12,7 +12,6 @@ import { hasMarketingConsent } from '../../utils/privacy-consent';
 import { useCourseDetail } from './hooks/use-course-detail';
 import CourseDetailV2Skeleton from './components/CourseDetailV2Skeleton';
 
-// google-libphonenumber (~570 KB de fuente) vive en este chunk: solo se descarga en el detalle del curso.
 // A nivel de MÓDULO (no dentro del componente): un lazy() creado en cada render haría que el
 // <Suspense> vuelva al fallback en cada re-render (parpadeo del formulario).
 const loadInscriptionForm = () => import('../../components/InscriptionForm');

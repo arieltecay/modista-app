@@ -15,21 +15,14 @@ import type {
   ConversionParams,
   FormEventParams
 } from './types';
-import { getStoredUTMData } from '../utils/utm-tracking';
 import { hasMarketingConsent } from '../utils/privacy-consent';
-
-type FbqTrack = (
-  cmd: string,
-  event: string,
-  params?: Record<string, unknown>,
-  options?: { eventID?: string }
-) => void;
-
-async function sha256(s: string): Promise<string> {
-  const buf = new TextEncoder().encode(s);
-  const hashBuf = await crypto.subtle.digest('SHA-256', buf);
-  return Array.from(new Uint8Array(hashBuf)).map(b => b.toString(16).padStart(2, '0')).join('');
-}
+import {
+  trackMetaInitiateCheckout,
+  trackMetaLead,
+  trackMetaPurchase,
+  trackMetaViewContent,
+  type MetaPixelTrack,
+} from './meta-pixel';
 
 /**
  * Obtiene el rol del usuario desde el almacenamiento local
@@ -47,24 +40,7 @@ const getUserRole = (): 'admin' | 'user' | 'guest' => {
   return 'guest';
 };
 
-const getCookie = (name: string): string | undefined => {
-  if (typeof document === 'undefined') return undefined;
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop()?.split(';').shift();
-  return undefined;
-};
-
-const getMetaAdvancedParams = (): Record<string, string> => {
-  if (!hasMarketingConsent()) return {};
-  const utm = getStoredUTMData();
-  const params: Record<string, string> = {};
-  if (utm?.fbc) params.fbc = utm.fbc;
-  // fbp: preferir sessionStorage, fallback al cookie _fbp directo
-  const fbp = utm?.fbp || getCookie('_fbp');
-  if (fbp) params.fbp = fbp;
-  return params;
-};
+const getMetaPixel = (): MetaPixelTrack | undefined => window.fbq as MetaPixelTrack | undefined;
 
 /**
  * Envía eventos a Google Tag Manager
@@ -149,26 +125,29 @@ export const trackCourseView = (courseId: string, courseTitle: string, price?: n
     course_title: courseTitle,
     course_price: price
   };
-  sendAnalyticsEvent(AnalyticsEvents.COURSE_VIEW, params);
+  const analyticsDedupeKey = `analytics_course_view_${courseId}`;
+  try {
+    if (!sessionStorage.getItem(analyticsDedupeKey)) {
+      sendAnalyticsEvent(AnalyticsEvents.COURSE_VIEW, params);
+      sessionStorage.setItem(analyticsDedupeKey, '1');
+    }
+  } catch {
+    sendAnalyticsEvent(AnalyticsEvents.COURSE_VIEW, params);
+  }
 
   // Meta Pixel: ViewContent
   if (hasMarketingConsent() && import.meta.env.PROD && typeof window !== 'undefined' && window.fbq) {
-    // eventId unico por usuario: debe coincidir con el CAPI server-side para dedup
     const sessionId = localStorage.getItem('modista_session_id');
-    const sessionSuffix = sessionId ? `_${sessionId.slice(0, 8)}` : `_${Date.now()}`;
-    const eventId = `view_content_${courseId}${sessionSuffix}`;
-
-    (window.fbq as FbqTrack)('track', 'ViewContent', {
-      content_name: courseTitle,
-      content_ids: [courseId],
-      content_type: 'product',
+    if (!sessionId) return;
+    trackMetaViewContent({
+      consentGranted: true,
+      fbq: getMetaPixel(),
+      courseId,
+      courseTitle,
+      sessionId,
       value: price || 0,
-      currency: 'ARS',
-      ...getMetaAdvancedParams()
-    }, { eventID: eventId });
-
-    // Y a DataLayer
-    window.dataLayer?.push({ event: 'view_content', event_id: eventId, course_id: courseId });
+      dedupeStore: sessionStorage,
+    });
   }
 };
 
@@ -185,15 +164,15 @@ export const trackFormStart = (formId: string, formName: string, courseId?: stri
   sendAnalyticsEvent(AnalyticsEvents.FORM_START, params);
 
   // Meta Pixel: InitiateCheckout (opcional, pero buena práctica)
-  if (hasMarketingConsent() && import.meta.env.PROD && typeof window !== 'undefined' && window.fbq) {
-    (window.fbq as FbqTrack)('track', 'InitiateCheckout', {
-      content_name: courseTitle,
-      content_category: 'Courses',
-      content_ids: courseId ? [courseId] : undefined,
+  if (hasMarketingConsent() && import.meta.env.PROD && typeof window !== 'undefined' && inscriptionId) {
+    trackMetaInitiateCheckout({
+      consentGranted: true,
+      fbq: getMetaPixel(),
+      inscriptionId,
+      courseId,
+      courseTitle: courseTitle || 'Curso',
       value: value || 0,
-      currency: 'ARS',
-      ...getMetaAdvancedParams()
-    }, inscriptionId ? { eventID: `checkout_${inscriptionId}` } : undefined);
+    });
   }
 };
 
@@ -218,8 +197,6 @@ export const trackInscriptionSuccess = async (
   courseId: string, 
   courseTitle: string, 
   value: number,
-  email?: string,
-  phone?: string,
   inscriptionId?: string
 ): Promise<void> => {
   const params: ConversionParams = {
@@ -234,26 +211,16 @@ export const trackInscriptionSuccess = async (
   sendAnalyticsEvent(AnalyticsEvents.INSCRIPTION_SUCCESS, params);
 
   // 2. Meta Pixel: Lead
-  if (hasMarketingConsent() && import.meta.env.PROD && typeof window !== 'undefined' && window.fbq) {
-    // Usamos una promesa para dar tiempo al Pixel de procesar
-    return (async () => {
-      const hash = async (s?: string) => s ? await sha256(s.trim().toLowerCase()) : undefined;
-      const hashedEmail = await hash(email);
-      const hashedPhone = await hash(phone);
-
-      (window.fbq as FbqTrack)('track', 'Lead', {
-        content_name: courseTitle,
-        value: value,
-        currency: 'ARS',
-        em: hashedEmail,
-        ph: hashedPhone,
-        ...getMetaAdvancedParams()
-      }, inscriptionId ? { eventID: `lead_${inscriptionId}` } : undefined);
-      
-      // Meta Pixel no tiene callback nativo de finalización garantizado en todas las versiones
-      // así que usamos un pequeño timeout de seguridad para asegurar que el evento se encole
-      await new Promise<void>(resolve => setTimeout(resolve, 600));
-    })();
+  if (hasMarketingConsent() && import.meta.env.PROD && typeof window !== 'undefined' && inscriptionId) {
+    trackMetaLead({
+      consentGranted: true,
+      fbq: getMetaPixel(),
+      inscriptionId,
+      courseId,
+      courseTitle,
+      value,
+    });
+    await new Promise<void>(resolve => setTimeout(resolve, 600));
   }
 
   return Promise.resolve();
@@ -288,15 +255,15 @@ export const trackPurchaseSuccess = (
   sendAnalyticsEvent(AnalyticsEvents.PURCHASE, params);
 
     // Meta Pixel: Purchase
-    if (hasMarketingConsent() && import.meta.env.PROD && typeof window !== 'undefined' && window.fbq) {
-      (window.fbq as FbqTrack)('track', 'Purchase', {
-        content_name: courseTitle,
-        content_ids: courseId ? [courseId] : undefined,
-        content_type: 'product',
+    if (hasMarketingConsent() && import.meta.env.PROD && typeof window !== 'undefined') {
+      trackMetaPurchase({
+        consentGranted: true,
+        fbq: getMetaPixel(),
+        inscriptionId,
+        courseId,
+        courseTitle,
         value,
-        currency: 'ARS',
-        ...getMetaAdvancedParams()
-      }, { eventID: `purchase_${inscriptionId}` });
+      });
     }
 };
 

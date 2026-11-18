@@ -7,6 +7,8 @@ type FunnelStep =
   | 'form_view'
   | 'form_start'
   | 'form_submit'
+  | 'lead'
+  | 'initiate_checkout'
   | 'scroll_50'
   | 'scroll_90'
   | 'redirect_to_payment'

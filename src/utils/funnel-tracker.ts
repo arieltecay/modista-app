@@ -1,6 +1,7 @@
 import { getStoredUTMData } from './utm-tracking';
 import { apiClient } from '../services/config/apiClient';
 import { hasMarketingConsent } from './privacy-consent';
+import { buildMetaEventId } from '../services/meta-pixel';
 
 const SESSION_KEY = 'modista_session_id';
 const DEDUPE_KEY = 'modista_funnel_dedupe';
@@ -30,19 +31,28 @@ type Step =
   | 'form_view'
   | 'form_start'
   | 'form_submit'
+  | 'lead'
+  | 'initiate_checkout'
   | 'scroll_50'
   | 'scroll_90'
   | 'redirect_to_payment'
   | 'purchase';
 
-const shouldFire = (key: string): boolean => {
+const inFlight = new Set<string>();
+
+const hasFired = (key: string): boolean => {
   try {
     const dedupe = JSON.parse(sessionStorage.getItem(DEDUPE_KEY) || '{}');
-    if (dedupe[key]) return false;
+    return Boolean(dedupe[key]);
+  } catch { return false; }
+};
+
+const markFired = (key: string): void => {
+  try {
+    const dedupe = JSON.parse(sessionStorage.getItem(DEDUPE_KEY) || '{}');
     dedupe[key] = Date.now();
     sessionStorage.setItem(DEDUPE_KEY, JSON.stringify(dedupe));
-    return true;
-  } catch { return true; }
+  } catch { /* La telemetría no debe bloquear el funnel. */ }
 };
 
 export const trackFunnel = (step: Step, extra: { courseId?: string; courseTitle?: string; inscriptionId?: string; value?: number } = {}): void => {
@@ -55,10 +65,14 @@ export const trackFunnel = (step: Step, extra: { courseId?: string; courseTitle?
   const sessionId = localStorage.getItem(SESSION_KEY);
   if (!sessionId) return;
   const dedupeKey = `${step}_${extra.courseId || ''}_${extra.inscriptionId || ''}`;
-  if (!shouldFire(dedupeKey)) return;
+  if (hasFired(dedupeKey) || inFlight.has(dedupeKey)) return;
+  inFlight.add(dedupeKey);
 
   const utm: UTMData = (getStoredUTMData() as UTMData) || {};
   const fbp = utm.fbp || getCookie('_fbp');
+  const eventId = step === 'course_detail_view' && extra.courseId
+    ? buildMetaEventId('view_content', extra.courseId, sessionId)
+    : undefined;
   const payload = {
     sessionId,
     step,
@@ -67,6 +81,8 @@ export const trackFunnel = (step: Step, extra: { courseId?: string; courseTitle?
     inscriptionId: extra.inscriptionId,
     value: extra.value,
     eventTime: Math.floor(Date.now() / 1000),
+    eventId,
+    eventSourceUrl: window.location.href,
     utmSource: utm.source,
     utmCampaign: utm.campaign,
     referrer: document.referrer || undefined,
@@ -77,5 +93,8 @@ export const trackFunnel = (step: Step, extra: { courseId?: string; courseTitle?
 
   window.dataLayer?.push({ event: `funnel_${step}`, ...payload });
 
-  apiClient.post('/funnel/event', payload, { timeout: 5000 }).catch(() => {});
+  apiClient.post('/funnel/event', payload, { timeout: 5000 })
+    .then(() => markFired(dedupeKey))
+    .catch(() => {})
+    .finally(() => inFlight.delete(dedupeKey));
 };

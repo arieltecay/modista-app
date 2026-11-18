@@ -1,4 +1,5 @@
 import { apiClient } from '../config/apiClient';
+import { publicClient } from '../config/publicClient';
 import { LandingPage, ApiResponse, Testimonial } from '../types';
 import type { Course } from '../courses/types';
 
@@ -18,8 +19,7 @@ export interface LandingFullData {
 }
 
 /**
- * Landing + curso + testimonios en UNA llamada. Usa `apiClient` (no `publicClient`)
- * a propósito: necesita X-Session-Id / X-Meta-Fbc / X-Meta-Fbp para el CAPI del servidor.
+ * Landing + curso + testimonios en una llamada pública sin efectos secundarios.
  */
 export const getLandingFullBySlug = (slug: string): Promise<ApiResponse<LandingFullData>> =>
-    apiClient.get(`/landings/slug/${slug}/full`);
+    publicClient.get(`/landings/slug/${slug}/full`);

@@ -17,6 +17,9 @@ import FormSection from './sections/FormSection';
 import StickyCta from './sections/StickyCta';
 import { useRevealOnScroll } from './hooks/use-reveal';
 import { trackV2, useScrollDepthTracking } from './hooks/use-landing-tracking';
+import { trackCourseView } from '../../services/analytics';
+import { useMarketingConsent } from '../../hooks/use-marketing-consent';
+import { META_PIXEL_READY_EVENT } from '../../services/meta-pixel';
 
 const CAMISAS_PRESALE_DESCRIPTION =
   'Aprendé a crear una camisa a medida y a confeccionar distintos tipos de cuellos, paso a paso y con explicaciones claras. Inscribite hoy en la preventa y el 23 de noviembre recibirás acceso completo a todas las clases grabadas, para avanzar a tu ritmo y sin vencimiento.';
@@ -31,21 +34,29 @@ const CAMISAS_PRESALE_DESCRIPTION =
 const LandingPageV2: React.FC = () => {
   const { landing, course, testimonials, loading, error } = useLandingData();
   const formRef = useRef<HTMLElement | null>(null);
+  const marketingConsent = useMarketingConsent();
 
   const courseId = useMemo(() => course?.id || course?.uuid || course?._id, [course]);
 
   useRevealOnScroll();
   useScrollDepthTracking({ courseId, courseTitle: course?.title, value: course?.price });
 
-  // Paso 1 del funnel: vista del detalle/oferta del curso
   useEffect(() => {
-    if (!courseId || !course?.title) return;
-    trackV2('course_detail_view', {
-      courseId,
-      courseTitle: course.title,
-      value: course.price ? Number(course.price) : undefined,
-    });
-  }, [courseId, course?.title, course?.price]);
+    if (!marketingConsent || !courseId || !course?.title) return;
+
+    const trackLandingView = () => {
+      trackCourseView(courseId, course.title, course.price);
+      trackV2('course_detail_view', {
+        courseId,
+        courseTitle: course.title,
+        value: course.price ? Number(course.price) : undefined,
+      });
+    };
+
+    trackLandingView();
+    window.addEventListener(META_PIXEL_READY_EVENT, trackLandingView);
+    return () => window.removeEventListener(META_PIXEL_READY_EVENT, trackLandingView);
+  }, [courseId, course?.title, course?.price, marketingConsent]);
 
   if (loading) {
     return <LandingSkeleton />;

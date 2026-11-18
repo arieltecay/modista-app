@@ -2,6 +2,8 @@ import { getStoredUTMData } from './utm-tracking';
 import { apiClient } from '../services/config/apiClient';
 import { hasMarketingConsent } from './privacy-consent';
 import { buildMetaEventId } from '../services/meta-pixel';
+import { trackAcquisitionEvent } from './acquisition';
+import { acquisitionEventFor } from './acquisition/funnel-steps';
 
 const SESSION_KEY = 'modista_session_id';
 const DEDUPE_KEY = 'modista_funnel_dedupe';
@@ -67,6 +69,10 @@ export const trackFunnel = (step: Step, extra: { courseId?: string; courseTitle?
   const dedupeKey = `${step}_${extra.courseId || ''}_${extra.inscriptionId || ''}`;
   if (hasFired(dedupeKey) || inFlight.has(dedupeKey)) return;
   inFlight.add(dedupeKey);
+
+  // The acquisition API keeps its own visit-based record; the legacy endpoint below stays during the transition.
+  const mirrored = acquisitionEventFor(step, extra);
+  if (mirrored) trackAcquisitionEvent(mirrored.name, mirrored.extra);
 
   const utm: UTMData = (getStoredUTMData() as UTMData) || {};
   const fbp = utm.fbp || getCookie('_fbp');

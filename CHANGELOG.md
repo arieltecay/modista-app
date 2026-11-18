@@ -1,6 +1,7 @@
 # Changelog
 
 ## [Unreleased]
+- Adelanta la imagen principal de la campaña de Camisas y evita el preflight al cargar su contenido.
 - Reduce el peso de imágenes y validaciones del checkout, y estabiliza superficies señaladas por Web Analytics.
 - Registra `ViewContent`, `InitiateCheckout`, `Lead` y `Purchase` con IDs deterministas y sin PII en los datos personalizados del Pixel.
 - Deduplica vistas de la landing, espera consentimiento/Pixel disponible y envía las etapas internas del embudo al backend.

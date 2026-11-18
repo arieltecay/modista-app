@@ -1,10 +1,11 @@
-import type { AcquisitionTracker, PublicEventName, TrackerDeps, TrackEventExtra, VisitContext } from './types';
+import type { AcquisitionTracker, PublicEventName, StorageLike, TrackerDeps, TrackEventExtra, VisitContext } from './types';
 import { VISIT_CONTEXT_KEY, buildVisitBody, landingSlugOf, resolveVisit } from './visit-context';
 
 const DEDUPE_KEY = 'modista_acquisition_dedupe';
 const DEDUPE_LIMIT = 200;
 const RETRY_DELAYS_MS = [500, 1500];
 const MAX_EVENT_ID_LENGTH = 128;
+const COURSE_ID = /^[A-Za-z0-9_-]{1,64}$/;
 
 const PUBLIC_EVENTS: ReadonlySet<string> = new Set<PublicEventName>([
   'page_view', 'course_detail_view', 'pricing_visible', 'cta_click', 'form_view',
@@ -21,31 +22,51 @@ const compact = <T extends object>(values: T): Partial<T> =>
  * Sends visits, events and Pixel-invocation notices to the acquisition API. Everything is best
  * effort: consent and the client flag gate it, transient failures are retried a few times, an
  * occurrence is marked done only after the server accepted it, and nothing here ever throws.
+ * A reset (consent revoked) cancels whatever is still pending: nothing is sent or stored after it.
  */
 export const createAcquisitionTracker = (deps: TrackerDeps): AcquisitionTracker => {
   const inFlight = new Set<string>();
+  const memory = new Map<string, string>();
   let visitState: { visitId: string; ready: Promise<boolean> } | undefined;
+  let epoch = 0;
+  let documentReferrerAvailable = true;
+
+  /** The real storage can be blocked; a copy in memory keeps one visit per page load instead of one per event. */
+  const store: StorageLike = {
+    getItem: (key) => {
+      try {
+        const value = deps.storage.getItem(key);
+        if (value !== null) return value;
+      } catch { /* fall back to memory */ }
+      return memory.get(key) ?? null;
+    },
+    setItem: (key, value) => {
+      memory.set(key, value);
+      try { deps.storage.setItem(key, value); } catch { /* memory keeps it */ }
+    },
+    removeItem: (key) => {
+      memory.delete(key);
+      try { deps.storage.removeItem(key); } catch { /* nothing left to clear */ }
+    },
+  };
 
   const isActive = (): boolean => deps.enabled && deps.hasConsent() && deps.getVisitorId() !== null;
 
   const readDone = (): string[] => {
     try {
-      const parsed: unknown = JSON.parse(deps.storage.getItem(DEDUPE_KEY) ?? '[]');
+      const parsed: unknown = JSON.parse(store.getItem(DEDUPE_KEY) ?? '[]');
       return Array.isArray(parsed) ? parsed.filter((id): id is string => typeof id === 'string') : [];
     } catch {
       return [];
     }
   };
   const isDone = (id: string): boolean => readDone().includes(id);
-  const markDone = (id: string): void => {
-    try {
-      deps.storage.setItem(DEDUPE_KEY, JSON.stringify([...readDone(), id].slice(-DEDUPE_LIMIT)));
-    } catch { /* Without storage the dedupe is per page load, which the server tolerates. */ }
-  };
+  const markDone = (id: string): void => store.setItem(DEDUPE_KEY, JSON.stringify([...readDone(), id].slice(-DEDUPE_LIMIT)));
 
   /** True once the server accepted the request (any 2xx, including the 204 consent no-op). */
-  const send = async (path: string, body: object): Promise<boolean> => {
+  const send = async (path: string, body: object, startEpoch: number): Promise<boolean> => {
     for (let attempt = 0; ; attempt += 1) {
+      if (epoch !== startEpoch || !isActive()) return false;
       let status = 0;
       try {
         status = (await deps.post(path, body)).status;
@@ -63,15 +84,18 @@ export const createAcquisitionTracker = (deps: TrackerDeps): AcquisitionTracker 
   const currentVisit = (): VisitContext | null => {
     const visitorId = deps.getVisitorId();
     if (!visitorId) return null;
-    const page = deps.page();
-    const { context } = resolveVisit({ storage: deps.storage, now: deps.now(), uuid: deps.uuid, visitorId, search: page.search });
+    // The document's referrer describes how the page was opened, so only the first visit of this load may use it.
+    const page = documentReferrerAvailable ? deps.page() : { ...deps.page(), referrer: '' };
+    documentReferrerAvailable = false;
+    const { context } = resolveVisit({
+      storage: store, now: deps.now(), uuid: deps.uuid, visitorId, page, flags: { hasFbc: deps.hasFbc(), hasFbp: deps.hasFbp() },
+    });
 
     if (visitState?.visitId !== context.visitId) {
-      const body = buildVisitBody(context, page, { hasFbc: deps.hasFbc(), hasFbp: deps.hasFbp() });
-      const ready = send('/acquisition/visits', body);
+      const ready = send('/acquisition/visits', buildVisitBody(context), epoch);
       const state = { visitId: context.visitId, ready };
       visitState = state;
-      // A visit that never got through is sent again with the next event.
+      // A visit that never got through is sent again, with its original entry, along with the next event.
       void ready.then((accepted) => { if (!accepted && visitState === state) visitState = undefined; });
     }
     return context;
@@ -84,6 +108,7 @@ export const createAcquisitionTracker = (deps: TrackerDeps): AcquisitionTracker 
     buildBody: (context: VisitContext, id: string) => object,
   ): Promise<void> => {
     if (!isActive()) return;
+    const startEpoch = epoch;
     try {
       const context = currentVisit();
       if (!context) return;
@@ -92,7 +117,8 @@ export const createAcquisitionTracker = (deps: TrackerDeps): AcquisitionTracker 
       inFlight.add(id);
       try {
         await visitState?.ready;
-        if (await send(path, buildBody(context, id))) markDone(id);
+        if (epoch !== startEpoch || !isActive()) return;
+        if ((await send(path, buildBody(context, id), startEpoch)) && epoch === startEpoch) markDone(id);
       } finally {
         inFlight.delete(id);
       }
@@ -110,9 +136,9 @@ export const createAcquisitionTracker = (deps: TrackerDeps): AcquisitionTracker 
 
     trackEvent: async (name, extra: TrackEventExtra = {}) => {
       if (!PUBLIC_EVENTS.has(name)) return;
-      const fallbackId = deps.uuid();
+      let generated: string | undefined;
       await sendOnce(
-        (context) => extra.eventId ?? (extra.key ? stableEventId(name, context.visitId, extra.key) : fallbackId),
+        (context) => extra.eventId ?? (extra.key ? stableEventId(name, context.visitId, extra.key) : (generated ??= deps.uuid())),
         '/acquisition/events',
         (visit, eventId) => {
           const page = deps.page();
@@ -124,7 +150,8 @@ export const createAcquisitionTracker = (deps: TrackerDeps): AcquisitionTracker 
             occurredAt: deps.now().toISOString(),
             path: page.pathname,
             landingSlug: landingSlugOf(page.pathname),
-            courseId: extra.courseId,
+            // An id the server would reject must not cost the whole event.
+            courseId: extra.courseId && COURSE_ID.test(extra.courseId) ? extra.courseId : undefined,
           });
         },
       );
@@ -145,10 +172,9 @@ export const createAcquisitionTracker = (deps: TrackerDeps): AcquisitionTracker 
       ),
 
     reset: () => {
-      try {
-        deps.storage.removeItem(VISIT_CONTEXT_KEY);
-        deps.storage.removeItem(DEDUPE_KEY);
-      } catch { /* nothing left to clear */ }
+      epoch += 1;
+      store.removeItem(VISIT_CONTEXT_KEY);
+      store.removeItem(DEDUPE_KEY);
       visitState = undefined;
       inFlight.clear();
     },

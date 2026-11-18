@@ -17,6 +17,7 @@ const memoryStorage = (): StorageLike => {
 interface Call { path: string; body: Record<string, unknown> }
 
 const setup = (overrides: Partial<TrackerDeps> = {}, responses: PostResult[] = []) => {
+  let currentPage = { pathname: '/lp/curso', search: '?utm_source=instagram', referrer: '', userAgent: 'Mozilla/5.0 (iPhone)' };
   const calls: Call[] = [];
   const waits: number[] = [];
   let clock = new Date('2026-11-18T12:00:00.000Z').getTime();
@@ -29,7 +30,7 @@ const setup = (overrides: Partial<TrackerDeps> = {}, responses: PostResult[] = [
     storage: memoryStorage(),
     now: () => new Date(clock),
     uuid: () => `00000000-0000-4000-8000-${String(++n).padStart(12, '0')}`,
-    page: () => ({ pathname: '/lp/curso', search: '?utm_source=instagram', referrer: '', userAgent: 'Mozilla/5.0 (iPhone)' }),
+    page: () => currentPage,
     hasFbc: () => false,
     hasFbp: () => true,
     post: async (path, body) => {
@@ -39,7 +40,8 @@ const setup = (overrides: Partial<TrackerDeps> = {}, responses: PostResult[] = [
     wait: async (ms) => void waits.push(ms),
     ...overrides,
   };
-  return { tracker: createAcquisitionTracker(deps), deps, calls, waits, advance: (ms: number) => { clock += ms; } };
+  const tracker = createAcquisitionTracker(deps);
+  return { tracker, deps, calls, waits, advance: (ms: number) => { clock += ms; }, setPage: (next: Partial<typeof currentPage>) => { currentPage = { ...currentPage, ...next }; } };
 };
 
 describe('acquisition tracker gating', () => {
@@ -206,5 +208,87 @@ describe('acquisition tracker reset (consent revoked)', () => {
     expect(calls.filter((call) => call.path === '/acquisition/visits')).toHaveLength(2);
     expect(calls.filter((call) => call.path === '/acquisition/events')).toHaveLength(2);
     expect(deps.enabled).toBe(true);
+  });
+});
+
+describe('acquisition tracker review fixes', () => {
+  it('stops retrying and writes nothing once consent is revoked mid-flight', async () => {
+    const storage = memoryStorage();
+    let revoke: () => void = () => {};
+    const { tracker, calls } = setup(
+      { storage, wait: async () => revoke() },
+      [{ status: 201 }, { status: 0 }, { status: 0 }, { status: 0 }],
+    );
+    revoke = () => tracker.reset();
+    await tracker.trackEvent('cta_click', { eventId: 'cta_click_revoked_1' });
+    expect(calls.filter((call) => call.path === '/acquisition/events')).toHaveLength(1);
+    expect(storage.getItem(VISIT_CONTEXT_KEY)).toBeNull();
+    expect(storage.getItem('modista_acquisition_dedupe')).toBeNull();
+  });
+
+  it('does not send anything when consent disappears while waiting for the visit', async () => {
+    let consent = true;
+    let releaseVisit: () => void = () => {};
+    const { tracker, calls } = setup({
+      hasConsent: () => consent,
+      post: (path, body) => {
+        calls_.push({ path, body: body as Record<string, unknown> });
+        return path === '/acquisition/visits' ? new Promise((resolve) => { releaseVisit = () => resolve({ status: 201 }); }) : Promise.resolve({ status: 201 });
+      },
+    });
+    const calls_: Call[] = calls;
+    const pending = tracker.trackEvent('cta_click');
+    await Promise.resolve();
+    consent = false;
+    tracker.reset();
+    releaseVisit();
+    await pending;
+    expect(calls.filter((call) => call.path === '/acquisition/events')).toHaveLength(0);
+  });
+
+  it('re-sends a visit that failed with the data of its entry, not of the current page', async () => {
+    const { tracker, calls, setPage } = setup({}, [{ status: 400 }, { status: 201 }, { status: 201 }]);
+    await tracker.trackEvent('page_view', { eventId: 'page_view_first_try' });
+    setPage({ pathname: '/otra', search: '', referrer: 'https://elsewhere.example/' });
+    await tracker.trackEvent('cta_click', { eventId: 'cta_click_second_try' });
+    const visits = calls.filter((call) => call.path === '/acquisition/visits');
+    expect(visits).toHaveLength(2);
+    expect(visits[1].body).toMatchObject({ entryPath: '/lp/curso', utm: { source: 'instagram' } });
+    expect(visits[1].body.referrer).toBeUndefined();
+  });
+
+  it('uses the document referrer only for the visit born with the document, not for later ones', async () => {
+    const { tracker, calls, advance, setPage } = setup();
+    setPage({ referrer: 'https://l.facebook.com/l.php?u=secret' });
+    await tracker.trackEvent('page_view');
+    advance(VISIT_IDLE_MS + 1);
+    setPage({ search: '' });
+    await tracker.trackEvent('page_view');
+    const visits = calls.filter((call) => call.path === '/acquisition/visits');
+    expect(visits[0].body.referrer).toBe('https://l.facebook.com');
+    expect(visits[1].body.referrer).toBeUndefined();
+  });
+
+  it('keeps a single visit when storage is blocked', async () => {
+    const blocked = { getItem: () => null, setItem: () => { throw new Error('blocked'); }, removeItem: () => {} };
+    const { tracker, calls } = setup({ storage: blocked });
+    await tracker.trackEvent('page_view');
+    await tracker.trackEvent('cta_click');
+    expect(calls.filter((call) => call.path === '/acquisition/visits')).toHaveLength(1);
+  });
+
+  it('omits a course id the server would reject instead of losing the event', async () => {
+    const { tracker, calls } = setup();
+    await tracker.trackEvent('cta_click', { courseId: 'not valid <id>' });
+    await tracker.trackEvent('form_view', { courseId: 'curso_1' });
+    const events = calls.filter((call) => call.path === '/acquisition/events');
+    expect(events[0].body.courseId).toBeUndefined();
+    expect(events[1].body.courseId).toBe('curso_1');
+  });
+
+  it('never rejects when the id generator itself fails', async () => {
+    const { tracker } = setup({ uuid: () => { throw new Error('no crypto'); } });
+    await expect(tracker.trackEvent('page_view')).resolves.toBeUndefined();
+    await expect(tracker.reportPixelInvoked('lead_abc12345')).resolves.toBeUndefined();
   });
 });

@@ -5,6 +5,7 @@ import {
   VISIT_MAX_AGE_MS,
   buildVisitBody,
   deviceOf,
+  entryFromPage,
   landingSlugOf,
   readTouchParams,
   resolveVisit,
@@ -25,11 +26,14 @@ const memoryStorage = (): StorageLike & { dump: () => Map<string, string> } => {
 const VISITOR = '11111111-1111-4111-8111-111111111111';
 const T0 = new Date('2026-11-18T12:00:00.000Z');
 const later = (ms: number) => new Date(T0.getTime() + ms);
+const later_ = later;
 
 let counter = 0;
 const uuid = () => `00000000-0000-4000-8000-${String(++counter).padStart(12, '0')}`;
-const resolve = (storage: StorageLike, now: Date, search = '', visitorId = VISITOR) =>
-  resolveVisit({ storage, now, uuid, visitorId, search });
+const page = (overrides = {}) => ({ pathname: '/lp/curso', search: '', referrer: '', userAgent: 'Mozilla/5.0 (iPhone)', ...overrides });
+const flags = { hasFbc: false, hasFbp: false };
+const resolve = (storage: StorageLike, now: Date, search = '', visitorId = VISITOR, pageOverrides = {}) =>
+  resolveVisit({ storage, now, uuid, visitorId, page: page({ search, ...pageOverrides }), flags });
 
 describe('readTouchParams', () => {
   it('reads the current URL campaign parameters, trimmed and bounded', () => {
@@ -50,6 +54,12 @@ describe('touchKeyOf', () => {
     expect(touchKeyOf({})).toBe('');
     expect(touchKeyOf(readTouchParams('?utm_source=Instagram'))).toBe(touchKeyOf(readTouchParams('?utm_source=instagram')));
     expect(touchKeyOf(readTouchParams('?utm_source=instagram'))).not.toBe(touchKeyOf(readTouchParams('?utm_source=facebook')));
+  });
+
+  it('never keeps the click id (or any campaign text) readable in the key', () => {
+    const key = touchKeyOf(readTouchParams('?utm_source=instagram&fbclid=secretclickid123'));
+    expect(key).not.toContain('secretclickid123');
+    expect(key).not.toContain('instagram');
   });
 
   it('treats a new ad click (different fbclid) as a different touch', () => {
@@ -127,13 +137,23 @@ describe('resolveVisit', () => {
       '{}',
       JSON.stringify({ visitId: 1 }),
       JSON.stringify({ visitId: 'v', visitorId: VISITOR, startedAt: 'x', lastActivityAt: 'y', touchKey: '' }),
-      JSON.stringify({ visitId: 'v', visitorId: VISITOR, startedAt: later(60_000).toISOString(), lastActivityAt: later(60_000).toISOString(), touchKey: '' }),
+      JSON.stringify({ visitId: 'v', visitorId: VISITOR, startedAt: later(60_000).toISOString(), lastActivityAt: later(60_000).toISOString(), touchKey: '', entry: { entryPath: '/' } }),
+      JSON.stringify({ visitId: 'v', visitorId: VISITOR, startedAt: T0.toISOString(), lastActivityAt: T0.toISOString(), touchKey: '' }),
     ];
     for (const raw of invalid) {
       const storage = memoryStorage();
       storage.setItem(VISIT_CONTEXT_KEY, raw);
       expect(resolve(storage, T0).isNew, raw).toBe(true);
     }
+  });
+
+  it('keeps the entry snapshot of the visit, so it survives reloads and later pages', () => {
+    const storage = memoryStorage();
+    const first = resolve(storage, T0, '?utm_source=instagram', VISITOR, { pathname: '/lp/curso', referrer: 'https://l.instagram.com/x' });
+    const later = resolve(storage, later_(1000), '', VISITOR, { pathname: '/otra', referrer: '' });
+    expect(later.context.entry).toEqual(first.context.entry);
+    expect(first.context.entry).toMatchObject({ entryPath: '/lp/curso', referrer: 'https://l.instagram.com', utm: { source: 'instagram' } });
+    expect(storage.dump().get(VISIT_CONTEXT_KEY)).not.toContain('fbclid');
   });
 
   it('keeps tabs independent: separate storages give separate visits for the same visitor', () => {
@@ -168,15 +188,14 @@ describe('page helpers', () => {
 });
 
 describe('buildVisitBody', () => {
-  const context = { visitId: 'v-1', visitorId: VISITOR, startedAt: T0.toISOString(), lastActivityAt: T0.toISOString(), touchKey: '' };
-  const page = (overrides = {}) => ({
-    pathname: '/lp/curso', search: '?utm_source=instagram&utm_medium=paid_social&utm_campaign=black&fbclid=abc&email=a@b.com',
-    referrer: 'https://l.instagram.com/?u=secret-token#frag', userAgent: 'Mozilla/5.0 (iPhone)', ...overrides,
-  });
+  const contextFor = (pageOverrides = {}) => {
+    const search = '?utm_source=instagram&utm_medium=paid_social&utm_campaign=black&fbclid=abc&email=a@b.com';
+    const entry = entryFromPage(page({ search, referrer: 'https://l.instagram.com/?u=secret-token#frag', ...pageOverrides }), { hasFbc: true, hasFbp: false });
+    return { visitId: 'v-1', visitorId: VISITOR, startedAt: T0.toISOString(), lastActivityAt: T0.toISOString(), touchKey: 'k', entry };
+  };
 
-  it('sends the current URL campaign data, the landing and a referrer reduced to its origin', () => {
-    const body = buildVisitBody(context, page(), { hasFbc: true, hasFbp: false });
-    expect(body).toEqual({
+  it('sends the entry campaign data, the landing and a referrer reduced to its origin', () => {
+    expect(buildVisitBody(contextFor())).toEqual({
       visitId: 'v-1', visitorId: VISITOR, startedAt: T0.toISOString(), lastActivityAt: T0.toISOString(),
       entryPath: '/lp/curso', landingSlug: 'curso', referrer: 'https://l.instagram.com',
       utm: { source: 'instagram', medium: 'paid_social', campaign: 'black' }, device: 'mobile', hasFbc: true, hasFbp: false,
@@ -184,18 +203,18 @@ describe('buildVisitBody', () => {
   });
 
   it('never leaks the query string, click ids, tokens or unrelated parameters', () => {
-    const serialized = JSON.stringify(buildVisitBody(context, page(), { hasFbc: true, hasFbp: true }));
+    const serialized = JSON.stringify(buildVisitBody(contextFor()));
     for (const leak of ['fbclid', 'abc', 'a@b.com', 'secret-token', 'frag', 'email=']) expect(serialized).not.toContain(leak);
   });
 
   it('omits what does not exist instead of sending empty values', () => {
-    const body = buildVisitBody(context, page({ search: '', referrer: '', pathname: '/' }), { hasFbc: false, hasFbp: false });
+    const body = buildVisitBody(contextFor({ search: '', referrer: '', pathname: '/' }));
     expect(body.utm).toBeUndefined();
     expect(body.referrer).toBeUndefined();
     expect(body.landingSlug).toBeUndefined();
   });
 
   it('ignores a malformed referrer', () => {
-    expect(buildVisitBody(context, page({ referrer: 'not a url' }), { hasFbc: false, hasFbp: false }).referrer).toBeUndefined();
+    expect(buildVisitBody(contextFor({ referrer: 'not a url' })).referrer).toBeUndefined();
   });
 });

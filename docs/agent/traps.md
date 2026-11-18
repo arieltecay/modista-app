@@ -9,3 +9,7 @@
 - Un evento se marca como hecho solo después de que el servidor lo acepta (2xx); 4xx no se reintenta y 0/429/5xx se reintentan 2 veces. La telemetría nunca lanza ni bloquea CTA, formulario o pago. Evidencia: `src/utils/acquisition/tracker.ts`.
 - El estado de adquisición se limpia al revocar el consentimiento (`clearMarketingIdentifiers` y el evento de consentimiento); las claves están duplicadas a propósito para evitar un ciclo de imports.
 - `apiClient` conserva `status` en los errores con mensaje para distinguir fallos reintentables. Evidencia: `src/services/config/apiClient.ts`.
+- Revocar cancela lo pendiente: `reset()` sube un `epoch` y ningún reintento, espera ni `markDone` escribe después (también se resetea si otra pestaña revoca, vía el evento `storage`). Evidencia: `src/utils/acquisition/tracker.ts`.
+- La visita guarda su "entrada" (ruta, UTM, referrer-origen) para reenviarla igual si el primer POST falló; el `referrer` del documento solo lo usa la primera visita de cada carga, no las que rotan dentro de la SPA. El `touchKey` es un hash: el `fbclid` nunca queda legible en storage.
+- Un 204 cuenta como aceptado: desplegar la API (flag activo) antes de encender `VITE_ACQUISITION_TRACKING_ENABLED`, o los eventos se darán por enviados sin guardarse.
+- Ida y vuelta entre URLs con distinta UTM dentro de una pestaña crea una visita por cambio (solo se recuerda el último toque).

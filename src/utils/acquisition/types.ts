@@ -18,13 +18,25 @@ export interface StorageLike {
   removeItem: (key: string) => void;
 }
 
+/** What opened the visit. Kept with it so a retry or a reload sends the original entry, not the current page. */
+export interface VisitEntry {
+  entryPath: string;
+  device: Device;
+  hasFbc: boolean;
+  hasFbp: boolean;
+  landingSlug?: string;
+  referrer?: string;
+  utm?: Omit<TouchParams, 'clickId'>;
+}
+
 export interface VisitContext {
   visitId: string;
   visitorId: string;
   startedAt: string;
   lastActivityAt: string;
-  /** Signature of the explicit campaign touch that opened the visit; '' for a direct visit. */
+  /** Opaque signature of the explicit campaign touch that opened the visit; '' for a direct visit. */
   touchKey: string;
+  entry: VisitEntry;
 }
 
 /** Campaign parameters of the CURRENT URL only; stored attribution is never reused. */
@@ -44,18 +56,11 @@ export interface PageSnapshot {
   userAgent: string;
 }
 
-export interface VisitBody {
+export interface VisitBody extends VisitEntry {
   visitId: string;
   visitorId: string;
   startedAt: string;
   lastActivityAt: string;
-  entryPath: string;
-  device: Device;
-  hasFbc: boolean;
-  hasFbp: boolean;
-  landingSlug?: string;
-  referrer?: string;
-  utm?: Omit<TouchParams, 'clickId'>;
 }
 
 /** `status` is the HTTP status, or 0 when the request never got an answer. */

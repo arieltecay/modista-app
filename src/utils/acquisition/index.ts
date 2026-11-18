@@ -81,11 +81,17 @@ export const startAcquisitionTracking = (): (() => void) => {
     if (marketing) void getTracker().ensureVisit();
     else getTracker().reset();
   };
+  // Revoking in another tab changes localStorage but only fires `storage` here.
+  const onStorage = () => {
+    if (!hasMarketingConsent()) getTracker().reset();
+  };
   window.addEventListener(META_MARKETING_CONSENT_EVENT, onConsentChange);
+  window.addEventListener('storage', onStorage);
   setPixelInvokedObserver((eventId) => void getTracker().reportPixelInvoked(eventId));
 
   return () => {
     window.removeEventListener(META_MARKETING_CONSENT_EVENT, onConsentChange);
+    window.removeEventListener('storage', onStorage);
     setPixelInvokedObserver(undefined);
   };
 };

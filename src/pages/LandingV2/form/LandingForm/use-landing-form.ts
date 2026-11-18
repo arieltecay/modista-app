@@ -163,10 +163,13 @@ export const useLandingForm = ({ course, landing }: UseLandingFormArgs) => {
         payload.courseId,
         course.title,
         course.price,
-        formData.email,
-        formData.celular,
         inscriptionId
       );
+
+      if (inscriptionId) {
+        trackV2('lead', { courseId: payload.courseId, courseTitle: course.title, inscriptionId, value: course.price });
+        trackV2('initiate_checkout', { courseId: payload.courseId, courseTitle: course.title, inscriptionId, value: course.price });
+      }
 
       // Prioridad: preference dinámica (mpInitPoint) > fallback estático (mpPaymentLink).
       const initPoint = import.meta.env.DEV

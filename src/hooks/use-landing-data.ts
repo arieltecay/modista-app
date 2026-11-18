@@ -3,7 +3,6 @@ import { useParams } from 'react-router-dom';
 import { getLandingPageBySlug, getLandingFullBySlug } from '../services/landing';
 import { getCourseById } from '../services/courses';
 import { getTestimonials } from '../services/testimonials/testimonialService';
-import { trackCourseView } from '../services/analytics';
 import { useCourseContext } from '../context/CourseContext';
 import {
   getLandingHeroSrcSet,
@@ -141,8 +140,6 @@ export function useLandingData(): UseLandingDataResult {
           setCourse(courseData);
           setActiveCourse(courseData);
           setLoading(false);
-          trackCourseView(courseData.id, courseData.title, courseData.price);
-
           if (testimonialItems === null) {
             // Solo en el fallback: testimonios no bloqueantes.
             writeCache(slug, { landing: landingData, course: courseData, testimonials: cached?.testimonials || [] });

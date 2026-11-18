@@ -143,8 +143,6 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
         course?.id || course?._id || '1',
         course?.title || 'Curso',
         parseFloat(course?.price?.toString() || '0'),
-        formData.email,
-        formData.celular,
         inscriptionId
       );
 

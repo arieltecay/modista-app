@@ -5,6 +5,7 @@ import { useLocation } from 'react-router-dom';
 import { updateFbpFromCookie } from '../../utils/utm-tracking';
 import { META_MARKETING_CONSENT_VERSION } from '../../utils/privacy-consent';
 import { useMarketingConsent } from '../../hooks/use-marketing-consent';
+import { META_PIXEL_READY_EVENT } from '../../services/meta-pixel';
 
 const GTM_ID = import.meta.env.VITE_GTM_ID || 'GTM-W5DMS7RV';
 // Acepta ambos nombres de env (la de prod puede estar con cualquiera de las dos).
@@ -74,6 +75,7 @@ const GoogleTagManager = () => {
       // igual en Pixel y CAPI para los eventos de esta sesión persistente.
       fbq('init', FB_PIXEL_ID, { external_id: sessionId });
       fbq('consent', 'grant');
+      window.dispatchEvent(new Event(META_PIXEL_READY_EVENT));
       // NOTA: no disparamos PageView acá. El useEffect de `location` (abajo)
       // ya emite PageView en el mount inicial y en cada cambio de ruta; hacerlo
       // en ambos lugares duplicaba el evento en cada carga de página.
@@ -84,6 +86,7 @@ const GoogleTagManager = () => {
       }, 1000);
     } else if (FB_PIXEL_ID && window.fbq) {
       window.fbq('consent', 'grant');
+      window.dispatchEvent(new Event(META_PIXEL_READY_EVENT));
       // Pixel ya estaba inicializado (navegación SPA), actualizar fbp de todas formas
       setTimeout(() => {
         updateFbpFromCookie();

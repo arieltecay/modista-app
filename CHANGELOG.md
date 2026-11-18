@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 - Reduce el peso de imágenes y validaciones del checkout, y estabiliza superficies señaladas por Web Analytics.
+- Registra `ViewContent`, `InitiateCheckout`, `Lead` y `Purchase` con IDs deterministas y sin PII en los datos personalizados del Pixel.
+- Deduplica vistas de la landing, espera consentimiento/Pixel disponible y envía las etapas internas del embudo al backend.
 - Aclara la preventa del curso de camisas, el acceso desde el 23/11 y mejora el contraste móvil de la landing.
 - Corrige el reporte de Web Vitals al importar la validación de consentimiento de marketing.
 - Fija el color de negritas y cursivas del contenido enriquecido para mantener contraste en el detalle del curso.

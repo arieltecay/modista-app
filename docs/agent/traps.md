@@ -13,3 +13,5 @@
 - La visita guarda su "entrada" (ruta, UTM, referrer-origen) para reenviarla igual si el primer POST falló; el `referrer` del documento solo lo usa la primera visita de cada carga, no las que rotan dentro de la SPA. El `touchKey` es un hash: el `fbclid` nunca queda legible en storage.
 - Un 204 cuenta como aceptado: desplegar la API (flag activo) antes de encender `VITE_ACQUISITION_TRACKING_ENABLED`, o los eventos se darán por enviados sin guardarse.
 - Ida y vuelta entre URLs con distinta UTM dentro de una pestaña crea una visita por cambio (solo se recuerda el último toque).
+- El preload crítico de Camisas replica el asset configurado en el CMS; actualizar `index.html` si cambia la imagen del hero.
+- Web Analytics se inyecta desde Cloudflare, no desde el repo. No activar a la vez Pages Analytics y la inyección automática de la zona: duplican `beacon.min.js`.

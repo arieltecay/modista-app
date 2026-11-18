@@ -7,6 +7,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="preconnect" href="https://res.cloudinary.com" />
   <link rel="dns-prefetch" href="https://res.cloudinary.com" />
+  <script>
+    // La campaña paga necesita descubrir el LCP antes de que React y el API resuelvan la landing.
+    if (window.location.pathname.replace(/\/$/, '') === '/lp/curso-online-de-camisas') {
+      const preload = document.createElement('link');
+      preload.rel = 'preload';
+      preload.as = 'image';
+      preload.setAttribute('imagesrcset', [
+        'https://res.cloudinary.com/ddfee9hht/image/upload/f_auto,q_auto,w_320,h_400,c_fill,g_auto/v1793288758/modista_app/51FE0725-C7A3-4B96-9BE4-75C8A0E9F230-1793288757972.jpg 320w',
+        'https://res.cloudinary.com/ddfee9hht/image/upload/f_auto,q_auto,w_480,h_600,c_fill,g_auto/v1793288758/modista_app/51FE0725-C7A3-4B96-9BE4-75C8A0E9F230-1793288757972.jpg 480w',
+        'https://res.cloudinary.com/ddfee9hht/image/upload/f_auto,q_auto,w_560,h_700,c_fill,g_auto/v1793288758/modista_app/51FE0725-C7A3-4B96-9BE4-75C8A0E9F230-1793288757972.jpg 560w',
+      ].join(', '));
+      preload.setAttribute('imagesizes', '(max-width: 380px) calc(100vw - 40px), 340px');
+      preload.setAttribute('fetchpriority', 'high');
+      preload.href = 'https://res.cloudinary.com/ddfee9hht/image/upload/f_auto,q_auto,w_560,h_700,c_fill,g_auto/v1793288758/modista_app/51FE0725-C7A3-4B96-9BE4-75C8A0E9F230-1793288757972.jpg';
+      document.head.appendChild(preload);
+    }
+  </script>
   <!-- Preconnect a la API (mismo valor que VITE_API_URL; Vite lo reemplaza al compilar) -->
   <link rel="preconnect" href="%VITE_API_URL%" crossorigin />
   <link rel="preconnect" href="https://fonts.googleapis.com" />

@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect } from 'react';
 import GoogleTagManager from './components/GoogleTagManager';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import Spinner from './components/Spinner';
 import ScrollToTop from './components/ScrollToTop';
 import { Toaster } from 'react-hot-toast';
@@ -8,6 +8,8 @@ import { CourseProvider } from './context/CourseContext';
 import { captureUTMParameters } from './utils/utm-tracking';
 import { hasMarketingConsent, META_MARKETING_CONSENT_EVENT } from './utils/privacy-consent';
 import PrivacyConsentBanner from './components/PrivacyConsentBanner';
+import { useMarketingConsent } from './hooks/use-marketing-consent';
+import { startAcquisitionTracking, trackAcquisitionEvent } from './utils/acquisition';
 import LandingSkeleton from './pages/LandingV2/components/LandingSkeleton';
 
 // Landing v2 "Atelier Digital"
@@ -31,6 +33,16 @@ const PaymentFailure = lazy(() => import('./pages/Payment/PaymentFailure'));
 const PaymentPending = lazy(() => import('./pages/Payment/PaymentPending'));
 
 function App() {
+  const { pathname } = useLocation();
+  const marketingConsent = useMarketingConsent();
+
+  useEffect(() => startAcquisitionTracking(), []);
+
+  // One page view per navigation; granting consent mid-session records the page being viewed.
+  useEffect(() => {
+    if (marketingConsent) trackAcquisitionEvent('page_view');
+  }, [pathname, marketingConsent]);
+
   useEffect(() => {
     const captureWithConsent = () => {
       if (hasMarketingConsent()) captureUTMParameters();

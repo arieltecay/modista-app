@@ -1,6 +1,7 @@
 # Changelog
 
 ## [Unreleased]
+- Registra visitas, eventos de comportamiento y llamadas al Pixel en la API de adquisición (con consentimiento y detrás de `VITE_ACQUISITION_TRACKING_ENABLED`).
 - Reduce el peso de imágenes y validaciones del checkout, y estabiliza superficies señaladas por Web Analytics.
 - Registra `ViewContent`, `InitiateCheckout`, `Lead` y `Purchase` con IDs deterministas y sin PII en los datos personalizados del Pixel.
 - Deduplica vistas de la landing, espera consentimiento/Pixel disponible y envía las etapas internas del embudo al backend.

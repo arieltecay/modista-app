@@ -30,6 +30,20 @@ interface MetaInscriptionEvent extends MetaCommerceEvent {
   courseId?: string;
 }
 
+type PixelInvokedObserver = (eventId: string) => void;
+let pixelInvokedObserver: PixelInvokedObserver | undefined;
+
+/** Lets other modules learn which event ids the pixel was really called with (never what it carried). */
+export const setPixelInvokedObserver = (observer: PixelInvokedObserver | undefined): void => {
+  pixelInvokedObserver = observer;
+};
+
+const notifyPixelInvoked = (eventId: string): void => {
+  try {
+    pixelInvokedObserver?.(eventId);
+  } catch { /* An observer must never break the pixel call. */ }
+};
+
 export const buildMetaEventId = (
   kind: MetaEventKind,
   id: string,
@@ -54,6 +68,7 @@ export const trackMetaViewContent = (event: MetaViewContentEvent): boolean => {
     currency: 'ARS',
   }, { eventID: eventId });
   event.dedupeStore?.setItem(dedupeKey, '1');
+  notifyPixelInvoked(eventId);
   return true;
 };
 
@@ -66,6 +81,7 @@ export const trackMetaInitiateCheckout = (event: MetaInscriptionEvent): boolean 
     value: event.value,
     currency: 'ARS',
   }, { eventID: buildMetaEventId('checkout', event.inscriptionId) });
+  notifyPixelInvoked(buildMetaEventId('checkout', event.inscriptionId));
   return true;
 };
 
@@ -76,6 +92,7 @@ export const trackMetaLead = (event: MetaInscriptionEvent): boolean => {
     value: event.value,
     currency: 'ARS',
   }, { eventID: buildMetaEventId('lead', event.inscriptionId) });
+  notifyPixelInvoked(buildMetaEventId('lead', event.inscriptionId));
   return true;
 };
 
@@ -89,5 +106,6 @@ export const trackMetaPurchase = (event: MetaInscriptionEvent): boolean => {
     currency: 'ARS',
     order_id: event.inscriptionId,
   }, { eventID: buildMetaEventId('purchase', event.inscriptionId) });
+  notifyPixelInvoked(buildMetaEventId('purchase', event.inscriptionId));
   return true;
 };

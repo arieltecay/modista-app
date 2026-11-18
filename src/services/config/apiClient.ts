@@ -106,7 +106,8 @@ apiClient.interceptors.response.use(
     },
     (error: AxiosError<{ message?: string }>) => {
         if (error.response?.data?.message) {
-            return Promise.reject(new Error(error.response.data.message));
+            // The status survives so callers can tell a retryable failure from a rejected request.
+            return Promise.reject(Object.assign(new Error(error.response.data.message), { status: error.response.status }));
         }
         return Promise.reject(error);
     }

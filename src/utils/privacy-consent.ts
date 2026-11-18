@@ -64,6 +64,9 @@ export const clearMarketingIdentifiers = (keepSessionId = false): void => {
   sessionStorage.removeItem(UTM_KEY);
   sessionStorage.removeItem('modista_session_tracked');
   sessionStorage.removeItem('modista_funnel_dedupe');
+  // Acquisition tracking state (keys live in utils/acquisition; duplicated here to avoid an import cycle).
+  sessionStorage.removeItem('modista_visit_context');
+  sessionStorage.removeItem('modista_acquisition_dedupe');
   expireCookie('_fbc');
   expireCookie('_fbp');
   expireCookie('_clck');

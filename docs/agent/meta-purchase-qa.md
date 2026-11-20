@@ -22,4 +22,4 @@ Meta indica que los eventos con `test_event_code` pueden utilizarse en medición
 
 ## Revisión del cambio
 
-Rama `fix/meta-purchase-pixel-ready`, base `master`. El PR cubre la corrección del navegador, la regresión y esta guía. Para cerrarlo, distinguir la verificación local del estado de recepción y deduplicación en Meta QA. El despliegue en producción queda fuera de esta revisión.
+[PR #12 de modista-app](https://github.com/arieltecay/modista-app/pull/12), rama `fix/meta-purchase-pixel-ready`, base `master`. Cubre la corrección del navegador, la regresión y esta guía. Para cerrarlo, distinguir la verificación local del estado de recepción y deduplicación en Meta QA. El despliegue en producción queda fuera de esta revisión.

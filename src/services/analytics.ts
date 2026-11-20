@@ -226,45 +226,60 @@ export const trackInscriptionSuccess = async (
   return Promise.resolve();
 };
 
-/**
- * Tracking de compra confirmada (pago aprobado por MercadoPago)
- * Se dispara una única vez por inscripción por sesión (dedupe con sessionStorage).
- * Google Ads además deduplica server-side por transaction_id.
- */
+const purchaseFallback = new Set<string>();
+
+const hasTrackedPurchase = (key: string): boolean => {
+  try {
+    return sessionStorage.getItem(key) === '1' || purchaseFallback.has(key);
+  } catch {
+    return purchaseFallback.has(key);
+  }
+};
+
+const markPurchaseTracked = (key: string): void => {
+  try {
+    sessionStorage.setItem(key, '1');
+  } catch {
+    purchaseFallback.add(key);
+  }
+};
+
+/** Registra cada canal una vez cuando está listo para recibir la compra. */
 export const trackPurchaseSuccess = (
   inscriptionId: string,
   courseTitle: string,
   value: number,
   courseId?: string
 ): void => {
-  const dedupeKey = `purchase_fired_${inscriptionId}`;
-  try {
-    if (sessionStorage.getItem(dedupeKey)) return;
-    sessionStorage.setItem(dedupeKey, '1');
-  } catch {
-    // sessionStorage no disponible: se envía igual, dedupe queda a cargo de transaction_id
+  if (!import.meta.env.PROD || typeof window === 'undefined' || !hasMarketingConsent()) return;
+
+  // Previous releases used one marker for both channels.
+  if (hasTrackedPurchase(`purchase_fired_${inscriptionId}`)) return;
+
+  const analyticsKey = `purchase_gtm_${inscriptionId}`;
+  if (window.dataLayer && !hasTrackedPurchase(analyticsKey)) {
+    const params: ConversionParams = {
+      transaction_id: inscriptionId,
+      course_id: '',
+      course_title: courseTitle,
+      value,
+      currency: 'ARS'
+    };
+    sendAnalyticsEvent(AnalyticsEvents.PURCHASE, params);
+    markPurchaseTracked(analyticsKey);
   }
 
-  const params: ConversionParams = {
-    transaction_id: inscriptionId,
-    course_id: '',
-    course_title: courseTitle,
+  const pixelKey = `meta_pixel_purchase_${inscriptionId}`;
+  if (hasTrackedPurchase(pixelKey)) return;
+  const invoked = trackMetaPurchase({
+    consentGranted: true,
+    fbq: getMetaPixel(),
+    inscriptionId,
+    courseId,
+    courseTitle,
     value,
-    currency: 'ARS'
-  };
-  sendAnalyticsEvent(AnalyticsEvents.PURCHASE, params);
-
-    // Meta Pixel: Purchase
-    if (hasMarketingConsent() && import.meta.env.PROD && typeof window !== 'undefined') {
-      trackMetaPurchase({
-        consentGranted: true,
-        fbq: getMetaPixel(),
-        inscriptionId,
-        courseId,
-        courseTitle,
-        value,
-      });
-    }
+  });
+  if (invoked) markPurchaseTracked(pixelKey);
 };
 
 /**

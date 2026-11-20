@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { usePaymentStatusPolling } from '../../components/PaymentReturnHandler';
 import { trackPurchaseSuccess } from '../../services/analytics';
+import { META_PIXEL_READY_EVENT } from '../../services/meta-pixel';
+import { useMarketingConsent } from '../../hooks/use-marketing-consent';
 import type { PaymentStatusResponse } from '../../services/payment/types';
 import Spinner from '../../components/Spinner';
 import { FaWhatsapp, FaCheckCircle } from 'react-icons/fa';
@@ -14,6 +16,7 @@ const PaymentSuccess: React.FC = () => {
   const inscriptionId = searchParams.get('inscription_id') || searchParams.get('external_reference');
   const [paymentData, setPaymentData] = useState<PaymentStatusResponse | null>(null);
   const [outcome, setOutcome] = useState<'resolved' | 'timeout' | 'error'>('resolved');
+  const marketingConsent = useMarketingConsent();
 
   usePaymentStatusPolling({
     inscriptionId: inscriptionId || '',
@@ -27,7 +30,18 @@ const PaymentSuccess: React.FC = () => {
 
   useEffect(() => {
     if (!isPaid || !inscriptionId || !paymentData) return;
-    trackPurchaseSuccess(inscriptionId, paymentData.courseTitle, paymentData.totalPaid || paymentData.coursePrice, paymentData.courseId);
+    if (!marketingConsent) return;
+
+    const trackPurchase = () => {
+      trackPurchaseSuccess(inscriptionId, paymentData.courseTitle, paymentData.totalPaid || paymentData.coursePrice, paymentData.courseId);
+    };
+    window.addEventListener(META_PIXEL_READY_EVENT, trackPurchase);
+    trackPurchase();
+    return () => window.removeEventListener(META_PIXEL_READY_EVENT, trackPurchase);
+  }, [isPaid, paymentData, inscriptionId, marketingConsent]);
+
+  useEffect(() => {
+    if (!isPaid || !inscriptionId || !paymentData) return;
     import('../../utils/funnel-tracker').then(({ trackFunnel }) => {
       trackFunnel('purchase', { courseId: paymentData.courseId, courseTitle: paymentData.courseTitle, inscriptionId, value: paymentData.totalPaid || paymentData.coursePrice });
     });

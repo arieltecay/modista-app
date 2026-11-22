@@ -12,6 +12,10 @@ import {
   hasMarketingConsent,
   initializePrivacyConsent,
 } from './utils/privacy-consent';
+import { isPrivateDocumentPath } from './utils/privateRoutes';
+
+// La URL de la factura lleva un token secreto: esa página se monta sin App ni trackers (ver privateRoutes.ts).
+const isPrivateDocument = isPrivateDocumentPath(window.location.pathname);
 
 // Bloquea los trackers opcionales y limpia identificadores previos hasta obtener consentimiento.
 initializePrivacyConsent();
@@ -99,22 +103,37 @@ function reportWebVitals(metric) {
   }
 }
 
-// Iniciar monitoreo de métricas de usuario reales (Modern Web Vitals)
-onCLS(reportWebVitals);
-onINP(reportWebVitals); // Reemplaza a FID en v4+
-onLCP(reportWebVitals);
-onFCP(reportWebVitals);
-onTTFB(reportWebVitals);
+// Iniciar monitoreo de métricas de usuario reales (Modern Web Vitals). Nunca en páginas privadas:
+// el reporte incluye `window.location.pathname`.
+if (!isPrivateDocument) {
+  onCLS(reportWebVitals);
+  onINP(reportWebVitals); // Reemplaza a FID en v4+
+  onLCP(reportWebVitals);
+  onFCP(reportWebVitals);
+  onTTFB(reportWebVitals);
+}
 
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <HelmetProvider>
-      <ThemeProvider>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
-      </ThemeProvider>
-    </HelmetProvider>
-  </StrictMode>,
-);
+const root = createRoot(document.getElementById('root'));
+
+if (isPrivateDocument) {
+  import('./pages/Invoice').then(({ default: InvoicePage }) => {
+    root.render(
+      <StrictMode>
+        <InvoicePage />
+      </StrictMode>,
+    );
+  });
+} else {
+  root.render(
+    <StrictMode>
+      <HelmetProvider>
+        <ThemeProvider>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </ThemeProvider>
+      </HelmetProvider>
+    </StrictMode>,
+  );
+}
 

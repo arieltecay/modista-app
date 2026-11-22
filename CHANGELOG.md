@@ -1,6 +1,7 @@
 # Changelog
 
 ## [Unreleased]
+- Agrega la página pública `/factura/:token` para ver, imprimir o guardar como PDF la factura de ARCA, sin scripts de seguimiento.
 - Envía Purchase al píxel cuando queda disponible después de confirmar el pago.
 - Registra visitas, eventos de comportamiento y llamadas al Pixel en la API de adquisición (con consentimiento y detrás de `VITE_ACQUISITION_TRACKING_ENABLED`).
 - Adelanta la imagen principal de la campaña de Camisas y evita el preflight al cargar su contenido.

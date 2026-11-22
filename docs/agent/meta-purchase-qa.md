@@ -23,3 +23,8 @@ Meta indica que los eventos con `test_event_code` pueden utilizarse en medición
 ## Revisión del cambio
 
 [PR #12 de modista-app](https://github.com/arieltecay/modista-app/pull/12), rama `fix/meta-purchase-pixel-ready`, base `master`. Cubre la corrección del navegador, la regresión y esta guía. Para cerrarlo, distinguir la verificación local del estado de recepción y deduplicación en Meta QA. El despliegue en producción queda fuera de esta revisión.
+
+## Verificación en producción
+
+- PR #12 fusionado y confirmado en el dominio público el 20/11/2026. En la compra con consentimiento de las 12:33:53 ART, Axiom registró CAPI OK a las 12:33:54 y la telemetría registró el píxel invocado a las 12:34:04 con el mismo `event_id`. También quedó registrado el paso de compra en el embudo.
+- Modista Pixel v2 mostraba actividad Purchase por navegador y servidor para el día. La vista agregada no permitió cotejar el ID de esa compra. La tarjeta de deduplicación todavía consultaba una ventana que terminaba a las 04:59 ART, antes de la compra. Queda confirmada la ejecución del fix y la entrega CAPI; el procesamiento del par por Meta sigue pendiente de confirmación.

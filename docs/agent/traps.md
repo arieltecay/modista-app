@@ -17,3 +17,6 @@
 - Ida y vuelta entre URLs con distinta UTM dentro de una pestaña crea una visita por cambio (solo se recuerda el último toque).
 - El preload crítico de Camisas replica el asset configurado en el CMS; actualizar `index.html` si cambia la imagen del hero.
 - Web Analytics se inyecta desde Cloudflare, no desde el repo. No activar a la vez Pages Analytics y la inyección automática de la zona: duplican `beacon.min.js`.
+- La URL de la factura lleva un token secreto: `main.jsx` monta esa página sola (sin `App`, GTM, Pixel, Clarity, visitas ni web-vitals), porque el tracker y `reportWebVitals` envían `pathname`. Una ruta privada nueva se agrega en `src/utils/privateRoutes.ts`. Evidencia: `src/main.jsx`.
+- Los comprobantes de homologación muestran "COMPROBANTE DE PRUEBA · SIN VALIDEZ FISCAL" (también al imprimir). Evidencia: `src/pages/Invoice/InvoiceSheet/index.tsx`.
+- Las páginas de este front no tienen tests de componentes (no hay jsdom): se prueban las utilidades y el servicio, y la vista se revisa a mano.

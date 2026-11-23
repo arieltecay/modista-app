@@ -9,6 +9,7 @@ import {
 import Spinner from '../Spinner';
 import TurnoSelector from '../TurnoSelector';
 import CouponField from '../CouponField';
+import { useCouponAvailability } from './useCouponAvailability';
 import { payableAmount } from '../../utils/couponCheck';
 import { formatArs } from '../../utils/formatArs';
 import { validateNombre, validateApellido, validateEmail, validateCelular } from '../../utils/formValidations';
@@ -34,6 +35,9 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
   const [formMessage, setFormMessage] = useState<FormMessage | null>(null);
   const [hasAvailableSpots, setHasAvailableSpots] = useState<boolean>(true);
   const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null);
+  // El campo de cupón solo aparece si el servidor dice que hay algún cupón usable para este curso.
+  const couponCourseId = course?.id || course?._id || '1';
+  const couponsAvailable = useCouponAvailability(couponCourseId, !isCourseFree(course?.price));
 
   React.useEffect(() => {
     return () => { hasTrackedFormStart = false; };
@@ -245,12 +249,14 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
                 )}
               </div>
 
-              <CouponField
-                courseId={course?.id || course?._id || '1'}
-                applied={appliedCoupon}
-                onApply={setAppliedCoupon}
-                onRemove={() => setAppliedCoupon(null)}
-              />
+              {(couponsAvailable || appliedCoupon) && (
+                <CouponField
+                  courseId={couponCourseId}
+                  applied={appliedCoupon}
+                  onApply={setAppliedCoupon}
+                  onRemove={() => setAppliedCoupon(null)}
+                />
+              )}
 
             </>
           )}

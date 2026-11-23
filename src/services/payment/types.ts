@@ -1,6 +1,7 @@
 export type PaymentStatusValue = 'pending' | 'paid' | 'partial' | 'rejected' | 'in_process';
 
 export type PaymentSource = 'webhook' | 'manual' | 'link_static';
+export type AccessNotificationStatus = 'pending' | 'accepted' | 'failed' | 'unknown' | 'disabled';
 
 export interface PaymentStatusResponse {
   paymentStatus: PaymentStatusValue;
@@ -10,6 +11,7 @@ export interface PaymentStatusResponse {
   coursePrice: number;
   totalPaid: number;
   paymentSource: PaymentSource | null;
+  accessNotifications?: { email: AccessNotificationStatus; whatsapp: AccessNotificationStatus };
 }
 
 export interface CreatePreferenceResponse {

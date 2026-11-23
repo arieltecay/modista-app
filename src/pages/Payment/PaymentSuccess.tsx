@@ -1,32 +1,77 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { usePaymentStatusPolling } from '../../components/PaymentReturnHandler';
+import { usePaymentStatusPolling, type PollingOutcome } from '../../components/PaymentReturnHandler';
 import { trackPurchaseSuccess } from '../../services/analytics';
 import { META_PIXEL_READY_EVENT } from '../../services/meta-pixel';
 import { useMarketingConsent } from '../../hooks/use-marketing-consent';
-import type { PaymentStatusResponse } from '../../services/payment/types';
+import type { AccessNotificationStatus, PaymentStatusResponse, PaymentStatusValue } from '../../services/payment/types';
 import Spinner from '../../components/Spinner';
 import { FaWhatsapp, FaCheckCircle } from 'react-icons/fa';
 import { buildWhatsAppUrl, WHATSAPP_MESSAGES } from '../../utils/constants';
 
 const whatsappUrl = buildWhatsAppUrl(WHATSAPP_MESSAGES.paymentSuccess);
 
+type AccessNotifications = { email: AccessNotificationStatus; whatsapp: AccessNotificationStatus };
+
+const keepPollingNotifications = (data: PaymentStatusResponse): boolean =>
+  data.paymentStatus === 'paid' && (data.accessNotifications?.email === 'pending' || data.accessNotifications?.whatsapp === 'pending');
+
+export const getSuccessCopy = (status: PaymentStatusValue, notifications?: AccessNotifications, outcome: PollingOutcome = 'resolved') => {
+  if (status === 'partial') return {
+    heading: '¡Pago parcial registrado!',
+    intro: 'Recibimos tu pago parcial. Te avisaremos cuando se complete el pago.',
+    details: 'Revisá el correo que ingresaste al inscribirte para seguir las novedades.',
+  };
+  if (notifications?.whatsapp === 'disabled') {
+    if (notifications.email === 'accepted') return {
+      heading: '¡Pago confirmado!',
+      intro: 'Tu pago está registrado.',
+      details: 'Te enviamos la confirmación y los detalles del curso solo al correo que ingresaste al inscribirte. Revisá tu bandeja de entrada.',
+    };
+    return {
+      heading: '¡Pago confirmado!',
+      intro: 'Tu pago está registrado.',
+      details: outcome === 'resolved' && notifications.email === 'pending'
+        ? 'Estamos enviando la confirmación y los detalles del curso al correo que ingresaste al inscribirte. Puede tardar unos minutos.'
+        : 'Revisá el correo que ingresaste al inscribirte. Todavía no pudimos confirmar el envío.',
+    };
+  }
+  if (notifications?.email === 'accepted' && notifications.whatsapp === 'accepted') return {
+    heading: '¡Pago confirmado!',
+    intro: 'Tu pago está registrado.',
+    details: 'Te enviamos la confirmación y los detalles del curso al correo y WhatsApp que ingresaste al inscribirte.',
+  };
+  return {
+    heading: '¡Pago confirmado!',
+    intro: 'Tu pago está registrado.',
+    details: outcome === 'resolved' && notifications &&
+      (notifications.email === 'pending' || notifications.email === 'accepted') &&
+      (notifications.whatsapp === 'pending' || notifications.whatsapp === 'accepted') &&
+      (notifications.email === 'pending' || notifications.whatsapp === 'pending')
+      ? 'Estamos enviando el acceso al correo y WhatsApp que ingresaste al inscribirte. Puede tardar unos minutos.'
+      : 'Revisá el correo y WhatsApp que ingresaste al inscribirte. Todavía no pudimos confirmar ambos envíos.',
+  };
+};
+
 const PaymentSuccess: React.FC = () => {
   const [searchParams] = useSearchParams();
   const inscriptionId = searchParams.get('inscription_id') || searchParams.get('external_reference');
-  const [paymentData, setPaymentData] = useState<PaymentStatusResponse | null>(null);
-  const [outcome, setOutcome] = useState<'resolved' | 'timeout' | 'error'>('resolved');
+  const [snapshot, setSnapshot] = useState<{ inscriptionId: string; data: PaymentStatusResponse } | null>(null);
+  const [pollingState, setPollingState] = useState<{ inscriptionId: string; outcome: PollingOutcome } | null>(null);
+  const paymentData = snapshot?.inscriptionId === inscriptionId ? snapshot.data : null;
+  const outcome = pollingState?.inscriptionId === inscriptionId ? pollingState.outcome : 'resolved';
   const marketingConsent = useMarketingConsent();
 
   usePaymentStatusPolling({
     inscriptionId: inscriptionId || '',
+    continueWhile: keepPollingNotifications,
     onUpdate: (data, oc) => {
-      if (data && Object.keys(data).length) setPaymentData(data);
-      setOutcome(oc);
+      if (data && Object.keys(data).length) setSnapshot({ inscriptionId: inscriptionId || '', data });
+      setPollingState({ inscriptionId: inscriptionId || '', outcome: oc });
     },
   });
 
-  const isPaid = outcome === 'resolved' && paymentData?.paymentStatus === 'paid';
+  const isPaid = paymentData?.paymentStatus === 'paid';
 
   useEffect(() => {
     if (!isPaid || !inscriptionId || !paymentData) return;
@@ -62,7 +107,8 @@ const PaymentSuccess: React.FC = () => {
     );
   }
 
-  const showPaid = outcome === 'resolved' && (paymentData?.paymentStatus === 'paid' || paymentData?.paymentStatus === 'partial');
+  const showPaid = paymentData?.paymentStatus === 'paid' || paymentData?.paymentStatus === 'partial';
+  const copy = showPaid ? getSuccessCopy(paymentData.paymentStatus, paymentData.accessNotifications, outcome) : null;
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-green-50 to-white p-4">
@@ -71,12 +117,10 @@ const PaymentSuccess: React.FC = () => {
           <>
             <FaCheckCircle className="text-6xl text-green-500 mx-auto mb-4" />
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              {paymentData?.paymentStatus === 'paid' ? '¡Pago confirmado!' : '¡Pago parcial registrado!'}
+              {copy?.heading}
             </h1>
             <p className="text-gray-600 mb-1">
-              {paymentData?.paymentStatus === 'paid'
-                ? 'Tu lugar está reservado. Empezá a aprender hoy.'
-                : `Recibimos tu pago parcial. El saldo se confirmará por email.`}
+              {copy?.intro}
             </p>
             {paymentData?.courseTitle && (
               <p className="text-sm text-gray-500 mb-2">
@@ -84,16 +128,8 @@ const PaymentSuccess: React.FC = () => {
               </p>
             )}
             <p className="text-sm text-gray-500 mb-6 max-w-xs mx-auto leading-relaxed">
-              Te enviamos un email con el enlace de acceso y las instrucciones para empezar.
+              {copy?.details}
             </p>
-            <div className="flex flex-col gap-3">
-              <a
-                href={whatsappUrl}
-                className="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors flex items-center justify-center gap-2 font-semibold"
-              >
-                <FaWhatsapp size={20} /> Unite al grupo de alumnas
-              </a>
-            </div>
           </>
         ) : (
           <>

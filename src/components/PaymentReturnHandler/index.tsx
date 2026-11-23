@@ -12,6 +12,7 @@ interface PaymentReturnHandlerProps {
   intervalMs?: number;
   /** Cantidad máxima de intentos. Default 15 (30s total). */
   maxAttempts?: number;
+  continueWhile?: (data: PaymentStatusResponse) => boolean;
 }
 
 /**
@@ -24,6 +25,7 @@ export const usePaymentStatusPolling = ({
   onUpdate,
   intervalMs = 2000,
   maxAttempts = 15,
+  continueWhile,
 }: PaymentReturnHandlerProps) => {
   const [status, setStatus] = useState<PaymentStatusValue>('pending');
   const [isPolling, setIsPolling] = useState(true);
@@ -47,9 +49,11 @@ export const usePaymentStatusPolling = ({
         setStatus(data.paymentStatus);
 
         if (data.paymentStatus === 'paid' || data.paymentStatus === 'partial') {
-          setIsPolling(false);
           onUpdateRef.current(data, 'resolved');
-          return;
+          if (!continueWhile?.(data)) {
+            setIsPolling(false);
+            return;
+          }
         }
       } catch {
         if (cancelled) return;
@@ -70,7 +74,7 @@ export const usePaymentStatusPolling = ({
     return () => {
       cancelled = true;
     };
-  }, [inscriptionId, intervalMs, maxAttempts]);
+  }, [inscriptionId, intervalMs, maxAttempts, continueWhile]);
 
   return { status, isPolling, attempts };
 };

@@ -5,6 +5,7 @@ import { createPreferenceForInscription } from '../../services/payment/paymentSe
 import { FaTimesCircle, FaWhatsapp, FaRedo } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 import { buildWhatsAppUrl, WHATSAPP_MESSAGES } from '../../utils/constants';
+import { paymentRetryMessage } from '../../utils/paymentRetryMessage';
 
 const whatsappUrl = buildWhatsAppUrl(WHATSAPP_MESSAGES.paymentFailure);
 
@@ -31,8 +32,8 @@ const PaymentFailure: React.FC = () => {
     try {
       const { initPoint } = await createPreferenceForInscription(inscriptionId);
       window.location.href = initPoint;
-    } catch {
-      toast.error('No se pudo generar el link de pago. Contactanos por WhatsApp.');
+    } catch (error) {
+      toast.error(paymentRetryMessage(error));
       setRetrying(false);
     }
   };

@@ -8,12 +8,16 @@ import {
 } from '../../services/analytics';
 import Spinner from '../Spinner';
 import TurnoSelector from '../TurnoSelector';
+import CouponField from '../CouponField';
+import { useCouponAvailability } from './useCouponAvailability';
+import { payableAmount } from '../../utils/couponCheck';
+import { formatArs } from '../../utils/formatArs';
 import { validateNombre, validateApellido, validateEmail, validateCelular } from '../../utils/formValidations';
 import { isCourseFree } from '../../utils/courseUtils';
 import { getStoredUTMData, getUTMPayload } from '../../utils/utm-tracking';
 import { getCookieValue } from '../../utils/cookies';
 import { hasMarketingConsent } from '../../utils/privacy-consent';
-import { InscriptionFormProps, InscriptionFormData, InscriptionFormErrors, FormMessage } from './types';
+import { InscriptionFormProps, InscriptionFormData, InscriptionFormErrors, FormMessage, AppliedCoupon } from './types';
 
 let hasTrackedFormStart = false;
 
@@ -30,6 +34,10 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [formMessage, setFormMessage] = useState<FormMessage | null>(null);
   const [hasAvailableSpots, setHasAvailableSpots] = useState<boolean>(true);
+  const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null);
+  // El campo de cupón solo aparece si el servidor dice que hay algún cupón usable para este curso.
+  const couponCourseId = course?.id || course?._id || '1';
+  const couponsAvailable = useCouponAvailability(couponCourseId, !isCourseFree(course?.price));
 
   React.useEffect(() => {
     return () => { hasTrackedFormStart = false; };
@@ -98,6 +106,9 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
      }
    };
 
+  // Lo que realmente se cobra (con cupón si hay uno); el servidor lo recalcula al inscribir.
+  const payable = payableAmount(parseFloat(course?.price?.toString() || '0'), appliedCoupon);
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setFormMessage(null);
@@ -124,6 +135,7 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
         courseDeeplink: course?.deeplink || 'https://modista.app',
         dateYear: new Date().getFullYear(),
         turnoId: selectedTurnoId,
+        couponCode: appliedCoupon?.code,
         marketingSource: utmData?.source || 'organic',
         utmParams: getUTMPayload(),
         sessionId: marketingConsent ? sessionId || undefined : undefined,
@@ -136,13 +148,13 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
       const inscriptionId = inscriptionResponse?.data?._id || inscriptionResponse?.data?.id;
       
       if (inscriptionId) {
-        trackFormStart('inscription_form', 'Formulario de Inscripción', course?.id || course?._id, course?.title, inscriptionId, course?.price);
+        trackFormStart('inscription_form', 'Formulario de Inscripción', course?.id || course?._id, course?.title, inscriptionId, payable);
       }
 
       await trackInscriptionSuccess(
         course?.id || course?._id || '1',
         course?.title || 'Curso',
-        parseFloat(course?.price?.toString() || '0'),
+        payable,
         inscriptionId
       );
 
@@ -174,8 +186,8 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
       setFormData({ nombre: '', apellido: '', email: '', celular: '', website: '' });
       setSelectedTurnoId(null);
 
-    } catch (error: any) {
-      const errorMessage = error.message || 'Ocurrió un error al enviar tu inscripción. Por favor, intenta de nuevo.';
+    } catch (error) {
+      const errorMessage = (error instanceof Error && error.message) || 'Ocurrió un error al enviar tu inscripción. Por favor, intenta de nuevo.';
       setFormMessage({ type: 'error', text: errorMessage });
     } finally {
       setLoading(false);
@@ -185,9 +197,8 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
   const isFree = isCourseFree(course?.price);
   const isBlocked = course?.isPresencial && !hasAvailableSpots;
 
-  const formattedPrice = course?.price && !isFree
-    ? new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(Number(course.price))
-    : null;
+  const formattedListPrice = course?.price && !isFree ? formatArs(Number(course.price)) : null;
+  const formattedPrice = formattedListPrice && appliedCoupon ? formatArs(appliedCoupon.finalPrice) : formattedListPrice;
 
   return (
     <section className="bg-background py-12">
@@ -230,12 +241,23 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
                 </p>
                 <h3 className="text-lg font-bold text-foreground mb-2">{course?.title}</h3>
                 {formattedPrice && (
-                  <div className="flex items-baseline gap-1">
+                  <div className="flex items-baseline gap-2">
+                    {appliedCoupon && <s className="text-sm text-muted-foreground">{formattedListPrice}</s>}
                     <span className="text-2xl font-black text-green-600">{formattedPrice}</span>
                     <span className="text-sm text-muted-foreground">pago único</span>
                   </div>
                 )}
               </div>
+
+              {(couponsAvailable || appliedCoupon) && (
+                <CouponField
+                  courseId={couponCourseId}
+                  applied={appliedCoupon}
+                  onApply={setAppliedCoupon}
+                  onRemove={() => setAppliedCoupon(null)}
+                />
+              )}
+
             </>
           )}
 

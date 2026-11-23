@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
+import { useSearchParams, Link, Navigate } from 'react-router-dom';
 import { usePaymentStatusPolling } from '../../components/PaymentReturnHandler';
 import { FaClock, FaWhatsapp } from 'react-icons/fa';
 import { buildWhatsAppUrl, WHATSAPP_MESSAGES } from '../../utils/constants';
@@ -19,16 +19,7 @@ const PaymentPending: React.FC = () => {
   });
 
   if (paymentStatus === 'paid' || paymentStatus === 'partial') {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-green-50 to-white p-4">
-        <div className="flex min-h-[22rem] w-full max-w-md flex-col justify-center rounded-2xl bg-white p-8 text-center shadow-lg">
-          <p className="text-gray-700">¡Tu pago fue confirmado! Te enviamos los detalles por email.</p>
-          <Link to="/" className="mt-4 inline-block px-6 py-3 bg-[var(--color-green-600)] text-white rounded-lg">
-            Volver al inicio
-          </Link>
-        </div>
-      </div>
-    );
+    return <Navigate to={`/payment/success?inscription_id=${encodeURIComponent(inscriptionId || '')}`} replace />;
   }
 
   return (

@@ -1,6 +1,7 @@
 # Changelog
 
 ## [Unreleased]
+- Success confirma el pago sin invitar a un grupo inexistente y dirige solo al correo cuando el envío de WhatsApp está apagado.
 - Agrega la página pública `/factura/:token` para ver, imprimir o guardar como PDF la factura de ARCA, sin scripts de seguimiento.
 - Envía Purchase al píxel cuando queda disponible después de confirmar el pago.
 - Registra visitas, eventos de comportamiento y llamadas al Pixel en la API de adquisición (con consentimiento y detrás de `VITE_ACQUISITION_TRACKING_ENABLED`).

@@ -20,3 +20,4 @@
 - La URL de la factura lleva un token secreto: `main.jsx` monta esa página sola (sin `App`, GTM, Pixel, Clarity, visitas ni web-vitals), porque el tracker y `reportWebVitals` envían `pathname`. Una ruta privada nueva se agrega en `src/utils/privateRoutes.ts`. Evidencia: `src/main.jsx`.
 - Los comprobantes de homologación muestran "COMPROBANTE DE PRUEBA · SIN VALIDEZ FISCAL" (también al imprimir). Evidencia: `src/pages/Invoice/InvoiceSheet/index.tsx`.
 - Las páginas de este front no tienen tests de componentes (no hay jsdom): se prueban las utilidades y el servicio, y la vista se revisa a mano.
+- Con cupón, `trackFormStart` y `trackInscriptionSuccess` usan el precio final (`payableAmount`), no `course.price`; si no, Meta recibe un valor distinto al cobrado. Evidencia: `src/components/InscriptionForm/index.tsx`.

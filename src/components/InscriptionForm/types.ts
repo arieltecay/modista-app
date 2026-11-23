@@ -33,3 +33,11 @@ export interface FormMessage {
 export interface InscriptionFormProps {
   course: InscriptionCourse;
 }
+
+/** Cupón aceptado por el servidor; el precio final lo calculó él, no el navegador. */
+export interface AppliedCoupon {
+  code: string;
+  listPrice: number;
+  discountAmount: number;
+  finalPrice: number;
+}

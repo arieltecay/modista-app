@@ -185,6 +185,8 @@ export interface CreateInscriptionData {
     courseShortDescription?: string;
     dateYear?: number;
     turnoId?: string | null;
+    /** Código de cupón tipeado; el servidor decide si aplica y cuánto descuenta. */
+    couponCode?: string;
     marketingSource?: string;
     utmParams?: Record<string, string>;
     sessionId?: string;

@@ -4,10 +4,10 @@ import type { InvoiceSheetProps } from './types';
 const ARCA_LEGEND = 'Esta Agencia no se responsabiliza por los datos ingresados en el detalle de la operación';
 const TEST_NOTICE = 'COMPROBANTE DE PRUEBA · SIN VALIDEZ FISCAL';
 
-/** Factura C a consumidor final con el formato oficial de ARCA: solo datos, una copia. */
+/** Factura C (o la Nota de Crédito C que la anula) a consumidor final con el formato oficial de ARCA: solo datos, una copia. */
 export const InvoiceSheet = ({ invoice, qrDataUrl }: InvoiceSheetProps) => {
   const issued = formatDate(invoice.issuedAt);
-  const { emitter, receiver } = invoice;
+  const { emitter, receiver, creditedInvoice } = invoice;
 
   return (
     <article className="mx-auto max-w-3xl border border-black bg-white p-3 text-[13px] text-black print:max-w-none">
@@ -34,10 +34,10 @@ export const InvoiceSheet = ({ invoice, qrDataUrl }: InvoiceSheetProps) => {
         </div>
         <div className="mt-2 h-fit w-16 shrink-0 border border-black p-1 text-center">
           <b className="block text-3xl leading-none">C</b>
-          <small className="text-[9px]">COD. 011</small>
+          <small className="text-[9px]">{creditedInvoice ? 'COD. 013' : 'COD. 011'}</small>
         </div>
         <div className="flex-1 p-2.5">
-          <p className="text-2xl font-bold">FACTURA</p>
+          <p className="text-2xl font-bold">{creditedInvoice ? 'NOTA DE CRÉDITO' : 'FACTURA'}</p>
           <p>
             Punto de Venta: <b>{padNumber(invoice.pointOfSale, 5)}</b> &nbsp; Comp. Nro: <b>{padNumber(invoice.number, 8)}</b>
           </p>
@@ -66,6 +66,11 @@ export const InvoiceSheet = ({ invoice, qrDataUrl }: InvoiceSheetProps) => {
         <p>
           <b>Condición de venta:</b> Contado
         </p>
+        {creditedInvoice && (
+          <p>
+            <b>Comprobante asociado:</b> {`Factura C ${padNumber(creditedInvoice.pointOfSale, 5)}-${padNumber(creditedInvoice.number, 8)}`}
+          </p>
+        )}
       </section>
 
       <table className="mt-2 w-full border-collapse">

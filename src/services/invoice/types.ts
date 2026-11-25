@@ -20,4 +20,6 @@ export interface PublicInvoice {
   /** Vencimiento del CAE, AAAA-MM-DD. */
   caeExpiresAt: string;
   fiscalQrUrl: string;
+  /** Solo en notas de crédito: la factura que anulan. */
+  creditedInvoice?: { pointOfSale: number; number: number };
 }

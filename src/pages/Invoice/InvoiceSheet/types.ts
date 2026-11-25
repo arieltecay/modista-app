@@ -19,6 +19,8 @@ export interface InvoiceSheetProps {
     cae: string;
     /** Vencimiento del CAE, AAAA-MM-DD. */
     caeExpiresAt: string;
+    /** Solo en notas de crédito: la factura que anulan. */
+    creditedInvoice?: { pointOfSale: number; number: number };
   };
   /** QR ya dibujado (data URL); mientras no llega se reserva su lugar. */
   qrDataUrl?: string;

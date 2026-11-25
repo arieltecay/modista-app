@@ -1,6 +1,7 @@
 # Changelog
 
 ## [Unreleased]
+- La página `/factura/:token` también muestra la Nota de Crédito C y la factura que anula.
 - Success confirma el pago sin invitar a un grupo inexistente y dirige solo al correo cuando el envío de WhatsApp está apagado.
 - El formulario de inscripción acepta un cupón de descuento (el campo aparece solo si hay un cupón usable para el curso) y muestra el precio final que cobra MercadoPago.
 - Agrega la página pública `/factura/:token` para ver, imprimir o guardar como PDF la factura de ARCA, sin scripts de seguimiento.

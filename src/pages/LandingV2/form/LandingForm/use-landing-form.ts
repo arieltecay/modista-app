@@ -2,15 +2,13 @@ import React, { useRef, useState } from 'react';
 import { createLandingInscription } from '../../../../services/inscriptions';
 import { trackFormStart, trackFormError, trackFormFieldFocus, trackInscriptionSuccess, trackEnrollmentDiagnostic } from '../../../../services/analytics';
 import { resolveCheckoutDestination } from '../../../../services/payment/checkoutDestination';
+import { getEnrollmentAttribution } from '../../../../services/inscriptions/enrollmentAttribution';
 import {
   validateEmailAddress,
   validateFullName,
   validatePhone,
   validatePhoneStrict,
 } from '../../../../utils/validators';
-import { getUTMPayload, getStoredUTMData } from '../../../../utils/utm-tracking';
-import { getCookieValue } from '../../../../utils/cookies';
-import { hasMarketingConsent } from '../../../../utils/privacy-consent';
 import { trackV2 } from '../../hooks/use-landing-tracking';
 import type { LandingFormField, LandingFormState, SubmitPhase, FormMessageState } from './types';
 import type { CourseData, LandingPageData } from '../../types';
@@ -132,10 +130,6 @@ export const useLandingForm = ({ course, landing }: UseLandingFormArgs) => {
 
     let responseInvalid = false;
     try {
-      const utmData = getStoredUTMData();
-      const sessionId = localStorage.getItem('modista_session_id');
-      const marketingConsent = hasMarketingConsent();
-
       const payload: CreateLandingInscriptionData = {
         fullName: formData.fullName,
         email: formData.email,
@@ -144,11 +138,7 @@ export const useLandingForm = ({ course, landing }: UseLandingFormArgs) => {
         courseTitle: course.title,
         coursePrice: course.price,
         landingPageId: (landing._id || landing.id || '') as string,
-        marketingSource: utmData?.source || 'organic',
-        utmParams: getUTMPayload(),
-        sessionId: marketingConsent ? sessionId || undefined : undefined,
-        metaFbc: marketingConsent ? utmData?.fbc || getCookieValue('_fbc') : undefined,
-        metaFbp: marketingConsent ? utmData?.fbp || getCookieValue('_fbp') : undefined,
+        ...getEnrollmentAttribution(),
         website: formData.website,
       };
 

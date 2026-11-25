@@ -31,11 +31,19 @@ export const apiClient: AxiosInstance = axios.create({
 });
 
 const getCookie = (name: string): string | undefined => {
-    if (typeof document === 'undefined') return undefined;
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop()?.split(';').shift();
-    return undefined;
+    try {
+        if (typeof document === 'undefined') return undefined;
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop()?.split(';').shift();
+        return undefined;
+    } catch { return undefined; }
+};
+
+const getStoredValue = (storage: 'local' | 'session', key: string): string | null => {
+    try {
+        return (storage === 'local' ? localStorage : sessionStorage).getItem(key);
+    } catch { return null; }
 };
 
 /**
@@ -46,7 +54,7 @@ const getCookie = (name: string): string | undefined => {
  */
 apiClient.interceptors.request.use(
     (config: InternalAxiosRequestConfig) => {
-        const token = localStorage.getItem('token');
+        const token = getStoredValue('local', 'token');
         if (token && config.headers) {
             config.headers.Authorization = `Bearer ${token}`;
         }
@@ -65,7 +73,7 @@ apiClient.interceptors.request.use(
         const UTM_KEY = 'modista_utm_data';
         let storedFbc: string | undefined;
         try {
-            const stored = sessionStorage.getItem(UTM_KEY);
+            const stored = getStoredValue('session', UTM_KEY);
             storedFbc = stored ? (JSON.parse(stored) as { fbc?: string }).fbc : undefined;
         } catch { storedFbc = undefined; }
 
@@ -75,7 +83,7 @@ apiClient.interceptors.request.use(
         if (fbp && config.headers) config.headers['X-Meta-Fbp'] = fbp;
 
         // Enviar sessionId para event_id unico por usuario en CAPI
-        const sessionId = localStorage.getItem('modista_session_id');
+        const sessionId = getStoredValue('local', 'modista_session_id');
         if (sessionId && config.headers) config.headers['X-Session-Id'] = sessionId;
 
         return config;

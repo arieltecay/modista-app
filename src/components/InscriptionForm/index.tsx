@@ -8,6 +8,7 @@ import {
   trackEnrollmentDiagnostic,
 } from '../../services/analytics';
 import { resolveCheckoutDestination } from '../../services/payment/checkoutDestination';
+import { getEnrollmentAttribution } from '../../services/inscriptions/enrollmentAttribution';
 import Spinner from '../Spinner';
 import TurnoSelector from '../TurnoSelector';
 import CouponField from '../CouponField';
@@ -16,9 +17,6 @@ import { payableAmount } from '../../utils/couponCheck';
 import { formatArs } from '../../utils/formatArs';
 import { validateNombre, validateApellido, validateEmail, validateCelular } from '../../utils/formValidations';
 import { isCourseFree } from '../../utils/courseUtils';
-import { getStoredUTMData, getUTMPayload } from '../../utils/utm-tracking';
-import { getCookieValue } from '../../utils/cookies';
-import { hasMarketingConsent } from '../../utils/privacy-consent';
 import { buildWhatsAppUrl, WHATSAPP_MESSAGES } from '../../utils/constants';
 import { InscriptionFormProps, InscriptionFormData, InscriptionFormErrors, FormMessage, AppliedCoupon } from './types';
 
@@ -130,9 +128,6 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
     setLoading(true);
     let responseInvalid = false;
     try {
-      const utmData = getStoredUTMData();
-      const sessionId = localStorage.getItem('modista_session_id');
-      const marketingConsent = hasMarketingConsent();
       const inscriptionData = {
         ...formData,
         courseId: course?.id || course?._id || '1',
@@ -143,11 +138,7 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
         dateYear: new Date().getFullYear(),
         turnoId: selectedTurnoId,
         couponCode: appliedCoupon?.code,
-        marketingSource: utmData?.source || 'organic',
-        utmParams: getUTMPayload(),
-        sessionId: marketingConsent ? sessionId || undefined : undefined,
-        metaFbc: marketingConsent ? utmData?.fbc || getCookieValue('_fbc') : undefined,
-        metaFbp: marketingConsent ? utmData?.fbp || getCookieValue('_fbp') : undefined,
+        ...getEnrollmentAttribution(),
       };
 
       const inscriptionResponse = await createInscription(inscriptionData);

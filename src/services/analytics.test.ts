@@ -1,11 +1,16 @@
 import { afterEach, expect, it, vi } from 'vitest';
-import { trackPurchaseSuccess } from './analytics';
+import { trackEnrollmentDiagnostic, trackPurchaseSuccess } from './analytics';
 
 vi.mock('../utils/privacy-consent', () => ({ hasMarketingConsent: () => true }));
 
 afterEach(() => {
   vi.unstubAllGlobals();
   vi.unstubAllEnvs();
+});
+
+it('keeps checkout available when Clarity throws', () => {
+  vi.stubGlobal('window', { clarity: () => { throw new Error('Clarity unavailable'); } });
+  expect(() => trackEnrollmentDiagnostic('payment_redirect_attempt')).not.toThrow();
 });
 
 it('sends Purchase once when the pixel becomes available after the confirmed payment', () => {

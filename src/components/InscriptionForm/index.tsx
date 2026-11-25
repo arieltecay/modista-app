@@ -4,8 +4,10 @@ import {
   trackFormStart, 
   trackFormError, 
   trackInscriptionSuccess, 
-  trackFormFieldFocus 
+  trackFormFieldFocus,
+  trackEnrollmentDiagnostic,
 } from '../../services/analytics';
+import { resolveCheckoutDestination } from '../../services/payment/checkoutDestination';
 import Spinner from '../Spinner';
 import TurnoSelector from '../TurnoSelector';
 import CouponField from '../CouponField';
@@ -17,6 +19,7 @@ import { isCourseFree } from '../../utils/courseUtils';
 import { getStoredUTMData, getUTMPayload } from '../../utils/utm-tracking';
 import { getCookieValue } from '../../utils/cookies';
 import { hasMarketingConsent } from '../../utils/privacy-consent';
+import { buildWhatsAppUrl, WHATSAPP_MESSAGES } from '../../utils/constants';
 import { InscriptionFormProps, InscriptionFormData, InscriptionFormErrors, FormMessage, AppliedCoupon } from './types';
 
 let hasTrackedFormStart = false;
@@ -114,14 +117,18 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
     setFormMessage(null);
 
     if (!validateForm()) {
+      trackEnrollmentDiagnostic('validation_failed');
       return;
     }
+
+    trackEnrollmentDiagnostic('submitted');
 
     import('../../utils/funnel-tracker').then(({ trackFunnel }) => {
       trackFunnel('form_submit', { courseId: course?.id || course?._id || '1', courseTitle: course?.title });
     });
 
     setLoading(true);
+    let responseInvalid = false;
     try {
       const utmData = getStoredUTMData();
       const sessionId = localStorage.getItem('modista_session_id');
@@ -146,39 +153,43 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
       const inscriptionResponse = await createInscription(inscriptionData);
 
       const inscriptionId = inscriptionResponse?.data?._id || inscriptionResponse?.data?.id;
+      if (!inscriptionId) {
+        responseInvalid = true;
+        throw new Error('No pudimos completar tu inscripción. Intentá de nuevo o contactanos.');
+      }
+      trackEnrollmentDiagnostic('created');
       
-      if (inscriptionId) {
+      try {
         trackFormStart('inscription_form', 'Formulario de Inscripción', course?.id || course?._id, course?.title, inscriptionId, payable);
+        await trackInscriptionSuccess(
+          course?.id || course?._id || '1',
+          course?.title || 'Curso',
+          payable,
+          inscriptionId
+        );
+      } catch {
+        trackEnrollmentDiagnostic('analytics_failed');
       }
 
-      await trackInscriptionSuccess(
-        course?.id || course?._id || '1',
-        course?.title || 'Curso',
-        payable,
-        inscriptionId
-      );
+      const destination = resolveCheckoutDestination({
+        coursePrice: Number(inscriptionResponse.data?.coursePrice ?? payable),
+        inscriptionId,
+        isDevelopment: import.meta.env.DEV,
+        mpInitPoint: inscriptionResponse.mpInitPoint,
+        sandboxInitPoint: inscriptionResponse.sandboxInitPoint,
+        mpPaymentLink: inscriptionResponse.mpPaymentLink,
+      });
 
-      const initPoint = import.meta.env.DEV
-        ? (inscriptionResponse?.sandboxInitPoint || inscriptionResponse?.mpInitPoint)
-        : inscriptionResponse?.mpInitPoint;
-
-      if (initPoint) {
-        import('../../utils/funnel-tracker').then(({ trackFunnel }) => {
-          trackFunnel('redirect_to_payment', { courseId: course?.id || course?._id || '1', courseTitle: course?.title, inscriptionId });
-        });
+      if (destination) {
+        trackEnrollmentDiagnostic(destination.kind === 'recovery' ? 'checkout_unavailable' : 'payment_redirect_attempt');
+        if (destination.kind === 'payment') {
+          import('../../utils/funnel-tracker').then(({ trackFunnel }) => {
+            trackFunnel('redirect_to_payment', { courseId: course?.id || course?._id || '1', courseTitle: course?.title, inscriptionId });
+          });
+        }
         setTimeout(() => {
-          window.location.href = initPoint;
-        }, 500);
-        return;
-      }
-
-      if (inscriptionResponse?.mpPaymentLink) {
-        import('../../utils/funnel-tracker').then(({ trackFunnel }) => {
-          trackFunnel('redirect_to_payment', { courseId: course?.id || course?._id || '1', courseTitle: course?.title, inscriptionId });
-        });
-        setTimeout(() => {
-          window.location.href = inscriptionResponse.mpPaymentLink!;
-        }, 500);
+          window.location.href = destination.url;
+        }, destination.kind === 'recovery' ? 0 : 500);
         return;
       }
 
@@ -187,6 +198,7 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
       setSelectedTurnoId(null);
 
     } catch (error) {
+      trackEnrollmentDiagnostic(responseInvalid ? 'response_invalid' : 'api_failed');
       const errorMessage = (error instanceof Error && error.message) || 'Ocurrió un error al enviar tu inscripción. Por favor, intenta de nuevo.';
       setFormMessage({ type: 'error', text: errorMessage });
     } finally {
@@ -422,6 +434,11 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
                 <div className={`text-center p-3 rounded-md mt-4 ${formMessage.type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                   }`}>
                   {formMessage.text}
+                  {formMessage.type === 'error' && (
+                    <a className="mt-2 block underline" href={buildWhatsAppUrl(WHATSAPP_MESSAGES.paymentFailure)} target="_blank" rel="noopener noreferrer">
+                      Contactar por WhatsApp
+                    </a>
+                  )}
                 </div>
               )}
             </form>

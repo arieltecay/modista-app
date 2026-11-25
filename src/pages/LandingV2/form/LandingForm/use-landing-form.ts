@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { createLandingInscription } from '../../../../services/inscriptions';
-import { trackFormStart, trackFormError, trackFormFieldFocus, trackInscriptionSuccess } from '../../../../services/analytics';
+import { trackFormStart, trackFormError, trackFormFieldFocus, trackInscriptionSuccess, trackEnrollmentDiagnostic } from '../../../../services/analytics';
+import { resolveCheckoutDestination } from '../../../../services/payment/checkoutDestination';
 import {
   validateEmailAddress,
   validateFullName,
@@ -96,6 +97,7 @@ export const useLandingForm = ({ course, landing }: UseLandingFormArgs) => {
 
     const firstErrorField = (Object.keys(VALIDATORS) as LandingFormField[]).find((name) => nextErrors[name]);
     if (firstErrorField) {
+      trackEnrollmentDiagnostic('validation_failed');
       // Error visible: llevamos a la usuaria directo al campo con problema
       trackFormError('landing_form_v2', 'Landing V2 Form', firstErrorField, nextErrors[firstErrorField] || 'validation');
       fieldRefs.current[firstErrorField]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -125,8 +127,10 @@ export const useLandingForm = ({ course, landing }: UseLandingFormArgs) => {
     }
 
     setFormMessage(null);
+    trackEnrollmentDiagnostic('submitted');
     trackV2('form_submit', { courseId, courseTitle: course.title });
 
+    let responseInvalid = false;
     try {
       const utmData = getStoredUTMData();
       const sessionId = localStorage.getItem('modista_session_id');
@@ -150,21 +154,26 @@ export const useLandingForm = ({ course, landing }: UseLandingFormArgs) => {
 
       const response = await createLandingInscription(payload);
       const inscriptionId = response.data?._id || response.data?.id;
+      if (!inscriptionId) {
+        responseInvalid = true;
+        throw new Error('No pudimos completar tu inscripción. Intentá de nuevo o contactanos.');
+      }
+      trackEnrollmentDiagnostic('created');
 
       setPhase('tracking');
 
-      if (inscriptionId) {
-        // InitiateCheckout (pixel) con el mismo eventID que el backend CAPI
+      try {
+        // InitiateCheckout y Lead comparten eventID con el backend CAPI.
         trackFormStart('landing_form_v2', 'Landing V2 Form', payload.courseId, course.title, inscriptionId, course.price);
+        await trackInscriptionSuccess(
+          payload.courseId,
+          course.title,
+          course.price,
+          inscriptionId
+        );
+      } catch {
+        trackEnrollmentDiagnostic('analytics_failed');
       }
-
-      // Lead (pixel) con mismo eventID que CAPI. Esperamos el encolado (~600ms).
-      await trackInscriptionSuccess(
-        payload.courseId,
-        course.title,
-        course.price,
-        inscriptionId
-      );
 
       if (inscriptionId) {
         trackV2('lead', { courseId: payload.courseId, courseTitle: course.title, inscriptionId, value: course.price });
@@ -172,21 +181,29 @@ export const useLandingForm = ({ course, landing }: UseLandingFormArgs) => {
       }
 
       // Prioridad: preference dinámica (mpInitPoint) > fallback estático (mpPaymentLink).
-      const initPoint = import.meta.env.DEV
-        ? (response.sandboxInitPoint || response.mpInitPoint)
-        : response.mpInitPoint;
+      const destination = resolveCheckoutDestination({
+        coursePrice: Number(response.data?.coursePrice ?? course.price),
+        inscriptionId,
+        isDevelopment: import.meta.env.DEV,
+        mpInitPoint: response.mpInitPoint,
+        sandboxInitPoint: response.sandboxInitPoint,
+        mpPaymentLink: response.mpPaymentLink,
+      });
 
-      if (initPoint || response.mpPaymentLink) {
+      if (destination) {
         setPhase('redirecting');
-        trackV2('redirect_to_payment', {
-          courseId: payload.courseId,
-          courseTitle: course.title,
-          inscriptionId: inscriptionId as string | undefined,
-        });
+        trackEnrollmentDiagnostic(destination.kind === 'recovery' ? 'checkout_unavailable' : 'payment_redirect_attempt');
+        if (destination.kind === 'payment') {
+          trackV2('redirect_to_payment', {
+            courseId: payload.courseId,
+            courseTitle: course.title,
+            inscriptionId,
+          });
+        }
         // Delay que protege la entrega del evento Lead del pixel antes de salir
         window.setTimeout(() => {
-          window.location.href = initPoint || response.mpPaymentLink!;
-        }, 1500);
+          window.location.href = destination.url;
+        }, destination.kind === 'recovery' ? 0 : 1500);
         return;
       }
 
@@ -194,6 +211,7 @@ export const useLandingForm = ({ course, landing }: UseLandingFormArgs) => {
       submittingRef.current = false;
       setFormMessage({ type: 'success', text: '¡Inscripción exitosa! Revisá tu email para completar el pago.' });
     } catch (error) {
+      trackEnrollmentDiagnostic(responseInvalid ? 'response_invalid' : 'api_failed');
       const errorMessage = error instanceof Error ? error.message : 'Error al procesar la inscripción';
       setPhase('idle');
       submittingRef.current = false;
@@ -203,7 +221,7 @@ export const useLandingForm = ({ course, landing }: UseLandingFormArgs) => {
       setFormMessage({
         type: isDuplicate ? 'info' : 'error',
         text: isDuplicate
-          ? 'Ya tenés una inscripción con este email para este curso. Revisá tu correo: ahí está tu link de pago.'
+          ? 'Ya tenés una inscripción con este email para este curso. Si no recibiste el correo o el link de pago, contactanos por WhatsApp.'
           : errorMessage,
       });
       trackFormError('landing_form_v2', 'Landing V2 Form', 'submit', errorMessage);

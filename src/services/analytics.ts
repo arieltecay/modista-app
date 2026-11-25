@@ -189,6 +189,16 @@ export const trackFormError = (formId: string, formName: string, fieldName: stri
   sendAnalyticsEvent(AnalyticsEvents.FORM_ERROR, params);
 };
 
+export const trackEnrollmentDiagnostic = (stage: 'validation_failed' | 'submitted' | 'created' | 'api_failed' | 'response_invalid' | 'checkout_unavailable' | 'payment_redirect_attempt' | 'analytics_failed'): void => {
+  try {
+    if (typeof window !== 'undefined' && hasMarketingConsent()) {
+      window.clarity?.('event', `enrollment_${stage}`);
+    }
+  } catch {
+    // Un script de medición nunca debe bloquear la inscripción o el checkout.
+  }
+};
+
 /**
  * Tracking de éxito en formulario (Conversión)
  * Envía datos a GTM y Meta Pixel

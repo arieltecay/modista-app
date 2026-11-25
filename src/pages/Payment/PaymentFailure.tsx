@@ -12,6 +12,7 @@ const whatsappUrl = buildWhatsAppUrl(WHATSAPP_MESSAGES.paymentFailure);
 const PaymentFailure: React.FC = () => {
   const [searchParams] = useSearchParams();
   const inscriptionId = searchParams.get('inscription_id') || searchParams.get('external_reference');
+  const checkoutUnavailable = searchParams.get('reason') === 'checkout_unavailable';
   const [retrying, setRetrying] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<string>('pending');
 
@@ -42,9 +43,11 @@ const PaymentFailure: React.FC = () => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-red-50 to-white p-4">
       <div className="flex min-h-[22rem] w-full max-w-md flex-col justify-center rounded-2xl bg-white p-8 text-center shadow-lg">
         <FaTimesCircle className="text-6xl text-red-500 mx-auto mb-4" />
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">No pudimos procesar el pago</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">{checkoutUnavailable ? 'No pudimos abrir Mercado Pago' : 'No pudimos procesar el pago'}</h1>
         <p className="text-gray-600 mb-6">
-          Puede deberse a fondos insuficientes, datos incorrectos o un problema con el medio de pago. Tu inscripción sigue activa.
+          {checkoutUnavailable
+            ? 'Guardamos tu inscripción, pero no pudimos generar el enlace de pago. Podés volver a intentarlo acá.'
+            : 'Puede deberse a fondos insuficientes, datos incorrectos o un problema con el medio de pago. Tu inscripción sigue activa.'}
         </p>
         <div className="flex flex-col gap-3">
           <button

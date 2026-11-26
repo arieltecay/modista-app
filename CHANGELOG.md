@@ -1,6 +1,8 @@
 # Changelog
 
 ## [Unreleased]
+- El envío de inscripción continúa aunque el navegador bloquee almacenamiento usado por marketing; el cliente HTTP tampoco impide el POST por ese motivo.
+- Los formularios pagos ofrecen reintentar Mercado Pago cuando falta el enlace, aíslan fallas de analítica, muestran soporte ante una inscripción repetida y Clarity distingue las etapas sin datos personales.
 - Success confirma el pago sin invitar a un grupo inexistente y dirige solo al correo cuando el envío de WhatsApp está apagado.
 - El formulario de inscripción acepta un cupón de descuento (el campo aparece solo si hay un cupón usable para el curso) y muestra el precio final que cobra MercadoPago.
 - Agrega la página pública `/factura/:token` para ver, imprimir o guardar como PDF la factura de ARCA, sin scripts de seguimiento.

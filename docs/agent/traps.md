@@ -21,3 +21,5 @@
 - Los comprobantes de homologación muestran "COMPROBANTE DE PRUEBA · SIN VALIDEZ FISCAL" (también al imprimir). Evidencia: `src/pages/Invoice/InvoiceSheet/index.tsx`.
 - Las páginas de este front no tienen tests de componentes (no hay jsdom): se prueban las utilidades y el servicio, y la vista se revisa a mano.
 - Con cupón, `trackFormStart` y `trackInscriptionSuccess` usan el precio final (`payableAmount`), no `course.price`; si no, Meta recibe un valor distinto al cobrado. Evidencia: `src/components/InscriptionForm/index.tsx`.
+- Clarity llama «Enviar formulario» también a intentos inválidos; usar los eventos `enrollment_*` para distinguir validación, creación y checkout. `payment_redirect_attempt` mide el intento, no confirma que Mercado Pago abrió. Los fallos de analítica no deben bloquear el checkout. Evidencia: `src/services/analytics.ts`.
+- Las lecturas de `localStorage` y `sessionStorage` para atribución y headers son opcionales: una excepción del navegador no debe impedir el POST de inscripción. Evidencia: `src/services/inscriptions/enrollmentAttribution.ts` y `src/services/config/apiClient.ts`.

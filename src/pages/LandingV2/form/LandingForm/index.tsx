@@ -4,6 +4,7 @@ import { useLandingForm } from './use-landing-form';
 import { SUBMIT_PHASE_LABEL } from './types';
 import type { LandingFormField } from './types';
 import type { CourseData, LandingPageData } from '../../types';
+import { buildWhatsAppUrl, WHATSAPP_MESSAGES } from '../../../../utils/constants';
 
 interface LandingFormProps {
   course: CourseData;
@@ -145,6 +146,11 @@ const LandingForm: React.FC<LandingFormProps> = ({ course, landing, accessLabel 
           }`}
         >
           {form.formMessage.text}
+          {form.formMessage.type === 'info' && (
+            <a className="mt-2 block underline" href={buildWhatsAppUrl(WHATSAPP_MESSAGES.paymentFailure)} target="_blank" rel="noopener noreferrer">
+              Contactar por WhatsApp
+            </a>
+          )}
         </div>
       )}
     </form>

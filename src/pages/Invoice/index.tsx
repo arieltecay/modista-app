@@ -6,7 +6,6 @@ const PRINT_STYLE = '@page { size: A4; margin: 10mm; } @media print { body { bac
 
 /** Sin buscadores ni referrer: la URL de la factura es un secreto. */
 const hidePageFromCrawlersAndReferrers = (): void => {
-  document.title = 'Tu factura';
   for (const [name, content] of [
     ['robots', 'noindex, nofollow'],
     ['referrer', 'no-referrer'],
@@ -42,6 +41,12 @@ const InvoicePage = () => {
 
   useEffect(hidePageFromCrawlersAndReferrers, []);
 
+  // El título es el nombre que propone el navegador al guardar el PDF.
+  const isCreditNote = state.status === 'ready' && Boolean(state.invoice.creditedInvoice);
+  useEffect(() => {
+    document.title = isCreditNote ? 'Tu nota de crédito' : 'Tu factura';
+  }, [isCreditNote]);
+
   return (
     <div className="min-h-screen bg-gray-100 px-4 py-6 print:bg-white print:p-0">
       <style>{PRINT_STYLE}</style>
@@ -64,7 +69,7 @@ const InvoicePage = () => {
       {state.status === 'ready' && (
         <>
           <div className="mx-auto mb-3 flex max-w-3xl items-center justify-between print:hidden">
-            <strong className="text-gray-900">Tu factura</strong>
+            <strong className="text-gray-900">{isCreditNote ? 'Tu nota de crédito' : 'Tu factura'}</strong>
             <button type="button" onClick={() => window.print()} className="rounded-lg bg-violet-800 px-5 py-2.5 text-sm font-semibold text-white">
               Imprimir / Guardar como PDF
             </button>

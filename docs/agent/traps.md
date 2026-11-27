@@ -1,5 +1,6 @@
 # Traps
 
+- En inputs sobre `bg-background`, declarar `text-foreground`: el campo de cupón era ilegible en modo oscuro sin esa clase. Evidencia: `src/components/CouponField/index.tsx`.
 - En landings pagas, mantener la validación telefónica estricta como import diferido al enviar; cargar `libphonenumber-js` al inicio compite con el render crítico (`src/utils/validators.ts`).
 - Cloudflare Pages ya cachea assets con hash; no agregar reglas amplias para HTML, `sw.js` o rutas SPA (`public/_headers`).
 - El código de la aplicación es el propietario de los eventos de Meta; GTM no debe duplicarlos.

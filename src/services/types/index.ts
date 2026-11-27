@@ -207,6 +207,7 @@ export interface CreateLandingInscriptionData {
     courseTitle: string;
     coursePrice: number;
     landingPageId: string;
+    couponCode?: string;
     marketingSource?: string;
     utmParams?: Record<string, string | null | undefined>;
     sessionId?: string;

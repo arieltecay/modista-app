@@ -204,7 +204,7 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
   const formattedPrice = formattedListPrice && appliedCoupon ? formatArs(appliedCoupon.finalPrice) : formattedListPrice;
 
   return (
-    <section className="bg-background py-12">
+    <section className="inscription-form-light bg-background py-12">
       <div className="container mx-auto px-4">
         <div className="max-w-3xl mx-auto bg-card p-8 rounded-lg shadow-md border border-border">
 
@@ -239,27 +239,18 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
               </div>
 
               <div className="bg-primary/5 border border-primary/20 rounded-xl p-5 mb-8">
-                <p className="text-sm font-semibold text-primary mb-1">
+                <p className="text-sm font-semibold text-atelier-primary-dark mb-1">
                   Estás por anotarte a:
                 </p>
                 <h3 className="text-lg font-bold text-foreground mb-2">{course?.title}</h3>
                 {formattedPrice && (
                   <div className="flex items-baseline gap-2">
                     {appliedCoupon && <s className="text-sm text-muted-foreground">{formattedListPrice}</s>}
-                    <span className="text-2xl font-black text-green-600">{formattedPrice}</span>
+                    <span className="text-2xl font-black text-atelier-primary-dark">{formattedPrice}</span>
                     <span className="text-sm text-muted-foreground">pago único</span>
                   </div>
                 )}
               </div>
-
-              {(couponsAvailable || appliedCoupon) && (
-                <CouponField
-                  courseId={couponCourseId}
-                  applied={appliedCoupon}
-                  onApply={setAppliedCoupon}
-                  onRemove={() => setAppliedCoupon(null)}
-                />
-              )}
 
             </>
           )}
@@ -384,6 +375,15 @@ const InscriptionForm: React.FC<InscriptionFormProps> = ({ course }) => {
                 aria-hidden="true"
                 className="absolute -left-[9999px] w-0 h-0 opacity-0 pointer-events-none"
               />
+
+              {!isFree && (couponsAvailable || appliedCoupon) && (
+                <CouponField
+                  courseId={couponCourseId}
+                  applied={appliedCoupon}
+                  onApply={setAppliedCoupon}
+                  onRemove={() => setAppliedCoupon(null)}
+                />
+              )}
 
               <div className="flex flex-col items-center space-y-3 pt-4">
                 <button

@@ -40,7 +40,7 @@ const CouponField = ({ courseId, applied, onApply, onRemove, appearance = 'check
 
   if (!open) {
     return (
-      <button type="button" onClick={() => setOpen(true)} className={`mb-6 text-sm font-semibold underline ${appearance === 'landing' ? 'text-atelier-primary-dark' : 'text-primary'}`}>
+      <button type="button" onClick={() => setOpen(true)} className="mb-6 text-sm font-semibold text-atelier-primary-dark underline">
         ¿Tenés un cupón de descuento?
       </button>
     );

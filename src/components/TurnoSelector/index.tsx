@@ -38,7 +38,7 @@ const TurnoSelector: React.FC<TurnoSelectorProps> = ({ courseId, onSelect, selec
   if (loading) return <div className="py-4 flex justify-center"><Spinner /></div>;
   if (error) return <div className="py-2 text-red-500 text-sm">{error}</div>;
   if (turnos.length === 0) return (
-    <div className="py-4 px-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg text-yellow-600 dark:text-yellow-500 text-sm">
+    <div className="py-4 px-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg text-yellow-600 text-sm">
       No hay turnos disponibles para este curso actualmente.
     </div>
   );

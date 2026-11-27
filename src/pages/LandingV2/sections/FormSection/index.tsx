@@ -1,7 +1,8 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import LandingForm from '../../form/LandingForm';
 import { trackV2, usePricingVisibleOnce } from '../../hooks/use-landing-tracking';
-import type { CourseData, LandingPageData, PriceInfo } from '../../types';
+import type { AppliedCoupon, CourseData, LandingPageData, PriceInfo } from '../../types';
+import { formatArs } from '../../../../utils/formatArs';
 
 interface FormSectionProps {
   course: CourseData;
@@ -18,6 +19,7 @@ interface FormSectionProps {
 const FormSection = React.forwardRef<HTMLElement, FormSectionProps>(({ course, landing, price, accessLabel, isPreSale }, ref) => {
   const priceRef = useRef<HTMLDivElement | null>(null);
   const courseId = course.uuid || course.id || course._id;
+  const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null);
   usePricingVisibleOnce(priceRef, { courseId, courseTitle: course.title, value: course.price });
 
   useEffect(() => {
@@ -50,7 +52,8 @@ const FormSection = React.forwardRef<HTMLElement, FormSectionProps>(({ course, l
         </p>
         {price.formatted && (
           <div ref={priceRef} className="inline-block bg-white rounded-2xl px-8 py-4 shadow-[0_2px_16px_rgba(91,114,99,0.08)] border border-atelier-sage/10">
-            <span className="text-3xl font-bold text-atelier-ink font-atelier-sans">{price.formatted}</span>
+            {appliedCoupon && <s className="mr-2 text-atelier-muted-text font-atelier-sans">{price.formatted}</s>}
+            <span className="text-3xl font-bold text-atelier-ink font-atelier-sans">{appliedCoupon ? formatArs(appliedCoupon.finalPrice) : price.formatted}</span>
             <span className="block text-atelier-muted-text text-xs mt-1 font-atelier-sans">Pago único · {accessLabel.toLowerCase()}</span>
           </div>
         )}
@@ -58,7 +61,7 @@ const FormSection = React.forwardRef<HTMLElement, FormSectionProps>(({ course, l
 
       <div className="max-w-md mx-auto">
         <div className="bg-white rounded-3xl p-6 sm:p-7 shadow-[0_4px_28px_rgba(91,114,99,0.1)] border border-atelier-sage/10">
-          <LandingForm course={course} landing={landing} accessLabel={accessLabel} />
+          <LandingForm course={course} landing={landing} accessLabel={accessLabel} appliedCoupon={appliedCoupon} onApplyCoupon={setAppliedCoupon} onRemoveCoupon={() => setAppliedCoupon(null)} />
           <div className="mt-5 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-[10px] text-atelier-muted-text font-atelier-sans">
             <span>MercadoPago · Tarjetas · Transferencia</span>
           </div>

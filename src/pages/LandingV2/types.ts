@@ -15,6 +15,13 @@ export interface PriceInfo {
   raw: number | undefined;
 }
 
+export interface AppliedCoupon {
+  code: string;
+  listPrice: number;
+  discountAmount: number;
+  finalPrice: number;
+}
+
 export interface LandingV2Data {
   landing: LandingPageData;
   course: CourseData;

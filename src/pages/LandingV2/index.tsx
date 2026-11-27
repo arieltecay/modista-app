@@ -127,6 +127,7 @@ const LandingPageV2: React.FC = () => {
         <SecuritySection accessLabel={accessLabel} accessDescription={accessDescription} />
 
         <FormSection
+          key={courseId}
           ref={formRef}
           course={course}
           landing={landing}

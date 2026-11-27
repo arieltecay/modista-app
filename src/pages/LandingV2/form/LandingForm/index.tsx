@@ -1,15 +1,21 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import Spinner from '../../../../components/Spinner';
+import CouponField from '../../../../components/CouponField';
+import { useCouponAvailability } from '../../../../components/InscriptionForm/useCouponAvailability';
+import { formatArs } from '../../../../utils/formatArs';
 import { useLandingForm } from './use-landing-form';
 import { SUBMIT_PHASE_LABEL } from './types';
 import type { LandingFormField } from './types';
-import type { CourseData, LandingPageData } from '../../types';
+import type { AppliedCoupon, CourseData, LandingPageData } from '../../types';
 import { buildWhatsAppUrl, WHATSAPP_MESSAGES } from '../../../../utils/constants';
 
 interface LandingFormProps {
   course: CourseData;
   landing: LandingPageData;
   accessLabel: string;
+  appliedCoupon: AppliedCoupon | null;
+  onApplyCoupon: (coupon: AppliedCoupon) => void;
+  onRemoveCoupon: () => void;
 }
 
 const FORM_FIELDS: Array<{
@@ -28,16 +34,14 @@ const FORM_FIELDS: Array<{
  * Formulario de inscripción de la landing v2 — COMPONENTE PRESENTACIONAL.
  * Toda la lógica (validación, submit, conversión) vive en `useLandingForm`.
  */
-const LandingForm: React.FC<LandingFormProps> = ({ course, landing, accessLabel }) => {
-  const form = useLandingForm({ course, landing });
+const LandingForm: React.FC<LandingFormProps> = ({ course, landing, accessLabel, appliedCoupon, onApplyCoupon, onRemoveCoupon }) => {
+  const form = useLandingForm({ course, landing, appliedCoupon });
+  const courseId = course.uuid || course.id || course._id || '';
+  const couponsAvailable = useCouponAvailability(courseId, course.price > 0);
 
-  const formattedPrice = useMemo(
-    () =>
-      course.price
-        ? new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(course.price)
-        : null,
-    [course.price]
-  );
+  const formattedPrice = appliedCoupon
+    ? formatArs(appliedCoupon.finalPrice)
+    : course.price ? formatArs(course.price) : null;
 
   return (
     <form onSubmit={form.handleSubmit} className="space-y-5" noValidate>
@@ -91,6 +95,16 @@ const LandingForm: React.FC<LandingFormProps> = ({ course, landing, accessLabel 
         aria-hidden="true"
         className="absolute -left-[9999px] w-0 h-0 opacity-0 pointer-events-none"
       />
+
+      {(couponsAvailable || appliedCoupon) && (
+        <CouponField
+          courseId={courseId}
+          applied={appliedCoupon}
+          onApply={onApplyCoupon}
+          onRemove={onRemoveCoupon}
+          appearance="landing"
+        />
+      )}
 
       <div className="pt-3">
         <button

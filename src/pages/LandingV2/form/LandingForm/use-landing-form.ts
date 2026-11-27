@@ -11,12 +11,14 @@ import {
 } from '../../../../utils/validators';
 import { trackV2 } from '../../hooks/use-landing-tracking';
 import type { LandingFormField, LandingFormState, SubmitPhase, FormMessageState } from './types';
-import type { CourseData, LandingPageData } from '../../types';
+import type { AppliedCoupon, CourseData, LandingPageData } from '../../types';
+import { payableAmount } from '../../../../utils/couponCheck';
 import type { CreateLandingInscriptionData } from '../../../../services/types';
 
 export interface UseLandingFormArgs {
   course: CourseData;
   landing: LandingPageData;
+  appliedCoupon: AppliedCoupon | null;
 }
 
 // Primer foco = form_start (una sola vez por montaje del form)
@@ -32,7 +34,7 @@ let hasTrackedFormStart = false;
  *   (eventID checkout_<id>) → await Lead pixel (eventID lead_<id>) →
  *   redirect_to_payment → delay 1500ms → redirect a MercadoPago.
  */
-export const useLandingForm = ({ course, landing }: UseLandingFormArgs) => {
+export const useLandingForm = ({ course, landing, appliedCoupon }: UseLandingFormArgs) => {
   const [formData, setFormData] = useState<LandingFormState>({ fullName: '', email: '', celular: '', website: '' });
   const [fieldErrors, setFieldErrors] = useState<Partial<Record<LandingFormField, string>>>({});
   const [touched, setTouched] = useState<Partial<Record<LandingFormField, boolean>>>({});
@@ -51,6 +53,7 @@ export const useLandingForm = ({ course, landing }: UseLandingFormArgs) => {
 
   const courseId = course.uuid || course.id || course._id;
   const loading = phase !== 'idle';
+  const payable = payableAmount(course.price, appliedCoupon);
 
   const VALIDATORS: Record<LandingFormField, (v: string) => string | null> = {
     fullName: validateFullName,
@@ -138,6 +141,7 @@ export const useLandingForm = ({ course, landing }: UseLandingFormArgs) => {
         courseTitle: course.title,
         coursePrice: course.price,
         landingPageId: (landing._id || landing.id || '') as string,
+        couponCode: appliedCoupon?.code,
         ...getEnrollmentAttribution(),
         website: formData.website,
       };
@@ -148,17 +152,18 @@ export const useLandingForm = ({ course, landing }: UseLandingFormArgs) => {
         responseInvalid = true;
         throw new Error('No pudimos completar tu inscripción. Intentá de nuevo o contactanos.');
       }
+      const chargedPrice = Number(response.data?.coursePrice ?? payable);
       trackEnrollmentDiagnostic('created');
 
       setPhase('tracking');
 
       try {
         // InitiateCheckout y Lead comparten eventID con el backend CAPI.
-        trackFormStart('landing_form_v2', 'Landing V2 Form', payload.courseId, course.title, inscriptionId, course.price);
+        trackFormStart('landing_form_v2', 'Landing V2 Form', payload.courseId, course.title, inscriptionId, chargedPrice);
         await trackInscriptionSuccess(
           payload.courseId,
           course.title,
-          course.price,
+          chargedPrice,
           inscriptionId
         );
       } catch {
@@ -166,13 +171,13 @@ export const useLandingForm = ({ course, landing }: UseLandingFormArgs) => {
       }
 
       if (inscriptionId) {
-        trackV2('lead', { courseId: payload.courseId, courseTitle: course.title, inscriptionId, value: course.price });
-        trackV2('initiate_checkout', { courseId: payload.courseId, courseTitle: course.title, inscriptionId, value: course.price });
+        trackV2('lead', { courseId: payload.courseId, courseTitle: course.title, inscriptionId, value: chargedPrice });
+        trackV2('initiate_checkout', { courseId: payload.courseId, courseTitle: course.title, inscriptionId, value: chargedPrice });
       }
 
       // Prioridad: preference dinámica (mpInitPoint) > fallback estático (mpPaymentLink).
       const destination = resolveCheckoutDestination({
-        coursePrice: Number(response.data?.coursePrice ?? course.price),
+        coursePrice: chargedPrice,
         inscriptionId,
         isDevelopment: import.meta.env.DEV,
         mpInitPoint: response.mpInitPoint,

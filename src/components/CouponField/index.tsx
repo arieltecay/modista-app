@@ -4,7 +4,7 @@ import { checkCoupon } from '../../utils/couponCheck';
 import { formatArs } from '../../utils/formatArs';
 import type { CouponFieldProps } from './types';
 
-const CouponField = ({ courseId, applied, onApply, onRemove }: CouponFieldProps) => {
+const CouponField = ({ courseId, applied, onApply, onRemove, appearance = 'checkout' }: CouponFieldProps) => {
   const [open, setOpen] = useState(false);
   const [code, setCode] = useState('');
   const [checking, setChecking] = useState(false);
@@ -40,7 +40,7 @@ const CouponField = ({ courseId, applied, onApply, onRemove }: CouponFieldProps)
 
   if (!open) {
     return (
-      <button type="button" onClick={() => setOpen(true)} className="mb-6 text-sm font-semibold text-primary underline">
+      <button type="button" onClick={() => setOpen(true)} className={`mb-6 text-sm font-semibold underline ${appearance === 'landing' ? 'text-atelier-primary-dark' : 'text-primary'}`}>
         ¿Tenés un cupón de descuento?
       </button>
     );
@@ -48,7 +48,7 @@ const CouponField = ({ courseId, applied, onApply, onRemove }: CouponFieldProps)
 
   return (
     <div className="mb-6">
-      <label htmlFor="coupon-code" className="mb-1 block text-sm font-medium text-muted-foreground">
+      <label htmlFor="coupon-code" className={`mb-1 block text-sm font-medium ${appearance === 'landing' ? 'text-atelier-ink' : 'text-muted-foreground'}`}>
         Código de cupón
       </label>
       <div className="flex gap-2">
@@ -63,13 +63,13 @@ const CouponField = ({ courseId, applied, onApply, onRemove }: CouponFieldProps)
             }
           }}
           autoComplete="off"
-          className="w-full rounded-lg border border-border bg-background px-3 py-2 uppercase"
+          className={`w-full min-w-0 rounded-lg border px-3 py-2 uppercase ${appearance === 'landing' ? 'border-atelier-sage/40 bg-atelier-canvas text-atelier-ink' : 'border-border bg-background text-foreground'}`}
         />
         <button
           type="button"
           onClick={() => void handleApply()}
           disabled={checking}
-          className="shrink-0 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground disabled:opacity-50"
+          className={`shrink-0 rounded-lg px-4 py-2 text-sm font-semibold disabled:opacity-50 ${appearance === 'landing' ? 'bg-atelier-primary text-white' : 'bg-primary text-primary-foreground'}`}
         >
           {checking ? 'Verificando…' : 'Aplicar'}
         </button>

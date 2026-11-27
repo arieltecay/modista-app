@@ -12,4 +12,5 @@ export interface CouponFieldProps {
   applied: AppliedCoupon | null;
   onApply: (coupon: AppliedCoupon) => void;
   onRemove: () => void;
+  appearance?: 'checkout' | 'landing';
 }

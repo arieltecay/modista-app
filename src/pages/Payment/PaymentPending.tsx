@@ -3,6 +3,7 @@ import { useSearchParams, Link, Navigate } from 'react-router-dom';
 import { usePaymentStatusPolling } from '../../components/PaymentReturnHandler';
 import { FaClock, FaWhatsapp } from 'react-icons/fa';
 import { buildWhatsAppUrl, WHATSAPP_MESSAGES } from '../../utils/constants';
+import { PrivacyPreferencesButton } from '../../components/PrivacyPreferencesButton';
 
 const whatsappUrl = buildWhatsAppUrl(WHATSAPP_MESSAGES.paymentPending);
 
@@ -44,6 +45,7 @@ const PaymentPending: React.FC = () => {
             Ver más cursos
           </Link>
         </div>
+        <PrivacyPreferencesButton className="mt-6 text-xs text-gray-400 underline-offset-4 hover:underline" />
       </div>
     </div>
   );

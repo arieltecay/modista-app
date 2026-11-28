@@ -1,7 +1,7 @@
 # Changelog
 
 ## [Unreleased]
-- Quita el botón flotante de privacidad: el aviso (más compacto) solo aparece a quien no eligió y se reabre desde «Preferencias de privacidad» en el pie de página.
+- Quita el botón flotante de privacidad: el aviso (más compacto) solo aparece a quien no eligió y se reabre desde «Preferencias de privacidad» en el pie de página, la 404 y las páginas de pago.
 - El formulario de cursos mantiene el tema claro y muestra el cupón justo antes del botón de pago, igual que la landing.
 - El cupón ahora se ve al escribir y se puede aplicar en las landing pages; el precio mostrado y el enviado al pago reflejan el descuento.
 - El envío de inscripción continúa aunque el navegador bloquee almacenamiento usado por marketing; el cliente HTTP tampoco impide el POST por ese motivo.

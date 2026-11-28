@@ -8,6 +8,7 @@ import type { AccessNotificationStatus, PaymentStatusResponse, PaymentStatusValu
 import Spinner from '../../components/Spinner';
 import { FaWhatsapp, FaCheckCircle } from 'react-icons/fa';
 import { buildWhatsAppUrl, WHATSAPP_MESSAGES } from '../../utils/constants';
+import { PrivacyPreferencesButton } from '../../components/PrivacyPreferencesButton';
 
 const whatsappUrl = buildWhatsAppUrl(WHATSAPP_MESSAGES.paymentSuccess);
 
@@ -103,6 +104,7 @@ const PaymentSuccess: React.FC = () => {
         >
           <FaWhatsapp size={20} /> Contactar por WhatsApp
         </a>
+        <PrivacyPreferencesButton className="mt-6 text-xs text-gray-400 underline-offset-4 hover:underline" />
       </div>
     );
   }
@@ -152,6 +154,7 @@ const PaymentSuccess: React.FC = () => {
             )}
           </>
         )}
+        <PrivacyPreferencesButton className="mt-6 text-xs text-gray-400 underline-offset-4 hover:underline" />
       </div>
     </div>
   );

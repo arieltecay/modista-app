@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   getMarketingConsentChoice,
   META_MARKETING_CONSENT_EVENT,
+  OPEN_PRIVACY_PREFERENCES_EVENT,
   saveMarketingConsent,
 } from '../../utils/privacy-consent';
 import type { PrivacyConsentState } from './types';
@@ -14,12 +15,25 @@ const PrivacyConsentBanner = () => {
     error: null,
   });
 
+  const panelRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    if (state.settingsOpen) panelRef.current?.focus();
+  }, [state.settingsOpen]);
+
   useEffect(() => {
     const syncChoice = () => {
       setState(previous => ({ ...previous, choice: getMarketingConsentChoice() }));
     };
+    const openSettings = () => {
+      setState(previous => ({ ...previous, settingsOpen: true, error: null }));
+    };
     window.addEventListener(META_MARKETING_CONSENT_EVENT, syncChoice);
-    return () => window.removeEventListener(META_MARKETING_CONSENT_EVENT, syncChoice);
+    window.addEventListener(OPEN_PRIVACY_PREFERENCES_EVENT, openSettings);
+    return () => {
+      window.removeEventListener(META_MARKETING_CONSENT_EVENT, syncChoice);
+      window.removeEventListener(OPEN_PRIVACY_PREFERENCES_EVENT, openSettings);
+    };
   }, []);
 
   const handleChoice = async (marketingConsent: boolean) => {
@@ -48,64 +62,56 @@ const PrivacyConsentBanner = () => {
     }
   };
 
-  const shouldShowPanel = state.choice === null || state.settingsOpen;
+  if (state.choice !== null && !state.settingsOpen) return null;
+
+  const closeSettings = () => setState(previous => ({ ...previous, settingsOpen: false }));
 
   return (
-    <>
-      {!shouldShowPanel && (
+    <section
+      ref={panelRef}
+      tabIndex={-1}
+      onKeyDown={event => {
+        if (event.key === 'Escape' && state.choice !== null) closeSettings();
+      }}
+      aria-label="Preferencias de privacidad y medición"
+      className="fixed inset-x-3 bottom-[calc(5rem+env(safe-area-inset-bottom)+0.5rem)] z-[100] rounded-xl border border-atelier-sage/20 bg-white/95 p-3.5 text-atelier-dark shadow-lg backdrop-blur outline-none sm:inset-x-auto sm:bottom-24 sm:right-4 sm:max-w-sm"
+    >
+      <div className="flex items-start justify-between gap-3">
+        <p className="text-xs leading-5 text-atelier-muted-text">
+          Con tu permiso usamos Meta, Google y Clarity para medir visitas y mejorar anuncios. Puedes cambiarlo cuando quieras.{' '}
+          <a href="/privacidad" className="underline">Más info</a>
+        </p>
+        {state.choice !== null && (
+          <button
+            type="button"
+            onClick={closeSettings}
+            className="-mr-2 -mt-2 rounded p-2 text-lg leading-none text-atelier-muted-text"
+            aria-label="Cerrar preferencias"
+          >
+            ×
+          </button>
+        )}
+      </div>
+      {state.error && <p role="alert" className="mt-2 text-xs text-red-700">{state.error}</p>}
+      <div className="mt-3 flex gap-2">
         <button
           type="button"
-          onClick={() => setState(previous => ({ ...previous, settingsOpen: true, error: null }))}
-          className="fixed bottom-[calc(5rem+env(safe-area-inset-bottom)+0.75rem)] left-3 z-[100] rounded-full border border-atelier-sage/30 bg-white px-4 py-2 text-xs font-semibold text-atelier-primary shadow-lg sm:bottom-3"
-          aria-label="Abrir preferencias de privacidad"
+          disabled={state.saving}
+          onClick={() => void handleChoice(false)}
+          className="flex-1 rounded-full border border-atelier-sage/40 px-3 py-2.5 text-xs font-semibold disabled:opacity-60"
         >
-          Preferencias de privacidad
+          Solo necesarias
         </button>
-      )}
-
-      {shouldShowPanel && (
-        <section
-          aria-label="Preferencias de privacidad y medición"
-          className="fixed inset-x-3 bottom-[calc(5rem+env(safe-area-inset-bottom)+0.75rem)] z-[100] mx-auto h-[min(21rem,calc(100dvh-7rem-env(safe-area-inset-bottom)))] max-w-3xl overflow-y-auto rounded-2xl border border-atelier-sage/20 bg-white p-5 text-atelier-dark shadow-2xl sm:inset-x-6 sm:bottom-3 sm:h-auto sm:min-h-[13rem] sm:max-h-[calc(100dvh-1.5rem)] sm:p-6"
+        <button
+          type="button"
+          disabled={state.saving}
+          onClick={() => void handleChoice(true)}
+          className="flex-1 rounded-full bg-atelier-primary px-3 py-2.5 text-xs font-semibold text-white disabled:opacity-60"
         >
-          <div className="flex items-start justify-between gap-4">
-            <h2 className="text-base font-bold">Privacidad y medición</h2>
-            {state.choice !== null && (
-              <button
-                type="button"
-                onClick={() => setState(previous => ({ ...previous, settingsOpen: false }))}
-                className="rounded p-1 text-lg leading-none text-atelier-muted-text"
-                aria-label="Cerrar preferencias"
-              >
-                ×
-              </button>
-            )}
-          </div>
-          <p className="mt-2 text-sm leading-6 text-atelier-muted-text">
-            Si aceptas, cargaremos herramientas opcionales de medición y publicidad, incluidas Meta Pixel/CAPI, Google Tag Manager y Microsoft Clarity. Pueden recibir eventos de navegación y compra, datos técnicos e identificadores del navegador. Puedes cambiar tu elección cuando quieras. <a href="/privacidad" className="underline">Lee la política de privacidad</a>.
-          </p>
-          {state.error && <p role="alert" className="mt-3 text-sm text-red-700">{state.error}</p>}
-          <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:justify-end">
-            <button
-              type="button"
-              disabled={state.saving}
-              onClick={() => void handleChoice(false)}
-              className="rounded-full border border-atelier-sage/40 px-5 py-2.5 text-sm font-semibold disabled:opacity-60"
-            >
-              Solo necesarias
-            </button>
-            <button
-              type="button"
-              disabled={state.saving}
-              onClick={() => void handleChoice(true)}
-              className="rounded-full bg-atelier-primary px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-60"
-            >
-              Aceptar medición y publicidad
-            </button>
-          </div>
-        </section>
-      )}
-    </>
+          Aceptar
+        </button>
+      </div>
+    </section>
   );
 };
 

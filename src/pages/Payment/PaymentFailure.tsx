@@ -6,6 +6,7 @@ import { FaTimesCircle, FaWhatsapp, FaRedo } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 import { buildWhatsAppUrl, WHATSAPP_MESSAGES } from '../../utils/constants';
 import { paymentRetryMessage } from '../../utils/paymentRetryMessage';
+import { PrivacyPreferencesButton } from '../../components/PrivacyPreferencesButton';
 
 const whatsappUrl = buildWhatsAppUrl(WHATSAPP_MESSAGES.paymentFailure);
 
@@ -64,6 +65,7 @@ const PaymentFailure: React.FC = () => {
             <FaWhatsapp size={20} /> Contactar por WhatsApp
           </a>
         </div>
+        <PrivacyPreferencesButton className="mt-6 text-xs text-gray-400 underline-offset-4 hover:underline" />
       </div>
     </div>
   );

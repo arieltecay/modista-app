@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { PrivacyPreferencesButton } from '../../components/PrivacyPreferencesButton';
 
 const NotFoundPage = () => {
   return (
@@ -14,6 +15,7 @@ const NotFoundPage = () => {
       >
         Volver al Inicio
       </Link>
+      <PrivacyPreferencesButton className="mt-6 text-xs text-gray-400 underline-offset-4 hover:underline" />
     </div>
   );
 };

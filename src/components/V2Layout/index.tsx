@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
+import { PrivacyPreferencesButton } from '../PrivacyPreferencesButton';
 import { useRevealOnScroll } from '../../pages/LandingV2/hooks/use-reveal';
 
 const WHATSAPP_URL = 'https://wa.me/5493815734249';
@@ -109,6 +110,7 @@ const V2Layout: React.FC<V2LayoutProps> = ({ children }) => {
           <div className="flex items-center gap-4 text-xs">
             <Link to="/privacidad" className="hover:text-atelier-primary transition-colors">Privacidad</Link>
             <Link to="/terminos" className="hover:text-atelier-primary transition-colors">Términos</Link>
+            <PrivacyPreferencesButton className="hover:text-atelier-primary transition-colors" />
           </div>
         </div>
       </footer>

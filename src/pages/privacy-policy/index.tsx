@@ -39,7 +39,7 @@ const PrivacyPolicyPage = () => {
           <section>
             <h2 className="text-2xl font-semibold text-foreground mb-3">4. Medición opcional y consentimiento</h2>
             <p>
-              Las herramientas opcionales de medición y publicidad no se cargan hasta que eliges “Aceptar medición y publicidad” en el aviso de privacidad. Si eliges “Solo necesarias”, puedes navegar, inscribirte y pagar; esas herramientas permanecen desactivadas. Puedes cambiar o revocar tu elección desde “Preferencias de privacidad”, disponible en el sitio.
+              Las herramientas opcionales de medición y publicidad no se cargan hasta que eliges “Aceptar” en el aviso de privacidad. Si eliges “Solo necesarias”, puedes navegar, inscribirte y pagar; esas herramientas permanecen desactivadas. Puedes cambiar o revocar tu elección desde “Preferencias de privacidad”, en el pie de página del sitio.
             </p>
             <p>
               Si aceptas, podemos cargar Google Tag Manager, Meta Pixel, Meta Conversions API y Microsoft Clarity. El contenedor de Google Tag Manager puede activar otras etiquetas configuradas para el sitio; su inventario debe mantenerse actualizado. Estas herramientas pueden recibir eventos como visitas a páginas, visualización de cursos, inicio de formularios, inscripciones y compras, además de la URL o referencia de la página, dirección IP, navegador, tipo de dispositivo, parámetros de campaña, identificadores de clic o cookies y un identificador aleatorio seudónimo del navegador.

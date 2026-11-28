@@ -2,6 +2,7 @@ import React from 'react';
 import { FaWhatsapp, FaInstagram, FaTiktok } from 'react-icons/fa';
 import { WHATSAPP_URL } from '../../utils/constants';
 import { Link } from 'react-router-dom';
+import { PrivacyPreferencesButton } from '../../components/PrivacyPreferencesButton';
 
 const Footer: React.FC = () => {
   return (
@@ -22,6 +23,8 @@ const Footer: React.FC = () => {
           <Link to="/privacidad" className="hover:underline">Política de Privacidad</Link>
           <span>|</span>
           <Link to="/terminos" className="hover:underline">Términos y Condiciones</Link>
+          <span>|</span>
+          <PrivacyPreferencesButton className="hover:underline" />
         </div>
       </div>
     </footer>

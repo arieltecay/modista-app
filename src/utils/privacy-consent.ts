@@ -1,5 +1,6 @@
 export const META_MARKETING_CONSENT_VERSION = 'privacy-2026-11';
 export const META_MARKETING_CONSENT_EVENT = 'modista:privacy-consent-changed';
+export const OPEN_PRIVACY_PREFERENCES_EVENT = 'modista:open-privacy-preferences';
 
 const CONSENT_KEY = 'modista_privacy_consent';
 const SESSION_KEY = 'modista_session_id';
@@ -38,6 +39,10 @@ export const hasMarketingConsent = (): boolean => readConsentRecord()?.marketing
 export const getMarketingConsentChoice = (): boolean | null => {
   const record = readConsentRecord();
   return record ? record.marketing : null;
+};
+
+export const openPrivacyPreferences = (): void => {
+  window.dispatchEvent(new CustomEvent(OPEN_PRIVACY_PREFERENCES_EVENT));
 };
 
 const dispatchConsentChange = (marketing: boolean): void => {

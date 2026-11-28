@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef } from 'react';
 import { Navigate } from 'react-router-dom';
 import SEO from '../../components/SEO';
 import PrivacyNotice from '../../components/PrivacyNotice';
+import { PrivacyPreferencesButton } from '../../components/PrivacyPreferencesButton';
 import FaqSection from '../../components/FaqSection';
 import { getOptimizedUrl } from '../../utils/image-utils';
 import { useLandingData } from '../../hooks/use-landing-data';
@@ -145,6 +146,7 @@ const LandingPageV2: React.FC = () => {
           <p className="text-atelier-muted-text text-sm font-atelier-sans">
             &copy; {new Date().getFullYear()} Modista App. Todos los derechos reservados.
           </p>
+          <PrivacyPreferencesButton className="mt-2 text-xs text-atelier-muted-text underline-offset-4 hover:underline" />
         </footer>
       </div>
     </>
